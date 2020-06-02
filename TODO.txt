@@ -1,0 +1,17 @@
+Rust library:
+- finalize API
+	- consider offering both an encapsulated API and a simple API
+
+Python bindings:
+- research Rust libraries designed to enable this
+
+Server:
+- Basic ORM schema (relational representation of the product graph without edit history)
+- Basic routing
+	- pages for: entering data, viewing data (including calculated values)
+	- including basic templates
+
+Testing:
+- Write tests for the server and the library
+- Consider integrating with Github CI
+
