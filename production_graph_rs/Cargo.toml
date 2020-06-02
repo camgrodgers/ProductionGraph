@@ -1,7 +1,7 @@
 [package]
 name = "production_graph_rs"
 version = "0.1.0"
-authors = ["Your Name"]
+authors = ["Cameron Rodgers"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

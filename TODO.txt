@@ -1,3 +1,5 @@
+NOTE: See Github Projects tab for a more up-to-date TODO list
+
 Rust library:
 - finalize API
 	- consider offering both an encapsulated API and a simple API
