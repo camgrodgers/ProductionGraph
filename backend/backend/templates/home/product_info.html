@@ -5,7 +5,7 @@
 {% block content %}
 
 <nav class="bg-gray-800">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto px-4 px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <div class="flex items-center">
         <div class="flex-shrink-0">
@@ -78,7 +78,7 @@
 
 <header class="pt-6">
   <div
-    class="flex items-center justify-between max-w-5xl mx-auto pt-4 sm:px-6 lg:px-8"
+    class="flex items-center justify-between max-w-5xl mx-auto pt-4 px-4 sm:px-6 lg:px-8"
   >
     <h3 class="text-xl">
       <span class="cursor-pointer" onclick="window.history.back();"
@@ -88,14 +88,14 @@
     </h3>
     <div>
       <button
-        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mr-2 rounded"
+        class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
         onclick="alert('NOT IMPLEMENTED YET')"
       >
         Edit
       </button>
       <button
-        class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
-        onclick="alert('NOT IMPLEMENTED YET')"
+        class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded"
+        onclick="window.location.href = '/product/analytics/'"
       >
         Charts
       </button>
@@ -103,7 +103,7 @@
   </div>
 </header>
 
-<div class="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8">
+<div class="max-w-5xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
   <div
     class="whitespace-no-wrap shadow overflow-hidden sm:rounded-lg border-b border-gray-200"
   >
@@ -173,19 +173,22 @@
       <div class="flex items-center justify-between">
         <h3 class="font-bold text-md">Dependencies</h3>
         <button
-          class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mr-2 rounded"
+          class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
           onclick="alert('NOT IMPLEMENTED YET')"
         >
           Edit
         </button>
       </div>
       <div
-        class="mt-4 align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200"
+        class="mt-4 align-middle inline-block min-w-full shadow overflow-scroll sm:rounded-lg border-b border-gray-200"
+        style="max-height: 20rem;"
       >
         <table class="min-w-full">
           <tbody class="bg-white">
             {% for dep in product.dependencies %}
-            <tr>
+            <tr
+              class="{% if forloop.counter|divisibleby:2 %}bg-gray-50{% endif %}"
+            >
               <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                 <div>
                   <div class="ml-4">

@@ -12,7 +12,8 @@ dummy_data = [
         'dependencies': [
             ('water', 0),
             ('ice', 0),
-            ('lemon', 0)
+            ('lemon', 0),
+            ('sugar', 0),
         ]
     },
     {
@@ -45,3 +46,9 @@ def product_view(request):
         'product': selected_product
     }
     return render(request, 'home/product_info.html', context)
+
+def product_analytics(request):
+    context = {
+        'product': selected_product
+    }
+    return render(request, 'home/product_analytics.html', context)
