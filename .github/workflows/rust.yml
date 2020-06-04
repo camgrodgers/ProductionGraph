@@ -22,6 +22,3 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
       working-directory: production_graph_rs
-    - name: Formatting
-      run: cargo fmt -- --check
-      working-directory: production_graph_rs
