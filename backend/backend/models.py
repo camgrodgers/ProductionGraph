@@ -6,7 +6,7 @@ class Product(models.Model):
     real_price = models.FloatField()
     direct_labor = models.FloatField() # Consider placing a lower bound of 0.0?
     direct_wages = models.FloatField()
-    cost_price = models.FloatField()
+    indirect_wages = models.FloatField()
     indirect_labor = models.FloatField()
 
 class Dependency(models.Model):
