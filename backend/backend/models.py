@@ -15,7 +15,7 @@ class Dependency(models.Model):
             on_delete=models.CASCADE,
             related_name = 'dependents'
             )
-    dependent = models.ForeignKey(
+    dependency = models.ForeignKey(
             'Product',
             on_delete=models.CASCADE,
             related_name = 'dependencies'
