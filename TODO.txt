@@ -11,6 +11,12 @@ Server:
 	- pages for: entering data, viewing data (including calculated values)
 	- including basic templates
 
+Frontend:
+- Create edit dependency modal
+- Create add dependency modal
+- Make all modals actually POST to server!
+	- research this ^
+
 Organization:
 - Make sure everyone knows how to branch and do pull requests
 - Check out Github's Projects tab as a replacement for this TODO file
