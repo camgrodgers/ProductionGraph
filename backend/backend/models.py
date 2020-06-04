@@ -23,5 +23,9 @@ class Dependency(models.Model):
     quantity = models.FloatField()
 
 
+class Economy(models.Model):
+    real_average_profit_rate = models.FloatField()
+    estimated_average_profit_rate = models.FloatField()
+
 
 
