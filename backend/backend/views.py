@@ -61,9 +61,16 @@ def home(request):
     return render(request, 'home/index.html', context)
 
 
+#TODO: 
+# 1). Add modals for creating / deleting dependencies
+# 2). Add Button + Confirmation modal (i.e. "Are you sure?") for delete product
+
+
 # I do not like the structure I have here, and it will
 # break once I add the POST for adding / editing dependency values
 # FIXME: definitely
+# IDEAS:
+# 1). Post each operation to a different URL (typical rest style)
 def product_view(request, name):
     target_product = retrieve_product(name)
     
