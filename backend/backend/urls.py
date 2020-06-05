@@ -19,7 +19,8 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('fourohfour/', views.fourohfour),
     path('', views.home),
-    path('product/', views.product_view),
-    path('product/analytics/', views.product_analytics)
+    path('product/<str:name>', views.product_view),
+    path('product/<str:name>/analytics/', views.product_analytics)
 ]

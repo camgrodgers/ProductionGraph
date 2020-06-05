@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 
 
 dummy_data = [
@@ -32,23 +32,44 @@ dummy_data = [
 ]
 
 
-selected_product = dummy_data[0]
+def retrieve_product(name):
+    target_product = None
 
-# Create your views here.
+    for product in dummy_data:
+        if product["name"] == name:
+            target_product = product
+            break
+    
+    return target_product
+
+
+def fourohfour(request):
+    return render(request, 'fourohfour/fourohfour.html')
+
 def home(request):
     context = {
         'products': dummy_data
     }
     return render(request, 'home/index.html', context)
 
-def product_view(request):
-    context = {
-        'product': selected_product
-    }
-    return render(request, 'home/product_info.html', context)
+def product_view(request, name):
+    target_product = retrieve_product(name)
+    
+    if target_product is None:
+        return redirect('/fourohfour')
+    else:
+        context = {
+            'product': target_product
+        }
+        return render(request, 'home/product_info.html', context)
 
-def product_analytics(request):
-    context = {
-        'product': selected_product
-    }
-    return render(request, 'home/product_analytics.html', context)
+def product_analytics(request, name):
+    target_product = retrieve_product(name)
+
+    if target_product is None:
+        return redirect('/fourohfour')
+    else:
+        context = {
+            'product': target_product
+        }
+        return render(request, 'home/product_analytics.html', context)
