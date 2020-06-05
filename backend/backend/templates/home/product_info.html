@@ -15,7 +15,7 @@
         >
         > {{product.name}}
       </h3>
-      <div>
+      <div class="flex items-center">
         <button
           id="modal-trigger"
           class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
@@ -26,12 +26,18 @@
           class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded"
           onclick="window.location.href = '/product/{{product.name}}/analytics/'"
         >
-          Charts
+          <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"
+            ></path>
+          </svg>
         </button>
       </div>
     </div>
   </header>
 
+  <!-- Product Details -->
+  <!-- Product Details Overview -->
   <div class="max-w-5xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
     <div
       class="bg-white whitespace-no-wrap shadow overflow-hidden sm:rounded-lg border-b border-gray-200"
@@ -44,7 +50,7 @@
         <div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
-              $ {{product.current_real_price}}
+              $ {{product.real_price}}
             </p>
             <p class="text-center text-md leading-5 text-gray-500">
               Current Real Price
@@ -52,38 +58,38 @@
           </div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
-              $ {{product.est_cost_price}}
+              $ {{product.direct_labor}}
             </p>
             <p class="text-center text-md leading-5 text-gray-500">
-              Estimated Cost
+              Direct Labor
             </p>
           </div>
         </div>
         <div>
-          <div class="py-4">
-            <p class="text-center text-xl font-extrabold">
-              $ {{product.est_time_labor}}
-            </p>
-            <p class="text-center text-md leading-5 text-gray-500">
-              Estimated Labor (Hours)
-            </p>
-          </div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
               $ {{product.direct_wages}}
             </p>
             <p class="text-center text-md leading-5 text-gray-500">
-              Estimated Wages
+              Direct Wages
+            </p>
+          </div>
+          <div class="py-4">
+            <p class="text-center text-xl font-extrabold">
+              $ {{product.indirect_wages}}
+            </p>
+            <p class="text-center text-md leading-5 text-gray-500">
+              Indirect Wages
             </p>
           </div>
         </div>
         <div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
-              $ {{product.est_time_labor}}
+              {{product.indirect_labor}}
             </p>
             <p class="text-center text-md leading-5 text-gray-500">
-              Estimated Labor (Hours)
+              Indirect Labor (Hours)
             </p>
           </div>
           <div class="py-4">
@@ -96,16 +102,17 @@
           </div>
         </div>
       </div>
+      <!-- End Product Details Overview -->
 
-      <!-- DEPS  -->
+      <!-- Product Dependencies  -->
       <div class="mt-12 mx-4 py-6 lg:mx-8">
         <div class="flex items-center justify-between">
           <h3 class="font-bold text-md">Dependencies</h3>
           <button
-            class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
+            class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded"
             onclick="alert('NOT IMPLEMENTED YET')"
           >
-            Edit
+            Create
           </button>
         </div>
         <div
@@ -114,7 +121,7 @@
         >
           <table class="min-w-full">
             <tbody class="bg-white">
-              {% for dep in product.dependencies %}
+              {% for dep in dependencies %}
               <tr
                 class="{% if forloop.counter|divisibleby:2 %}bg-gray-50{% endif %}"
               >
@@ -136,8 +143,10 @@
           </table>
         </div>
       </div>
+      <!-- End Product Dependencies -->
     </div>
   </div>
+  <!-- End Product Details -->
 
   <!-- MODAL -->
   <div
@@ -146,7 +155,8 @@
     <!-- This is the blurred, gray bg  -->
     <!-- TODO: Broken on mobile -->
     <div
-      class="modal-closer absolute w-full h-full bg-gray-900 opacity-50"
+      class="modal-closer absolute bg-gray-900 opacity-50"
+      style="width: 110vw; height: 110vh;"
     ></div>
 
     <div
@@ -194,7 +204,7 @@
                 <input
                   required
                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                  placeholder="${{ product.current_real_price }}"
+                  placeholder="${{ product.real_price }}"
                 />
               </div>
             </div>
@@ -208,7 +218,7 @@
                 <input
                   required
                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                  placeholder="{{ product.direct_labor_time }}"
+                  placeholder="{{ product.direct_labor }}"
                 />
               </div>
               <div class="w-1/2 px-2">
@@ -229,24 +239,24 @@
                 <label
                   class="px-2 block text-gray-700 text-sm font-medium mb-2"
                 >
-                  Estimated Cost-Price
+                  Indirect Wages
                 </label>
                 <input
                   required
                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                  placeholder="${{ product.est_cost_price }}"
+                  placeholder="${{ product.indirect_wages }}"
                 />
               </div>
               <div class="w-1/2 px-2">
                 <label
                   class="px-2 block text-gray-700 text-sm font-medium mb-2"
                 >
-                  Estimated Total Labor Time
+                  Indirect Labor
                 </label>
                 <input
                   required
                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                  placeholder="{{ product.est_time_labor }}"
+                  placeholder="{{ product.indirect_labor }}"
                 />
               </div>
             </div>

@@ -22,5 +22,8 @@ urlpatterns = [
     path('fourohfour/', views.fourohfour),
     path('', views.home),
     path('product/<str:name>', views.product_view),
-    path('product/<str:name>/analytics/', views.product_analytics)
+    path('product/<str:name>/analytics/', views.product_analytics),
+
+    # api
+    path('api/create-product', views.create_product)
 ]
