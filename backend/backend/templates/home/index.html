@@ -34,7 +34,7 @@
           <table class="min-w-full">
             <tbody class="bg-white">
               <!-- TODO: Add condition for empty product list, render something else if empty (e.g. "Click Create button to get started!") -->
-              {% for product in products %}
+              {% if products|length > 0 %} {% for product in products %}
               <tr
                 class="cursor-pointer"
                 onclick="location.href = '/product/{{product.name}}';"
@@ -61,6 +61,12 @@
                 ></td>
               </tr>
               {% endfor %}
+              <!--  -->
+              {% else %}
+              <div class="flex items-center justify-center py-6">
+                Click the "Create" button to get started!
+              </div>
+              {%endif%}
             </tbody>
           </table>
         </div>
