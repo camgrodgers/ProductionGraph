@@ -1,9 +1,12 @@
-mod production_graph;
-use production_graph::product_graph::*;
-use std::time::{Duration, Instant};
+#![allow(dead_code)]
+
+mod product_graph;
+mod product_graph_rayon;
+use product_graph_rayon::*;
+use std::time::{Instant};
 
 fn main() {
-    let num_prods = 20_000_000;
+    let num_prods = 1_000_000;
     let mut data = ProductGraph::generate_product_graph(num_prods);
     //    let mut data = ProductGraph::with_capacity(4);
     //    data.insert(0,Product{direct_cost: 5.0, indirect_cost: 0.0, dependencies: vec![DependencyInfo{ id: 1, quantity:  1.01}]});
@@ -17,9 +20,9 @@ fn main() {
     //        }
     //    }
 
-    let num_iters = 25;
+    let num_iters = 50;
     let start = Instant::now();
-    ProductGraph::calc_for_n_iterations(&mut data, num_iters);
+    let _results = data.calc_for_n_iterations(num_iters);
     let duration = start.elapsed();
 
     println!(

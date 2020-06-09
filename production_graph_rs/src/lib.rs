@@ -1,1 +1,1 @@
-pub mod production_graph;
+pub mod product_graph;

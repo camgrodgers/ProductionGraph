@@ -73,9 +73,9 @@ impl ProductGraph {
         increments
     }
 
-    pub fn calc_for_n_iterations(prods: &mut ProductGraph, count: u16) {
+    pub fn calc_for_n_iterations(&mut self, count: u16) {
         for _ in 0..count {
-            prods.calc_iteration(false);
+            self.calc_iteration(false);
         }
     }
 
