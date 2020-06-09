@@ -8,3 +8,6 @@ Run these commands:
 	To run the function in main.rs (note: may run a heavy benchmark):
 	cargo run --release
 
+	To read the documentation in a browser window:
+	cargo doc --open
+

@@ -8,7 +8,7 @@ use rayon::prelude::*;
 /// the products in the graph depend on each other, cyclically and acyclically.
 /// The Product struct is intended to be used as part of the ProductGraph to calculate the unknown
 /// indirect costs.
-/// TODO: generics?
+// TODO: generics?
 pub struct Product {
     pub direct_cost: f32,
     pub dependencies: Vec<Dependency>,

@@ -30,7 +30,7 @@ fn main() {
 fn benchmark() {
     let num_iters = 25;
     let mut times = Vec::new();
-    for i in 0..15 {
+    for i in 1..=15 {
         let num_prods = 1_000_000 * i;
         let data = ProductGraph::generate_product_graph(num_prods);
         let start = Instant::now();
