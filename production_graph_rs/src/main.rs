@@ -20,12 +20,10 @@ fn main() {
     //}
     benchmark();
 
-
     //for (id, c) in data.iter().enumerate() {
     //    println!("id: {}, direct_cost: {}, dep_count: {}, indirect_cost: {}", id, c.direct_cost, c.dependencies.len(), c.indirect_cost);
     //}
 }
-
 
 fn benchmark() {
     let num_iters = 25;
@@ -40,8 +38,9 @@ fn benchmark() {
     }
 
     for (multiple, duration) in times {
-        println!("Time elapsed for {} iterations on {} * 1mil products is: {:?}",
-                 num_iters, multiple, duration
-                 );
+        println!(
+            "Time elapsed for {} iterations on {} * 1mil products is: {:?}",
+            num_iters, multiple, duration
+        );
     }
 }
