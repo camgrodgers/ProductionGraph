@@ -119,7 +119,6 @@ impl ProductGraph {
             };
             prods.push(c);
         }
-        println!("graph capacity: {}", prods.graph.capacity());
         for _ in (count / 2)..count {
             let mut deps = Vec::with_capacity(7);
             for _ in 0..7 {
@@ -135,7 +134,6 @@ impl ProductGraph {
             };
             prods.push(c);
         }
-        println!("graph capacity: {}", prods.graph.capacity());
 
         prods
     }
