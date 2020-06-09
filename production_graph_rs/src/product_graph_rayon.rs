@@ -31,7 +31,7 @@ impl Product {
 }
 
 /// The Dependency struct contains an index for a dependency in the array-backed graph, and the
-/// quantity that is depended on. 
+/// quantity that is depended on.
 pub struct Dependency {
     id: usize,
     quantity: f32,
@@ -49,7 +49,7 @@ pub struct GraphError {
 
 impl ProductGraph {
     /// One iteration of the iterative estimation algorithm for indirect costs. Takes in the graph,
-    /// and returns the estimated indirect costs, associated with each product in the graph by index. 
+    /// and returns the estimated indirect costs, associated with each product in the graph by index.
     fn calc_iteration(&self, indir_costs_old: &Vec<f32>) -> Vec<f32> {
         // NOTE: allocates new memory each iteration. This is the tradeoff for getting free
         // multithreading from Rayon and appeasing the borrow checker. Because it is only a Vec
@@ -58,6 +58,10 @@ impl ProductGraph {
         self.graph
             .par_iter()
             .map(|prod| {
+                // Using non-parallel iterators here because dependencies per product grow
+                // logarithmically in relation to the total number of products in an economy
+                // and thus there will not be a large enough number of dependencies to justify
+                // multithreading.
                 prod.dependencies.iter().fold(0.0, |acc, dep| {
                     let dep_cost = self.graph[dep.id].direct_cost + indir_costs_old[dep.id];
                     acc + dep.quantity * dep_cost
@@ -82,7 +86,7 @@ impl ProductGraph {
 
     /// Check the graph for errors in the dataset. If a Product depends directly or indirectly on
     /// 1.0 or more of itself, this represents either bad data or a broken economy, as it will cause
-    /// the price of that Product and those that depend on it to go to infinity. 
+    /// the price of that Product and those that depend on it to go to infinity.
     pub fn check_graph(&self) -> Result<(), GraphError> {
         let result1 = self.calc_iteration(&vec![0.0; self.graph.len()]);
         let result2 = self.calc_iteration(&result1);
@@ -203,11 +207,12 @@ mod tests {
         //    .add_dependencies(vec![Dependency{ id: 0, quantity: 1.0}]);
         let prod = Product {
             direct_cost: 10.0,
-            dependencies: vec![Dependency{ id: 0, quantity: 1.0}]
+            dependencies: vec![Dependency {
+                id: 0,
+                quantity: 1.0,
+            }],
         };
-        let prods = ProductGraph {
-            graph: vec![prod]
-        };
+        let prods = ProductGraph { graph: vec![prod] };
         let result = prods.check_graph();
         match result {
             Ok(()) => panic!(),

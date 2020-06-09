@@ -194,7 +194,7 @@ impl Product {
         self.direct_cost
     }
 
-    fn set_indirect_cost(&mut self, new_val: f32) -> Result<(), ()> {
+    pub fn set_indirect_cost(&mut self, new_val: f32) -> Result<(), ()> {
         match Product::check_value(new_val) {
             Ok(()) => {
                 self.indirect_cost = new_val;

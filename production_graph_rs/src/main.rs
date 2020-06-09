@@ -13,12 +13,13 @@ fn main() {
     //    data.insert(1,Product{direct_cost: 10.0, indirect_cost: 0.0, dependencies: vec![DependencyInfo{ id: 0, quantity:  1.9}]});
     //    data.insert(2,Product{direct_cost: 10.0, indirect_cost: 0.0, dependencies: vec![DependencyInfo{ id: 2, quantity:  0.1}]});
     //    data.insert(3,Product{direct_cost: 10.0, indirect_cost: 0.0, dependencies: vec![DependencyInfo{ id: 3, quantity:  0.1}]});
-    match data.check_graph() {
-        Ok(()) => {},
-        Err(err) => {
-            println!("err");
-        }
-    }
+    //match data.check_graph() {
+    //match ProductGraph::detect_impossible_cycles(&data) {
+    //    Ok(()) => {},
+    //    Err(err) => {
+    //        println!("err");
+    //    }
+    //}
 
     let num_iters = 50;
     let start = Instant::now();
