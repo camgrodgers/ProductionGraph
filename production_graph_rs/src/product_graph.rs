@@ -8,9 +8,7 @@ pub struct ProductGraph {
     graph: Vec<Product>,
 }
 
-// TODO: multithreading, either system threads or rayon
 impl ProductGraph {
-    // TODO: May want to make a function that takes a "raw" graph and checks it for validity
     pub fn with_capacity(size: usize) -> Self {
         ProductGraph {
             graph: Vec::with_capacity(size),
@@ -46,9 +44,7 @@ impl ProductGraph {
         Ok(())
     }
 
-    // TODO: see if you can use fancy map filter stuff
     // TODO: figure out if there's a more idiomatic way to optionally return the increments
-    //       Maybe use a simple enum?
     fn calc_iteration(&mut self, track_increments: bool) -> Vec<f32> {
         let mut increments = if track_increments {
             vec![0.0; self.graph.len()]

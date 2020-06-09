@@ -3,22 +3,22 @@
 mod product_graph;
 mod product_graph_rayon;
 use product_graph_rayon::*;
-use std::time::{Instant};
+use std::time::Instant;
 
 fn main() {
-    let num_prods = 1_000_000;
+    let num_prods = 10_000_000;
     let mut data = ProductGraph::generate_product_graph(num_prods);
     //    let mut data = ProductGraph::with_capacity(4);
     //    data.insert(0,Product{direct_cost: 5.0, indirect_cost: 0.0, dependencies: vec![DependencyInfo{ id: 1, quantity:  1.01}]});
     //    data.insert(1,Product{direct_cost: 10.0, indirect_cost: 0.0, dependencies: vec![DependencyInfo{ id: 0, quantity:  1.9}]});
     //    data.insert(2,Product{direct_cost: 10.0, indirect_cost: 0.0, dependencies: vec![DependencyInfo{ id: 2, quantity:  0.1}]});
     //    data.insert(3,Product{direct_cost: 10.0, indirect_cost: 0.0, dependencies: vec![DependencyInfo{ id: 3, quantity:  0.1}]});
-    //    match ProductGraph::detect_impossible_cycles(&data) {
-    //        Ok(()) => {},
-    //        Err(err) => {
-    //            for i in err.prods_in_cycles { println!("{}", i); }
-    //        }
-    //    }
+    match data.check_graph() {
+        Ok(()) => {},
+        Err(err) => {
+            println!("err");
+        }
+    }
 
     let num_iters = 50;
     let start = Instant::now();
