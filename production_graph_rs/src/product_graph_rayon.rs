@@ -37,6 +37,9 @@ pub struct Dependency {
     quantity: f32,
 }
 
+/// The ProductGraph is a Vector-backed graph of Products. The Products are the graph nodes, and
+/// the dependencies are weighted, directed edges. The "key" or "id" of each Product is its index
+/// in the Vector. This graph is specialized for the purpose of rapidly estimating indirect costs.
 pub struct ProductGraph {
     graph: Vec<Product>,
 }
