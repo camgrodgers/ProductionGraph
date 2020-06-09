@@ -53,15 +53,12 @@ pub struct GraphError {
 }
 
 impl ProductGraph {
-    // One iteration of the iterative estimation algorithm for indirect costs. Takes in the graph,
-    // and returns the estimated indirect costs, associated with each product in the graph by index.
+    // One iteration of the iterative estimation algorithm for indirect costs. Takes in the graph
+    // and two buffers. Reads from one buffer and writes to the other. The buffers contain
+    // the estimated indirect costs, associated with each product in the graph by index.
     fn calc_iteration(&self, indir_costs_old: &Vec<f32>, indir_costs_new: &mut Vec<f32>) {
-        // NOTE: reuses a rotating pair of buffers to reduce allocations. This is the official way
+        // NOTE: reuses a rotating pair of buffers to reduce allocations. This is one acceptable way
         // to reuse buffers with Rayon.
-        // NOTE: allocates new memory each iteration. This is the tradeoff for getting free
-        // multithreading from Rayon and appeasing the borrow checker. Because it is only a Vec
-        // of f32, it is not a large memory allocation relative to the graph, but it is
-        // expensive compared to in-place mutation or a rotating pair of buffers.
         self.graph
             .par_iter()
             .map(|prod| {
@@ -88,6 +85,10 @@ impl ProductGraph {
         let indir_costs_copy = &mut vec![0.0; self.graph.len()];
         for _ in 0..count {
             self.calc_iteration(indir_costs, indir_costs_copy);
+            // NOTE: Double check that mem::swap() is not deep swap
+            // At the end of each iteration, the copy var has the most-updated data in it.
+            // Therefore, in the next iteration, it should be the old data, and the new data should
+            // overwrite the old old data.
             mem::swap(indir_costs, indir_costs_copy);
         }
         indir_costs.clone()
@@ -98,6 +99,8 @@ impl ProductGraph {
     /// the price of that Product and those that depend on it to go to infinity.
     pub fn check_graph(&self) -> Result<(), GraphError> {
         // This is going to be ugly
+        // This is quick and dirty code to deal with the way that calc_iteration now cycles through
+        // buffers.
         let indir_costs = &mut vec![0.0; self.graph.len()];
         let indir_costs_copy = &mut vec![0.0; self.graph.len()];
         self.calc_iteration(indir_costs, indir_costs_copy);
