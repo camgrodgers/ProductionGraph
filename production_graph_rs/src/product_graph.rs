@@ -19,7 +19,7 @@ impl ProductGraph {
         self.graph.push(prod);
     }
 
-    fn set_dependency(
+    pub fn set_dependency(
         &mut self,
         dependant: usize,
         dependency: usize,

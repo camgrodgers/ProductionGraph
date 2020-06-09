@@ -6,7 +6,7 @@ use product_graph_rayon::*;
 use std::time::Instant;
 
 fn main() {
-    let num_prods = 10_000_000;
+    let num_prods = 1_000_000;
     let mut data = ProductGraph::generate_product_graph(num_prods);
     //    let mut data = ProductGraph::with_capacity(4);
     //    data.insert(0,Product{direct_cost: 5.0, indirect_cost: 0.0, dependencies: vec![DependencyInfo{ id: 1, quantity:  1.01}]});

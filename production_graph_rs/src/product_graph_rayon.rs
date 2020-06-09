@@ -1,7 +1,14 @@
 use rand::Rng;
 use rayon::prelude::*;
 
-// TODO: generics?
+/// The Product struct represents the non-computable data for a product in real life.
+/// For example, a cup of lemonade could have a direct cost of $0.1 in wages, or 0.1 in labor hours,
+/// and could depend on 0.8 cups of water, 0.1 cup lemon juice, and 0.1 cup of sugar.
+/// However, the total cost of the lemonade is unknown at this point, as the indirect costs of all
+/// the products in the graph depend on each other, cyclically and acyclically.
+/// The Product struct is intended to be used as part of the ProductGraph to calculate the unknown
+/// indirect costs.
+/// TODO: generics?
 pub struct Product {
     pub direct_cost: f32,
     pub dependencies: Vec<Dependency>,
@@ -9,6 +16,7 @@ pub struct Product {
 
 // TODO: improve ergonomics for adding data
 impl Product {
+    /// Create a new Product with a given direct cost.
     pub fn new(direct_cost: f32) -> Self {
         Product {
             direct_cost: direct_cost,
@@ -16,11 +24,14 @@ impl Product {
         }
     }
 
+    /// Replace the current list of dependencies for the Product with a new list.
     pub fn set_dependencies(&mut self, deps: Vec<Dependency>) {
         self.dependencies = deps;
     }
 }
 
+/// The Dependency struct contains an index for a dependency in the array-backed graph, and the
+/// quantity that is depended on. 
 pub struct Dependency {
     id: usize,
     quantity: f32,
@@ -37,9 +48,14 @@ pub struct GraphError {
 }
 
 impl ProductGraph {
+    /// One iteration of the iterative estimation algorithm for indirect costs. Takes in the graph,
+    /// and returns the estimated indirect costs, associated with each product in the graph by index. 
     fn calc_iteration(&self, indir_costs_old: &Vec<f32>) -> Vec<f32> {
-        let indir_costs_new: Vec<f32> = self
-            .graph
+        // NOTE: allocates new memory each iteration. This is the tradeoff for getting free
+        // multithreading from Rayon and appeasing the borrow checker. Because it is only a Vec
+        // of f32, it is not a large memory allocation relative to the graph, but it is
+        // expensive compared to in-place mutation or a rotating pair of buffers.
+        self.graph
             .par_iter()
             .map(|prod| {
                 prod.dependencies.iter().fold(0.0, |acc, dep| {
@@ -47,10 +63,15 @@ impl ProductGraph {
                     acc + dep.quantity * dep_cost
                 })
             })
-            .collect();
-        indir_costs_new
+            .collect()
     }
 
+    /// Multiple iterations of the iterative estimation for indirect costs. Performs count number of
+    /// iterations. With each iteration, the estimates become more precise. ~15 iterations gives a
+    /// good estimate, ~25 is better, and ~50 is extremely precise. More iterations are needed to
+    /// get accurate results if any Product depends directly or indirectly on values that approach
+    /// 1.0. For instance, if corn depends on 0.01 of itself, 15 iterations should give a good
+    /// result. However, if it depends on 0.9 of itself, it could take 50 iterations to be sure.
     pub fn calc_for_n_iterations(&self, count: u16) -> Vec<f32> {
         let mut indir_costs = vec![0.0; self.graph.len()];
         for _ in 0..count {
@@ -59,6 +80,9 @@ impl ProductGraph {
         indir_costs
     }
 
+    /// Check the graph for errors in the dataset. If a Product depends directly or indirectly on
+    /// 1.0 or more of itself, this represents either bad data or a broken economy, as it will cause
+    /// the price of that Product and those that depend on it to go to infinity. 
     pub fn check_graph(&self) -> Result<(), GraphError> {
         let result1 = self.calc_iteration(&vec![0.0; self.graph.len()]);
         let result2 = self.calc_iteration(&result1);
@@ -68,7 +92,7 @@ impl ProductGraph {
 
         let prods_in_infinite_cycles: Vec<usize> = increments1
             .par_iter()
-            .zip(increments2.par_iter())
+            .zip_eq(increments2.par_iter())
             .enumerate()
             .filter_map(|(i, (increment1, increment2))| {
                 if increment1 <= increment2 && *increment2 != 0.0 {
@@ -90,10 +114,11 @@ impl ProductGraph {
         }
     }
 
+    /// Helper function for check_graph()
     fn diff_results(results1: &Vec<f32>, results2: &Vec<f32>) -> Vec<f32> {
         results1
             .par_iter()
-            .zip(results2.par_iter())
+            .zip_eq(results2.par_iter())
             .map(|(result1, result2)| result2 - result1)
             .collect()
     }
@@ -112,7 +137,7 @@ impl ProductGraph {
         self.graph.push(prod);
     }
 
-    fn set_dependency(
+    pub fn set_dependency(
         &mut self,
         dependant: usize,
         dependency: usize,
@@ -137,6 +162,7 @@ impl ProductGraph {
         Ok(())
     }
 
+    /// Generate a random product graph for testing and benchmarking purposes.
     pub fn generate_product_graph(count: usize) -> ProductGraph {
         let mut rng = rand::thread_rng();
 
@@ -171,7 +197,6 @@ impl ProductGraph {
 mod tests {
     use super::*;
 
-    // NOTE: This test is no longer relevant to public API
     #[test]
     fn detects_direct_infinite_cycle() {
         //let prod = Product::new(10.0)
