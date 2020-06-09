@@ -2,9 +2,9 @@ name: Rust
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, rust_library ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, rust_library ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -21,4 +21,9 @@ jobs:
       working-directory: production_graph_rs
     - name: Run tests
       run: cargo test --verbose
+      working-directory: production_graph_rs
+    - name: Formatting
+      run: |
+        rustup component add rustfmt 
+        cargo fmt -- --check
       working-directory: production_graph_rs
