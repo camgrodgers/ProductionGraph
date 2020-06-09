@@ -27,19 +27,19 @@ fn main() {
     }
     let duration = start.elapsed();
     println!("{:?}", duration);
-    //benchmark_rayon();
-    //benchmark_plain();
+    benchmark_rayon(1_000_000, 1, 1);
+    benchmark_plain(1_000_000, 1, 1);
 
     //for (id, c) in data.iter().enumerate() {
     //    println!("id: {}, direct_cost: {}, dep_count: {}, indirect_cost: {}", id, c.direct_cost, c.dependencies.len(), c.indirect_cost);
     //}
 }
 
-fn benchmark_rayon() {
+fn benchmark_rayon(step: usize, begin: usize, end: usize) {
     let num_iters = 25;
     let mut times = Vec::new();
-    for i in 1..=15 {
-        let num_prods = 1_000_000 * i;
+    for i in begin..=end {
+        let num_prods = step * i;
         let data = ProductGraph::generate_product_graph(num_prods);
         let start = Instant::now();
         let _results = data.calc_for_n_iterations(num_iters);
@@ -49,16 +49,16 @@ fn benchmark_rayon() {
 
     for (multiple, duration) in times {
         println!(
-            "Time elapsed in threaded for {} iterations on {} * 1mil products is: {:?}",
-            num_iters, multiple, duration
+            "Time elapsed in threaded for {} iterations on {} products is: {:?}",
+            num_iters, step * multiple, duration
         );
     }
 }
-fn benchmark_plain() {
+fn benchmark_plain(step: usize, begin: usize, end: usize) {
     let num_iters = 25;
     let mut times = Vec::new();
-    for i in 1..=15 {
-        let num_prods = 1_000_000 * i;
+    for i in begin..=end {
+        let num_prods = step * i;
         let mut data = product_graph::ProductGraph::generate_product_graph(num_prods);
         let start = Instant::now();
         let _results = data.calc_for_n_iterations(num_iters);
@@ -68,8 +68,8 @@ fn benchmark_plain() {
 
     for (multiple, duration) in times {
         println!(
-            "Time elapsed for {} iterations on {} * 1mil products is: {:?}",
-            num_iters, multiple, duration
+            "Time elapsed for {} iterations on {} products is: {:?}",
+            num_iters, step * multiple, duration
         );
     }
 }

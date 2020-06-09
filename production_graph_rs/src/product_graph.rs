@@ -44,16 +44,12 @@ impl ProductGraph {
         Ok(())
     }
 
-    // TODO: figure out if there's a more idiomatic way to optionally return the increments
     fn calc_iteration(&mut self, track_increments: bool) -> Vec<f32> {
         let mut increments = if track_increments {
             vec![0.0; self.graph.len()]
         } else {
             Vec::new()
         };
-
-        // NOTE: may want a function or loop here or somewhere to clear all indirect_cost values
-        //       or have a bool value to signify dirty graph
 
         for i in 0..self.graph.len() {
             let mut indirect_cost = 0.0;
@@ -70,14 +66,16 @@ impl ProductGraph {
     }
 
     pub fn calc_for_n_iterations(&mut self, count: u16) {
+        for p in self.graph.iter_mut() {
+            p.indirect_cost = 0.0;
+        }
+
         for _ in 0..count {
             self.calc_iteration(false);
         }
     }
 
     // NOTE: No product can depend on 1.0 or more of itself.
-    // Note: this function makes a copy and then destroys it to make sure the memory is freed
-    // NOTE: Memory STILL isn't freed? Don't trust my system monitor/OS? Rust being finnicky?
     // Note: this function gets a "broader sweep" when it is run after more increments or when
     // dependencies on prods in impossible cycles are a higher quantity
     pub fn detect_impossible_cycles(prods: &ProductGraph) -> Result<(), InfiniteValueError> {
@@ -88,7 +86,6 @@ impl ProductGraph {
         let increments1 = prods.calc_iteration(true);
         let increments2 = prods.calc_iteration(true);
 
-        //TODO: Can replace with iter.zip stuff probably
         let mut prods_in_cycles = Vec::new();
         for i in 0..increments1.len() {
             if increments1[i] <= increments2[i] && increments2[i] != 0.0 {
@@ -220,7 +217,6 @@ mod tests {
     use super::*;
     //use test::Bencher;
 
-    // NOTE: This test is no longer relevant to public API
     #[test]
     fn detects_direct_infinite_cycle() {
         let mut prods = ProductGraph::with_capacity(1);

@@ -1,5 +1,6 @@
 use rand::Rng;
 use rayon::prelude::*;
+use std::mem;
 
 /// The Product struct represents the non-computable data for a product in real life.
 /// For example, a cup of lemonade could have a direct cost of $0.1 in wages, or 0.1 in labor hours,
@@ -52,9 +53,11 @@ pub struct GraphError {
 }
 
 impl ProductGraph {
-    /// One iteration of the iterative estimation algorithm for indirect costs. Takes in the graph,
-    /// and returns the estimated indirect costs, associated with each product in the graph by index.
-    fn calc_iteration(&self, indir_costs_old: &Vec<f32>) -> Vec<f32> {
+    // One iteration of the iterative estimation algorithm for indirect costs. Takes in the graph,
+    // and returns the estimated indirect costs, associated with each product in the graph by index.
+    fn calc_iteration(&self, indir_costs_old: &Vec<f32>, indir_costs_new: &mut Vec<f32>) {
+        // NOTE: reuses a rotating pair of buffers to reduce allocations. This is the official way
+        // to reuse buffers with Rayon.
         // NOTE: allocates new memory each iteration. This is the tradeoff for getting free
         // multithreading from Rayon and appeasing the borrow checker. Because it is only a Vec
         // of f32, it is not a large memory allocation relative to the graph, but it is
@@ -71,7 +74,7 @@ impl ProductGraph {
                     acc + dep.quantity * dep_cost
                 })
             })
-            .collect()
+            .collect_into_vec(indir_costs_new);
     }
 
     /// Multiple iterations of the iterative estimation for indirect costs. Performs count number of
@@ -81,20 +84,31 @@ impl ProductGraph {
     /// 1.0. For instance, if corn depends on 0.01 of itself, 15 iterations should give a good
     /// result. However, if it depends on 0.9 of itself, it could take 50 iterations to be sure.
     pub fn calc_for_n_iterations(&self, count: u16) -> Vec<f32> {
-        let mut indir_costs = vec![0.0; self.graph.len()];
+        let indir_costs = &mut vec![0.0; self.graph.len()];
+        let indir_costs_copy = &mut vec![0.0; self.graph.len()];
         for _ in 0..count {
-            indir_costs = self.calc_iteration(&indir_costs);
+            self.calc_iteration(indir_costs, indir_costs_copy);
+            mem::swap(indir_costs, indir_costs_copy);
         }
-        indir_costs
+        indir_costs.clone()
     }
 
     /// Check the graph for errors in the dataset. If a Product depends directly or indirectly on
     /// 1.0 or more of itself, this represents either bad data or a broken economy, as it will cause
     /// the price of that Product and those that depend on it to go to infinity.
     pub fn check_graph(&self) -> Result<(), GraphError> {
-        let result1 = self.calc_iteration(&vec![0.0; self.graph.len()]);
-        let result2 = self.calc_iteration(&result1);
-        let result3 = self.calc_iteration(&result2);
+        // This is going to be ugly
+        let indir_costs = &mut vec![0.0; self.graph.len()];
+        let indir_costs_copy = &mut vec![0.0; self.graph.len()];
+        self.calc_iteration(indir_costs, indir_costs_copy);
+        let result1 = indir_costs_copy.clone();
+        mem::swap(indir_costs, indir_costs_copy);
+        self.calc_iteration(indir_costs, indir_costs_copy);
+        let result2 = indir_costs_copy.clone();
+        mem::swap(indir_costs, indir_costs_copy);
+        self.calc_iteration(indir_costs, indir_costs_copy);
+        let result3 = indir_costs_copy.clone();
+
         let increments1 = Self::diff_results(&result1, &result2);
         let increments2 = Self::diff_results(&result2, &result3);
 
