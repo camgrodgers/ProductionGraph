@@ -11,7 +11,6 @@ def create_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST)
         if form.is_valid():
-            # print(name, real_price, direct_labor, direct_wages, indirect_wages, indirect_labor)
             product = Product(
                 name=form.cleaned_data['name'],
                 real_price=form.cleaned_data['real_price'],
@@ -31,8 +30,9 @@ def create_product(request):
     else:
         return HttpResponseRedirect("/fourohfour")
 
-
+# TODO: add safety try/except blocks (see delete_product)
 def edit_product(request, name):
+    # url should only accept post requests
     if request.method == 'POST':
         form = ProductForm(request.POST)
         if form.is_valid():
@@ -44,6 +44,8 @@ def edit_product(request, name):
                 indirect_wages = form.cleaned_data['indirect_wages'],
                 indirect_labor = form.cleaned_data['indirect_labor']
             )
+
+            # redirect using NEW name, since it may have been updated
             return HttpResponseRedirect("/product/{}".format(form.cleaned_data['name']))
 
         else:
@@ -62,9 +64,14 @@ def delete_product(request, name):
         form = ProductForm(request.POST)
         if form.is_valid():
             try:
+                # find by name (primary key)
+                # if not found, goes to except block
+                # delete on find
                 Product.objects.get(name=name).delete()
             except:    
-                return None
+                # TODO: is this the best action to take?
+                return HttpResponseRedirect("/fourohfour")
+
         else:
             print(form._errors)
             # TODO: maybe add routing to uh oh error page??

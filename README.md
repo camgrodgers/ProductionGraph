@@ -15,4 +15,4 @@ $ python3 manage.py tailwind start
 $ python3 manage.py runserver
 ```
 
-`tailwind start` command watches for changes to recompile css during development
+`tailwind start` command watches for changes to recompile css during development, so should be run concurrently with runserver command.
