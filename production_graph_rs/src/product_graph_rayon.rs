@@ -3,7 +3,7 @@ use rayon::prelude::*;
 use std::mem;
 
 /// The Product struct represents the non-computable data for a product in real life.
-/// For example, a cup of lemonade could have a direct cost of $0.1 in wages, or 0.1 in labor hours,
+/// For example, a cup of lemonade could have a direct cost of $0.1 in wages, or 0.01 in labor hours,
 /// and could depend on 0.8 cups of water, 0.1 cup lemon juice, and 0.1 cup of sugar.
 /// However, the total cost of the lemonade is unknown at this point, as the indirect costs of all
 /// the products in the graph depend on each other, cyclically and acyclically.
@@ -18,17 +18,11 @@ pub struct Product {
 // TODO: improve ergonomics for adding data
 impl Product {
     /// Create a new Product with a given direct cost.
-    // TODO: should this check the cost too?
     pub fn new(direct_cost: f32) -> Self {
         Product {
             direct_cost: direct_cost,
             dependencies: Vec::new(),
         }
-    }
-
-    /// Replace the current list of dependencies for the Product with a new list.
-    pub fn set_dependencies(&mut self, deps: Vec<Dependency>) {
-        self.dependencies = deps;
     }
 }
 
@@ -46,10 +40,11 @@ pub struct ProductGraph {
     graph: Vec<Product>,
 }
 
+#[derive(Debug, Clone)]
 pub struct GraphError {
-    pub prods_in_inf_cycles: Option<Vec<usize>>,
-    pub out_of_bounds_dependency: Option<Vec<usize>>,
-    pub negative_quantity: Option<Vec<usize>>,
+    pub out_of_bounds_dependency: Vec<usize>,
+    pub negative: Vec<usize>,
+    pub prods_in_inf_cycles: Vec<usize>,
 }
 
 impl ProductGraph {
@@ -65,7 +60,7 @@ impl ProductGraph {
                 // Using non-parallel iterators here because dependencies per product grow
                 // logarithmically in relation to the total number of products in an economy
                 // and thus there will not be a large enough number of dependencies to justify
-                // multithreading.
+                // multithreading overhead.
                 prod.dependencies.iter().fold(0.0, |acc, dep| {
                     let dep_cost = self.graph[dep.id].direct_cost + indir_costs_old[dep.id];
                     acc + dep.quantity * dep_cost
@@ -75,11 +70,12 @@ impl ProductGraph {
     }
 
     /// Multiple iterations of the iterative estimation for indirect costs. Performs count number of
-    /// iterations. With each iteration, the estimates become more precise. ~15 iterations gives a
-    /// good estimate, ~25 is better, and ~50 is extremely precise. More iterations are needed to
-    /// get accurate results if any Product depends directly or indirectly on values that approach
-    /// 1.0. For instance, if corn depends on 0.01 of itself, 15 iterations should give a good
-    /// result. However, if it depends on 0.9 of itself, it could take 50 iterations to be sure.
+    /// iterations and then returns the final estimates. With each iteration, the estimates become 
+    /// more precise. ~15 iterations gives a good estimate, ~25 is better, and ~50 is extremely precise.
+    /// More iterations are needed to get accurate results if any Product depends directly or indirectly
+    /// on quantities that approach 1.0. For instance, if corn depends on 0.01 of itself, 15 iterations
+    /// should give a good result. However, if it depends on 0.9 of itself, it could take 50 iterations
+    /// to be sure.
     pub fn calc_for_n_iterations(&self, count: u16) -> Vec<f32> {
         let indir_costs = &mut vec![0.0; self.graph.len()];
         let indir_costs_copy = &mut vec![0.0; self.graph.len()];
@@ -90,6 +86,9 @@ impl ProductGraph {
             // Therefore, in the next iteration, it should be the old data, and the new data should
             // overwrite the old old data.
             mem::swap(indir_costs, indir_costs_copy);
+            //let temp = indir_costs;
+            //indir_costs = indir_costs_copy;
+            //indir_costs_copy = temp;
         }
         indir_costs.clone()
     }
@@ -97,7 +96,41 @@ impl ProductGraph {
     /// Check the graph for errors in the dataset. If a Product depends directly or indirectly on
     /// 1.0 or more of itself, this represents either bad data or a broken economy, as it will cause
     /// the price of that Product and those that depend on it to go to infinity.
+    /// Also checks for dependencies that reference vector elements out of bounds, and for values
+    /// that are infinity or negative. 
     pub fn check_graph(&self) -> Result<(), GraphError> {
+        // Checking for obvious issues
+        let mut out_of_bounds = Vec::new();
+        let mut negative_value = Vec::new();
+        let mut infinite = Vec::new();
+        for (i, p) in self.graph.iter().enumerate() {
+            if p.direct_cost < 0.0 {
+                negative_value.push(i);
+            }
+            if p.direct_cost == f32::INFINITY {
+                infinite.push(i);
+            }
+            for d in p.dependencies.iter() {
+                if d.id >= self.graph.len() {
+                    out_of_bounds.push(i);
+                }
+                if d.quantity < 0.0 {
+                    negative_value.push(i);
+                }
+                if d.quantity == f32::INFINITY || (d.id == i && d.quantity >= 1.0) {
+                    infinite.push(i);
+                }
+            }
+        }
+        if out_of_bounds.len() != 0 || negative_value.len() != 0 || infinite.len() != 0 {
+            return Err(GraphError {
+                out_of_bounds_dependency: out_of_bounds,
+                negative: negative_value,
+                prods_in_inf_cycles: infinite,
+            });
+        }
+
+        // Checking for infinite cycles
         // This is going to be ugly
         // This is quick and dirty code to deal with the way that calc_iteration now cycles through
         // buffers.
@@ -132,9 +165,9 @@ impl ProductGraph {
             Ok(())
         } else {
             Err(GraphError {
-                prods_in_inf_cycles: Some(prods_in_infinite_cycles),
-                out_of_bounds_dependency: None,
-                negative_quantity: None,
+                prods_in_inf_cycles: prods_in_infinite_cycles,
+                out_of_bounds_dependency: Vec::new(),
+                negative: Vec::new(),
             })
         }
     }
@@ -162,29 +195,14 @@ impl ProductGraph {
         self.graph.push(prod);
     }
 
-    pub fn set_dependency(
-        &mut self,
-        dependant: usize,
-        dependency: usize,
-        quantity: f32,
-    ) -> Result<(), ()> {
-        if dependant >= self.graph.len()
-            || (dependency == dependant && quantity >= 1.0)
-            || dependency >= self.graph.len()
-            || quantity < 0.0
-            || quantity == f32::INFINITY
-        {
-            return Err(());
-        }
-
+    pub fn set_dependency(&mut self, dependant: usize, dependency: usize, quantity: f32) {
         let dep = Dependency {
             id: dependency,
             quantity: quantity,
         };
-
+        // TODO: this can result in duplicate entries
         self.graph[dependant].dependencies.push(dep);
         self.graph[dependant].dependencies.shrink_to_fit();
-        Ok(())
     }
 
     /// Generate a random product graph for testing and benchmarking purposes.
@@ -224,20 +242,32 @@ mod tests {
 
     #[test]
     fn detects_direct_infinite_cycle() {
-        //let prod = Product::new(10.0)
-        //    .add_dependencies(vec![Dependency{ id: 0, quantity: 1.0}]);
-        let prod = Product {
-            direct_cost: 10.0,
-            dependencies: vec![Dependency {
-                id: 0,
-                quantity: 1.0,
-            }],
-        };
-        let prods = ProductGraph { graph: vec![prod] };
+        let mut prods = ProductGraph::from_raw_graph(vec![Product::new(10.0)]);
+        prods.set_dependency(0, 0, 1.0);
         let result = prods.check_graph();
         match result {
             Ok(()) => panic!(),
-            Err(e) => assert_eq!(0, e.prods_in_inf_cycles.unwrap()[0]),
+            Err(e) => assert_eq!(0, e.prods_in_inf_cycles[0]),
+        }
+    }
+
+    #[test]
+    fn detects_indirect_infinite_cycle() {
+        let mut prods = ProductGraph::with_capacity(3);
+        for _ in 0..3 {
+            prods.push(Product::new(10.0));
+        }
+        prods.set_dependency(0, 1, 0.5);
+        prods.set_dependency(0, 2, 0.5);
+        prods.set_dependency(2, 0, 1.0);
+        prods.set_dependency(1, 0, 1.0);
+
+        let result = prods.check_graph();
+        match result {
+            Ok(()) => panic!(),
+            Err(e) => {
+                assert_eq!(vec![0, 1, 2], e.prods_in_inf_cycles);
+            }
         }
     }
 
@@ -245,53 +275,32 @@ mod tests {
     fn calculates_correct_values_without_indirection() {
         let mut prods = ProductGraph::with_capacity(2);
         for _ in 0..2 {
-            let prod = Product::new(10.0);
-            prods.push(prod);
+            prods.push(Product::new(10.0));
         }
-        prods.set_dependency(0, 1, 10.0).unwrap();
+        prods.set_dependency(0, 1, 10.0);
         let indirect_costs = prods.calc_for_n_iterations(50);
         assert_eq!(indirect_costs[0], 100.0);
         assert_eq!(indirect_costs[1], 0.0);
     }
 
     #[test]
-    fn detects_indirect_infinite_cycle() {
-        let mut prods = ProductGraph::with_capacity(3);
-        for _ in 0..3 {
-            let prod = Product::new(10.0);
-            prods.push(prod);
-        }
-        prods.set_dependency(0, 1, 0.5).unwrap();
-        prods.set_dependency(0, 2, 0.5).unwrap();
-        prods.set_dependency(2, 0, 1.0).unwrap();
-        prods.set_dependency(1, 0, 1.0).unwrap();
-
-        let result = prods.check_graph();
-        match result {
-            Ok(()) => panic!(),
-            Err(e) => {
-                let v = vec![0, 1, 2];
-                assert_eq!(v, e.prods_in_inf_cycles.unwrap());
-            }
-        }
-    }
-
-    #[test]
     fn calculates_correct_values_with_indirection() {
         let mut prods = ProductGraph::with_capacity(2);
         for _ in 0..4 {
-            let prod = Product::new(10.0);
-            prods.push(prod);
+            prods.push(Product::new(10.0));
         }
-        prods.set_dependency(1, 0, 1.0).unwrap();
-        prods.set_dependency(2, 0, 1.0).unwrap();
-        prods.set_dependency(2, 1, 1.0).unwrap();
-        prods.set_dependency(3, 2, 1.0).unwrap();
+        prods.set_dependency(1, 0, 1.0);
+        prods.set_dependency(2, 0, 1.0);
+        prods.set_dependency(2, 1, 1.0);
+        prods.set_dependency(3, 2, 1.0);
 
         let indirect_costs = prods.calc_for_n_iterations(50);
-        assert_eq!(0.0, indirect_costs[0]);
-        assert_eq!(10.0, indirect_costs[1]);
-        assert_eq!(30.0, indirect_costs[2]);
-        assert_eq!(40.0, indirect_costs[3]);
+        assert_eq!(vec![0.0, 10.0, 30.0, 40.0], indirect_costs);
+    }
+
+    #[test]
+    fn generates_random_graph_without_errors() {
+        let prods = ProductGraph::generate_product_graph(100);
+        prods.check_graph().unwrap();
     }
 }
