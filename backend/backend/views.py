@@ -16,24 +16,6 @@ def retrieve_product(product_name):
     except:    
         return None
 
-def handle_create_product(form):
-    name = form.cleaned_data['name']
-    real_price = form.cleaned_data['real_price']
-    direct_labor = form.cleaned_data['direct_labor']
-    direct_wages = form.cleaned_data['direct_wages']
-    indirect_wages = form.cleaned_data['indirect_wages']
-    indirect_labor = form.cleaned_data['indirect_labor']
-    product = Product(
-        name=name,
-        real_price=real_price,
-        direct_labor=direct_labor,
-        direct_wages=direct_wages,
-        indirect_wages=indirect_wages,
-        indirect_labor=indirect_labor
-    )
-
-    product.save()
-
 # def handle_edit_product(form, name):
 
 
@@ -46,18 +28,14 @@ def fourohfour(request):
 # there is only one POST operation it will be okay
 # FIXME: maybe? 
 def home(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            handle_create_product(form)
-            return HttpResponseRedirect("")
-    else:
-        form = ProductForm()
+    if request.method != 'GET':
+        return HttpResponseRedirect("/fourohfour")
 
     context = {
-        'products': Product.objects.all(),
-        'form': form
+        'products': Product.objects.all()
+        # 'form': form
     }
+
     return render(request, 'home/index.html', context)
 
 
@@ -74,7 +52,7 @@ def home(request):
 def product_view(request, name):
     target_product = retrieve_product(name)
     
-    if target_product is None:
+    if target_product is None or request.method != 'GET':
         return redirect('/fourohfour')
     else:
         if request.method == 'POST':
