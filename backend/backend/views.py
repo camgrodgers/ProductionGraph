@@ -20,20 +20,18 @@ def retrieve_product(product_name):
 
 
 
-# VIEWS
+### VIEWS ###
+
 def fourohfour(request):
     return render(request, 'fourohfour/fourohfour.html')
 
-# I do not like the structure I have here, but since
-# there is only one POST operation it will be okay
-# FIXME: maybe? 
+
 def home(request):
     if request.method != 'GET':
         return HttpResponseRedirect("/fourohfour")
 
     context = {
         'products': Product.objects.all()
-        # 'form': form
     }
 
     return render(request, 'home/index.html', context)
@@ -43,39 +41,15 @@ def home(request):
 # 1). Add modals for creating / deleting dependencies
 # 2). Add Button + Confirmation modal (i.e. "Are you sure?") for delete product
 
-
-# I do not like the structure I have here, and it will
-# break once I add the POST for adding / editing dependency values
-# FIXME: definitely
-# IDEAS:
-# 1). Post each operation to a different URL (typical rest style)
 def product_view(request, name):
     target_product = retrieve_product(name)
     
     if target_product is None or request.method != 'GET':
         return redirect('/fourohfour')
     else:
-        if request.method == 'POST':
-            form = ProductForm(request.POST)
-            if form.is_valid():
-                Product.objects.filter(name=name).update(
-                    name = form.cleaned_data['name'],
-                    real_price = form.cleaned_data['real_price'],
-                    direct_labor = form.cleaned_data['direct_labor'],
-                    direct_wages = form.cleaned_data['direct_wages'],
-                    indirect_wages = form.cleaned_data['indirect_wages'],
-                    indirect_labor = form.cleaned_data['indirect_labor']
-                )
-                return HttpResponseRedirect("/product/{}".format(form.cleaned_data['name']))
-            else:
-                print(form._errors)
-
-        else:
-            form = ProductForm()
         context = {
             'product': target_product,
-            'dependencies': [],
-            'form': form
+            'dependencies': []
         }
         return render(request, 'home/product_info.html', context)
 
@@ -83,7 +57,7 @@ def product_view(request, name):
 def product_analytics(request, name):
     target_product = retrieve_product(name)
 
-    if target_product is None:
+    if target_product is None or request.method != "GET":
         return redirect('/fourohfour')
     else:
         context = {

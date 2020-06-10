@@ -8,24 +8,17 @@ from .forms import ProductForm
 
 def create_product(request):
     # handle the post to this url ONLY
-    print("HERE")
     if request.method == 'POST':
         form = ProductForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['name']
-            real_price = form.cleaned_data['real_price']
-            direct_labor = form.cleaned_data['direct_labor']
-            direct_wages = form.cleaned_data['direct_wages']
-            indirect_wages = form.cleaned_data['indirect_wages']
-            indirect_labor = form.cleaned_data['indirect_labor']
             # print(name, real_price, direct_labor, direct_wages, indirect_wages, indirect_labor)
             product = Product(
-                name=name,
-                real_price=real_price,
-                direct_labor=direct_labor,
-                direct_wages=direct_wages,
-                indirect_wages=indirect_wages,
-                indirect_labor=indirect_labor
+                name=form.cleaned_data['name'],
+                real_price=form.cleaned_data['real_price'],
+                direct_labor=form.cleaned_data['direct_labor'],
+                direct_wages=form.cleaned_data['direct_wages'],
+                indirect_wages=form.cleaned_data['indirect_wages'],
+                indirect_labor=form.cleaned_data['indirect_labor']
             )
 
             product.save()
@@ -38,13 +31,40 @@ def create_product(request):
     else:
         return HttpResponseRedirect("/fourohfour")
 
-def delete_product(request):
+
+def edit_product(request, name):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            Product.objects.filter(name=name).update(
+                name = form.cleaned_data['name'],
+                real_price = form.cleaned_data['real_price'],
+                direct_labor = form.cleaned_data['direct_labor'],
+                direct_wages = form.cleaned_data['direct_wages'],
+                indirect_wages = form.cleaned_data['indirect_wages'],
+                indirect_labor = form.cleaned_data['indirect_labor']
+            )
+            return HttpResponseRedirect("/product/{}".format(form.cleaned_data['name']))
+
+        else:
+            print(form._errors)
+            
+            # redirect to the product page using ORIGINAL name, since update did not work if here
+            return HttpResponseRedirect("/product/{}".format(name))
+
+    else:
+        return HttpResponseRedirect("/fourohfour")
+
+
+def delete_product(request, name):
     # TODO: change to DELETE request??
     if request.method == 'POST':
         form = ProductForm(request.POST)
         if form.is_valid():
-                name = form.cleaned_data['name']
-                print(name)
+            try:
+                Product.objects.get(name=name).delete()
+            except:    
+                return None
         else:
             print(form._errors)
             # TODO: maybe add routing to uh oh error page??
@@ -52,3 +72,17 @@ def delete_product(request):
         return HttpResponseRedirect("/")
     else:
         return HttpResponseRedirect("/fourohfour")
+
+
+### CRUD FOR DEPENDENCY ###
+
+def create_dependency(request):
+    pass
+
+
+def edit_dependency(request, prod_name):
+    pass
+
+
+def delete_dependency(request, dep_name):
+    pass
