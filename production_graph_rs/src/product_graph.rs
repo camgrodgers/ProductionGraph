@@ -106,30 +106,29 @@ impl ProductGraph {
     // For testing purposes, generating a graph that can't have cyclical dependencies
     pub fn generate_product_graph(count: usize) -> ProductGraph {
         let mut rng = rand::thread_rng();
-
-        let mut prods = ProductGraph::with_capacity(count);
-        for _ in 0..(count / 2) {
-            let c = Product {
-                direct_cost: rng.gen_range(0.01, 10.0),
-                indirect_cost: 0.0,
-                dependencies: Vec::new(),
-            };
-            prods.push(c);
-        }
-        for _ in (count / 2)..count {
-            let mut deps = Vec::with_capacity(7);
-            for _ in 0..7 {
-                deps.push(DependencyInfo {
-                    id: rng.gen_range(0, count / 2),
-                    quantity: rng.gen_range(0.01, 10.0),
-                });
+        let mut prods = ProductGraph {
+            graph: vec![
+                Product {
+                    direct_cost: 10.0,
+                    indirect_cost: 0.0,
+                    dependencies: Vec::new()
+                };
+                count
+            ],
+        };
+        for i in 0..(count / 2) {
+            for _ in 0..8 {
+                prods
+                    .set_dependency(i, rng.gen_range(count / 2, count), 0.00000000001)
+                    .unwrap();
             }
-            let c = Product {
-                direct_cost: rng.gen_range(0.01, 10.0),
-                indirect_cost: 0.0,
-                dependencies: deps,
-            };
-            prods.push(c);
+        }
+        for i in (count / 2)..count {
+            for _ in 0..8 {
+                prods
+                    .set_dependency(i, rng.gen_range(0, count / 2), rng.gen_range(0.01, 5.0))
+                    .unwrap();
+            }
         }
 
         prods

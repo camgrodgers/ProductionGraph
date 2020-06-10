@@ -10,6 +10,7 @@ use std::mem;
 /// The Product struct is intended to be used as part of the ProductGraph to calculate the unknown
 /// indirect costs.
 // TODO: generics?
+#[derive(Clone, Debug)]
 pub struct Product {
     pub direct_cost: f32,
     pub dependencies: Vec<Dependency>,
@@ -28,6 +29,7 @@ impl Product {
 
 /// The Dependency struct contains an index for a dependency in the array-backed graph, and the
 /// quantity that is depended on.
+#[derive(Clone, Debug)]
 pub struct Dependency {
     id: usize,
     quantity: f32,
@@ -36,6 +38,7 @@ pub struct Dependency {
 /// The ProductGraph is a Vector-backed graph of Products. The Products are the graph nodes, and
 /// the dependencies are weighted, directed edges. The "key" or "id" of each Product is its index
 /// in the Vector. This graph is specialized for the purpose of rapidly estimating indirect costs.
+#[derive(Debug)]
 pub struct ProductGraph {
     graph: Vec<Product>,
 }
@@ -70,7 +73,7 @@ impl ProductGraph {
     }
 
     /// Multiple iterations of the iterative estimation for indirect costs. Performs count number of
-    /// iterations and then returns the final estimates. With each iteration, the estimates become 
+    /// iterations and then returns the final estimates. With each iteration, the estimates become
     /// more precise. ~15 iterations gives a good estimate, ~25 is better, and ~50 is extremely precise.
     /// More iterations are needed to get accurate results if any Product depends directly or indirectly
     /// on quantities that approach 1.0. For instance, if corn depends on 0.01 of itself, 15 iterations
@@ -97,7 +100,7 @@ impl ProductGraph {
     /// 1.0 or more of itself, this represents either bad data or a broken economy, as it will cause
     /// the price of that Product and those that depend on it to go to infinity.
     /// Also checks for dependencies that reference vector elements out of bounds, and for values
-    /// that are infinity or negative. 
+    /// that are infinity or negative.
     pub fn check_graph(&self) -> Result<(), GraphError> {
         // Checking for obvious issues
         let mut out_of_bounds = Vec::new();
@@ -134,6 +137,7 @@ impl ProductGraph {
         // This is going to be ugly
         // This is quick and dirty code to deal with the way that calc_iteration now cycles through
         // buffers.
+        // TODO: replace this with slightly less efficient code that isn't ugly
         let indir_costs = &mut vec![0.0; self.graph.len()];
         let indir_costs_copy = &mut vec![0.0; self.graph.len()];
         self.calc_iteration(indir_costs, indir_costs_copy);
@@ -208,28 +212,16 @@ impl ProductGraph {
     /// Generate a random product graph for testing and benchmarking purposes.
     pub fn generate_product_graph(count: usize) -> ProductGraph {
         let mut rng = rand::thread_rng();
-
-        let mut prods = ProductGraph::with_capacity(count);
-        for _ in 0..(count / 2) {
-            let c = Product {
-                direct_cost: rng.gen_range(0.01, 10.0),
-                dependencies: Vec::new(),
-            };
-            prods.graph.push(c);
-        }
-        for _ in (count / 2)..count {
-            let mut deps = Vec::with_capacity(7);
-            for _ in 0..7 {
-                deps.push(Dependency {
-                    id: rng.gen_range(0, count / 2),
-                    quantity: rng.gen_range(0.01, 10.0),
-                });
+        let mut prods = ProductGraph::from_raw_graph(vec![Product::new(10.0); count]);
+        for i in 0..(count / 2) {
+            for _ in 0..8 {
+                prods.set_dependency(i, rng.gen_range(count / 2, count), 0.00000000001);
             }
-            let c = Product {
-                direct_cost: rng.gen_range(0.01, 10.0),
-                dependencies: deps,
-            };
-            prods.graph.push(c);
+        }
+        for i in (count / 2)..count {
+            for _ in 0..8 {
+                prods.set_dependency(i, rng.gen_range(0, count / 2), rng.gen_range(0.01, 5.0));
+            }
         }
 
         prods
@@ -278,6 +270,8 @@ mod tests {
             prods.push(Product::new(10.0));
         }
         prods.set_dependency(0, 1, 10.0);
+        prods.check_graph().unwrap();
+
         let indirect_costs = prods.calc_for_n_iterations(50);
         assert_eq!(indirect_costs[0], 100.0);
         assert_eq!(indirect_costs[1], 0.0);
@@ -293,6 +287,7 @@ mod tests {
         prods.set_dependency(2, 0, 1.0);
         prods.set_dependency(2, 1, 1.0);
         prods.set_dependency(3, 2, 1.0);
+        prods.check_graph().unwrap();
 
         let indirect_costs = prods.calc_for_n_iterations(50);
         assert_eq!(vec![0.0, 10.0, 30.0, 40.0], indirect_costs);
