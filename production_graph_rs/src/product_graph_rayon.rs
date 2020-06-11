@@ -139,7 +139,8 @@ impl ProductGraph {
         let indir_costs_copy = &mut vec![0.0; self.graph.len()];
         let mut increments_gather = || {
             self.calc_iteration(indir_costs, indir_costs_copy);
-            let increments = indir_costs.par_iter()
+            let increments = indir_costs
+                .par_iter()
                 .zip_eq(indir_costs_copy.par_iter())
                 .map(|(r1, r2)| r2 - r1)
                 .collect::<Vec<f32>>();
