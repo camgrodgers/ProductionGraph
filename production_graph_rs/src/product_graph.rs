@@ -1,18 +1,14 @@
 use rand::Rng;
 use std::error;
-use std::fmt;
 use std::f32;
-
-
+use std::fmt;
 
 #[derive(Clone)]
 pub struct ProductGraph {
-    graph: Vec<Product>
+    graph: Vec<Product>,
 }
 
-// TODO: multithreading, either system threads or rayon
 impl ProductGraph {
-    // TODO: May want to make a function that takes a "raw" graph and checks it for validity
     pub fn with_capacity(size: usize) -> Self {
         ProductGraph {
             graph: Vec::with_capacity(size),
@@ -23,14 +19,20 @@ impl ProductGraph {
         self.graph.push(prod);
     }
 
-    fn set_dependency(&mut self, dependant: usize, dependency: usize, quantity: f32) -> Result<(), ()> {
+    pub fn set_dependency(
+        &mut self,
+        dependant: usize,
+        dependency: usize,
+        quantity: f32,
+    ) -> Result<(), ()> {
         if dependant >= self.graph.len()
             || (dependency == dependant && quantity >= 1.0)
             || dependency >= self.graph.len()
             || quantity < 0.0
-            || quantity == f32::INFINITY {
-                return Err(());
-            }
+            || quantity == f32::INFINITY
+        {
+            return Err(());
+        }
 
         let dep = DependencyInfo {
             id: dependency,
@@ -42,10 +44,6 @@ impl ProductGraph {
         Ok(())
     }
 
-
-    // TODO: see if you can use fancy map filter stuff
-    // TODO: figure out if there's a more idiomatic way to optionally return the increments
-    //       Maybe use a simple enum?
     fn calc_iteration(&mut self, track_increments: bool) -> Vec<f32> {
         let mut increments = if track_increments {
             vec![0.0; self.graph.len()]
@@ -53,9 +51,6 @@ impl ProductGraph {
             Vec::new()
         };
 
-        // NOTE: may want a function or loop here or somewhere to clear all indirect_cost values
-        //       or have a bool value to signify dirty graph
-    
         for i in 0..self.graph.len() {
             let mut indirect_cost = 0.0;
             for depinfo in &self.graph[i].dependencies {
@@ -70,37 +65,40 @@ impl ProductGraph {
         increments
     }
 
-    pub fn calc_for_n_iterations(prods: &mut ProductGraph, count: u16) {
+    pub fn calc_for_n_iterations(&mut self, count: u16) {
+        for p in self.graph.iter_mut() {
+            p.indirect_cost = 0.0;
+        }
+
         for _ in 0..count {
-            prods.calc_iteration(false);
+            self.calc_iteration(false);
         }
     }
 
     // NOTE: No product can depend on 1.0 or more of itself.
-    // Note: this function makes a copy and then destroys it to make sure the memory is freed 
-    // NOTE: Memory STILL isn't freed? Don't trust my system monitor/OS? Rust being finnicky?
     // Note: this function gets a "broader sweep" when it is run after more increments or when
     // dependencies on prods in impossible cycles are a higher quantity
     pub fn detect_impossible_cycles(prods: &ProductGraph) -> Result<(), InfiniteValueError> {
         let mut prods = prods.clone();
-    
+
         // increments in first iteration may be smaller than the next due to doubly indirect costs
         prods.calc_iteration(false);
         let increments1 = prods.calc_iteration(true);
         let increments2 = prods.calc_iteration(true);
-    
-        //TODO: Can replace with iter.zip stuff probably
+
         let mut prods_in_cycles = Vec::new();
         for i in 0..increments1.len() {
             if increments1[i] <= increments2[i] && increments2[i] != 0.0 {
                 prods_in_cycles.push(i);
             }
         }
-        
+
         if prods_in_cycles.len() == 0 {
             Ok(())
         } else {
-            Err(InfiniteValueError{prods_in_cycles: prods_in_cycles})
+            Err(InfiniteValueError {
+                prods_in_cycles: prods_in_cycles,
+            })
         }
     }
 
@@ -108,38 +106,38 @@ impl ProductGraph {
     // For testing purposes, generating a graph that can't have cyclical dependencies
     pub fn generate_product_graph(count: usize) -> ProductGraph {
         let mut rng = rand::thread_rng();
-    
-        let mut prods = ProductGraph::with_capacity(count);
-        for _ in 0..(count / 2) {
-            let c = Product {
-                direct_cost: rng.gen_range(0.01, 10.0),
-                indirect_cost: 0.0,
-                dependencies: Vec::new(),
-            };
-            prods.push(c);
-        }
-        println!("graph capacity: {}",prods.graph.capacity());
-        for _ in (count / 2)..count {
-            let mut deps = Vec::with_capacity(7);
-            for _ in 0..7 {
-                deps.push(DependencyInfo {id: rng.gen_range(0, count / 2), quantity: rng.gen_range(0.01, 10.0)});
+        let mut prods = ProductGraph {
+            graph: vec![
+                Product {
+                    direct_cost: 10.0,
+                    indirect_cost: 0.0,
+                    dependencies: Vec::new()
+                };
+                count
+            ],
+        };
+        for i in 0..(count / 2) {
+            for _ in 0..8 {
+                prods
+                    .set_dependency(i, rng.gen_range(count / 2, count), 0.00000000001)
+                    .unwrap();
             }
-            let c = Product {
-                direct_cost: rng.gen_range(0.01, 10.0),
-                indirect_cost: 0.0,
-                dependencies: deps,
-            };
-            prods.push(c);
         }
-        println!("graph capacity: {}",prods.graph.capacity());
-    
+        for i in (count / 2)..count {
+            for _ in 0..8 {
+                prods
+                    .set_dependency(i, rng.gen_range(0, count / 2), rng.gen_range(0.01, 5.0))
+                    .unwrap();
+            }
+        }
+
         prods
     }
 }
 
 #[derive(Debug, Clone)]
 pub struct InfiniteValueError {
-    pub prods_in_cycles: Vec<usize>
+    pub prods_in_cycles: Vec<usize>,
 }
 
 impl error::Error for InfiniteValueError {
@@ -152,8 +150,6 @@ impl fmt::Display for InfiniteValueError {
         write!(f, "ProductGraph contained dependency cycle where product depends on 1.0 or more of itself.")
     }
 }
-
-
 
 #[derive(Clone)]
 pub struct Product {
@@ -170,7 +166,6 @@ pub struct DependencyInfo {
 }
 
 impl Product {
-
     pub fn new() -> Self {
         Product {
             direct_cost: 0.0,
@@ -181,11 +176,11 @@ impl Product {
 
     pub fn set_direct_cost(&mut self, new_val: f32) -> Result<(), ()> {
         match Product::check_value(new_val) {
-            Ok(()) => { 
+            Ok(()) => {
                 self.direct_cost = new_val;
-                Ok(()) 
-            }, 
-            Err(()) => Err(())
+                Ok(())
+            }
+            Err(()) => Err(()),
         }
     }
 
@@ -193,13 +188,13 @@ impl Product {
         self.direct_cost
     }
 
-    fn set_indirect_cost(&mut self, new_val: f32) -> Result<(), ()> {
+    pub fn set_indirect_cost(&mut self, new_val: f32) -> Result<(), ()> {
         match Product::check_value(new_val) {
             Ok(()) => {
                 self.indirect_cost = new_val;
-                Ok(()) 
-            }, 
-            Err(()) => Err(())
+                Ok(())
+            }
+            Err(()) => Err(()),
         }
     }
 
@@ -214,7 +209,6 @@ impl Product {
             Ok(())
         }
     }
-
 }
 
 #[cfg(test)]
@@ -222,13 +216,15 @@ mod tests {
     use super::*;
     //use test::Bencher;
 
-    // NOTE: This test is no longer relevant to public API
     #[test]
     fn detects_direct_infinite_cycle() {
         let mut prods = ProductGraph::with_capacity(1);
         let mut prod = Product::new();
         prod.set_direct_cost(10.0).unwrap();
-        prod.dependencies.push(DependencyInfo{ id: 0, quantity: 1.0});
+        prod.dependencies.push(DependencyInfo {
+            id: 0,
+            quantity: 1.0,
+        });
         prods.push(prod);
         // NOTE: This line is now unneeded because set_dependency prevents direct infinite loops
         //prods.set_dependency(0, 0, 1.0).unwrap();
@@ -237,7 +233,6 @@ mod tests {
             Ok(()) => panic!(),
             Err(e) => assert_eq!(0, e.prods_in_cycles[0]),
         }
-
     }
 
     #[test]
@@ -297,6 +292,4 @@ mod tests {
         assert_eq!(30.0, prods.graph[2].indirect_cost);
         assert_eq!(40.0, prods.graph[3].indirect_cost);
     }
-
 }
-
