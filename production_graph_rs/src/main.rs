@@ -6,12 +6,12 @@ use product_graph_rayon::*;
 use std::time::Instant;
 
 fn main() {
-    benchmark_rayon(1_000_000, 1, 1);
-    benchmark_plain(1_000_000, 1, 1);
+    benchmark_rayon(100_000, 1, 10);
+    benchmark_plain(100_000, 1, 10);
 }
 
 fn benchmark_rayon(step: usize, begin: usize, end: usize) {
-    let num_iters = 50;
+    let num_iters = 25;
     let mut times = Vec::new();
     for i in begin..=end {
         let num_prods = step * i;
@@ -32,7 +32,7 @@ fn benchmark_rayon(step: usize, begin: usize, end: usize) {
     }
 }
 fn benchmark_plain(step: usize, begin: usize, end: usize) {
-    let num_iters = 50;
+    let num_iters = 25;
     let mut times = Vec::new();
     for i in begin..=end {
         let num_prods = step * i;

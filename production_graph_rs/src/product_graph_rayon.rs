@@ -19,7 +19,7 @@ pub struct Product {
 // TODO: improve ergonomics for adding data
 impl Product {
     /// Create a new Product with a given direct cost.
-    pub fn new(direct_cost: f32) -> Self {
+    pub fn new(direct_cost: f32) -> Product {
         Product {
             direct_cost: direct_cost,
             dependencies: Vec::new(),
@@ -31,8 +31,8 @@ impl Product {
 /// quantity that is depended on.
 #[derive(Clone, Debug)]
 pub struct Dependency {
-    id: usize,
-    quantity: f32,
+    pub id: usize,
+    pub quantity: f32,
 }
 
 /// The ProductGraph is a Vector-backed graph of Products. The Products are the graph nodes, and
@@ -40,7 +40,7 @@ pub struct Dependency {
 /// in the Vector. This graph is specialized for the purpose of rapidly estimating indirect costs.
 #[derive(Debug)]
 pub struct ProductGraph {
-    graph: Vec<Product>,
+    pub graph: Vec<Product>,
 }
 
 #[derive(Debug, Clone)]
@@ -66,7 +66,7 @@ impl ProductGraph {
                 // multithreading overhead.
                 prod.dependencies.iter().fold(0.0, |acc, dep| {
                     let dep_cost = self.graph[dep.id].direct_cost + indir_costs_old[dep.id];
-                    acc + dep.quantity * dep_cost
+                    acc + (dep.quantity * dep_cost)
                 })
             })
             .collect_into_vec(indir_costs_new);
@@ -76,7 +76,7 @@ impl ProductGraph {
     /// iterations and then returns the final estimates. With each iteration, the estimates become
     /// more precise. ~15 iterations gives a good estimate, ~25 is better, and ~50 is extremely precise.
     /// More iterations are needed to get accurate results if any Product depends directly or indirectly
-    /// on quantities that approach 1.0. For instance, if corn depends on 0.01 of itself, 15 iterations
+    /// on quantities of itself that approach 1.0. For instance, if corn depends on 0.01 of itself, 15 iterations
     /// should give a good result. However, if it depends on 0.9 of itself, it could take 50 iterations
     /// to be sure.
     pub fn calc_for_n_iterations(&self, count: u16) -> Vec<f32> {
@@ -103,6 +103,7 @@ impl ProductGraph {
     /// that are infinity or negative.
     pub fn check_graph(&self) -> Result<(), GraphError> {
         // Checking for obvious issues
+        // This code could be made a bit less procedural?
         let mut out_of_bounds = Vec::new();
         let mut negative_value = Vec::new();
         let mut infinite = Vec::new();
@@ -134,23 +135,25 @@ impl ProductGraph {
         }
 
         // Checking for infinite cycles
-        // This is going to be ugly
-        // This is quick and dirty code to deal with the way that calc_iteration now cycles through
-        // buffers.
-        // TODO: replace this with slightly less efficient code that isn't ugly
         let indir_costs = &mut vec![0.0; self.graph.len()];
         let indir_costs_copy = &mut vec![0.0; self.graph.len()];
-        self.calc_iteration(indir_costs, indir_costs_copy);
-        let result1 = indir_costs_copy.clone();
-        mem::swap(indir_costs, indir_costs_copy);
-        self.calc_iteration(indir_costs, indir_costs_copy);
-        let result2 = indir_costs_copy.clone();
-        mem::swap(indir_costs, indir_costs_copy);
-        self.calc_iteration(indir_costs, indir_costs_copy);
-        let result3 = indir_costs_copy.clone();
+        let mut results_gather = || {
+            self.calc_iteration(indir_costs, indir_costs_copy);
+            mem::swap(indir_costs, indir_costs_copy);
+            indir_costs.clone()
+        };
+        let result1 = results_gather();
+        let result2 = results_gather();
+        let result3 = results_gather();
 
-        let increments1 = Self::diff_results(&result1, &result2);
-        let increments2 = Self::diff_results(&result2, &result3);
+        let diff_results = |rs1: &Vec<f32>, rs2: &Vec<f32>| {
+            rs1.par_iter()
+                .zip_eq(rs2.par_iter())
+                .map(|(r1, r2)| r2 - r1)
+                .collect::<Vec<f32>>()
+        };
+        let increments1 = diff_results(&result1, &result2);
+        let increments2 = diff_results(&result2, &result3);
 
         let prods_in_infinite_cycles: Vec<usize> = increments1
             .par_iter()
@@ -176,29 +179,26 @@ impl ProductGraph {
         }
     }
 
-    // Helper function for check_graph()
-    fn diff_results(results1: &Vec<f32>, results2: &Vec<f32>) -> Vec<f32> {
-        results1
-            .par_iter()
-            .zip_eq(results2.par_iter())
-            .map(|(result1, result2)| result2 - result1)
-            .collect()
-    }
-
-    pub fn with_capacity(size: usize) -> Self {
+    /// Create a graph with a specified initial capacity. The capacity is not the size of the
+    /// graph, but the amount of memory that is pre-allocated.
+    pub fn with_capacity(size: usize) -> ProductGraph {
         ProductGraph {
             graph: Vec::with_capacity(size),
         }
     }
 
-    pub fn from_raw_graph(graph: Vec<Product>) -> Self {
+    /// Create a ProductGraph from a plain Vec of Products.
+    pub fn from_raw_graph(graph: Vec<Product>) -> ProductGraph {
         ProductGraph { graph: graph }
     }
 
+    /// Add a Product to the ProductGraph. Because Products are IDed by Vector index, be careful to
+    /// insert them in the correct order.
     pub fn push(&mut self, prod: Product) {
         self.graph.push(prod);
     }
 
+    /// Create a dependency for a Product in the graph.
     pub fn set_dependency(&mut self, dependant: usize, dependency: usize, quantity: f32) {
         let dep = Dependency {
             id: dependency,
