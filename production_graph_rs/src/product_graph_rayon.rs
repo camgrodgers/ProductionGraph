@@ -56,7 +56,11 @@ impl ProductGraph {
     // the estimated indirect costs, associated with each product in the graph by index.
     fn calc_iteration(&self, indir_costs_old: &Vec<f32>, indir_costs_new: &mut Vec<f32>) {
         // NOTE: reuses a rotating pair of buffers to reduce allocations. This is one acceptable way
-        // to reuse buffers with Rayon.
+        // to reuse buffers with Rayon. The pair of buffers is actually the most memory-efficient
+        // method of doing this with thread safety AFAICT. A Mutex or RWLock on the whole buffer would eliminate
+        // advantages of multi-threading, and a RWLock per element would actually take more space
+        // than the duplicate elements here (RWLock struct has three fields, which also have their
+        // own fields, etc).
         self.graph
             .par_iter()
             .map(|prod| {
@@ -84,14 +88,10 @@ impl ProductGraph {
         let indir_costs_copy = &mut vec![0.0; self.graph.len()];
         for _ in 0..count {
             self.calc_iteration(indir_costs, indir_costs_copy);
-            // NOTE: Double check that mem::swap() is not deep swap
             // At the end of each iteration, the copy var has the most-updated data in it.
             // Therefore, in the next iteration, it should be the old data, and the new data should
             // overwrite the old old data.
             mem::swap(indir_costs, indir_costs_copy);
-            //let temp = indir_costs;
-            //indir_costs = indir_costs_copy;
-            //indir_costs_copy = temp;
         }
         indir_costs.clone()
     }
@@ -103,7 +103,7 @@ impl ProductGraph {
     /// that are infinity or negative.
     pub fn check_graph(&self) -> Result<(), GraphError> {
         // Checking for obvious issues
-        // This code could be made a bit less procedural?
+        // TODO: this code could be made a bit less procedural?
         let mut out_of_bounds = Vec::new();
         let mut negative_value = Vec::new();
         let mut infinite = Vec::new();
@@ -137,23 +137,18 @@ impl ProductGraph {
         // Checking for infinite cycles
         let indir_costs = &mut vec![0.0; self.graph.len()];
         let indir_costs_copy = &mut vec![0.0; self.graph.len()];
-        let mut results_gather = || {
+        let mut increments_gather = || {
             self.calc_iteration(indir_costs, indir_costs_copy);
-            mem::swap(indir_costs, indir_costs_copy);
-            indir_costs.clone()
-        };
-        let result1 = results_gather();
-        let result2 = results_gather();
-        let result3 = results_gather();
-
-        let diff_results = |rs1: &Vec<f32>, rs2: &Vec<f32>| {
-            rs1.par_iter()
-                .zip_eq(rs2.par_iter())
+            let increments = indir_costs.par_iter()
+                .zip_eq(indir_costs_copy.par_iter())
                 .map(|(r1, r2)| r2 - r1)
-                .collect::<Vec<f32>>()
+                .collect::<Vec<f32>>();
+            mem::swap(indir_costs, indir_costs_copy);
+            increments
         };
-        let increments1 = diff_results(&result1, &result2);
-        let increments2 = diff_results(&result2, &result3);
+        increments_gather(); // Throw away first result as it involves the 0.0 initialized vec
+        let increments1 = increments_gather();
+        let increments2 = increments_gather();
 
         let prods_in_infinite_cycles: Vec<usize> = increments1
             .par_iter()
