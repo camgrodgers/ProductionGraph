@@ -36,7 +36,7 @@ impl ProductGraph {
 
         let dep = DependencyInfo {
             id: dependency,
-            quantity: quantity,
+            quantity,
         };
 
         self.graph[dependant].dependencies.push(dep);
@@ -97,7 +97,7 @@ impl ProductGraph {
             Ok(())
         } else {
             Err(InfiniteValueError {
-                prods_in_cycles: prods_in_cycles,
+                prods_in_cycles,
             })
         }
     }

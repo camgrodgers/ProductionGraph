@@ -1,5 +1,5 @@
 [package]
-name = "production_graph_rs"
+name = "product_graph_rs"
 version = "0.1.0"
 authors = ["Cameron Rodgers"]
 edition = "2018"

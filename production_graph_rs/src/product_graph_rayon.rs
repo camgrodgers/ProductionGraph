@@ -21,7 +21,7 @@ impl Product {
     /// Create a new Product with a given direct cost.
     pub fn new(direct_cost: f32) -> Product {
         Product {
-            direct_cost: direct_cost,
+            direct_cost,
             dependencies: Vec::new(),
         }
     }
@@ -43,6 +43,7 @@ pub struct ProductGraph {
     pub graph: Vec<Product>,
 }
 
+// TODO: impl Error
 #[derive(Debug, Clone)]
 pub struct GraphError {
     pub out_of_bounds_dependency: Vec<usize>,
@@ -185,7 +186,7 @@ impl ProductGraph {
 
     /// Create a ProductGraph from a plain Vec of Products.
     pub fn from_raw_graph(graph: Vec<Product>) -> ProductGraph {
-        ProductGraph { graph: graph }
+        ProductGraph { graph }
     }
 
     /// Add a Product to the ProductGraph. Because Products are IDed by Vector index, be careful to
@@ -196,13 +197,18 @@ impl ProductGraph {
 
     /// Create a dependency for a Product in the graph.
     pub fn set_dependency(&mut self, dependant: usize, dependency: usize, quantity: f32) {
-        let dep = Dependency {
-            id: dependency,
-            quantity: quantity,
-        };
-        // TODO: this can result in duplicate entries
-        self.graph[dependant].dependencies.push(dep);
-        self.graph[dependant].dependencies.shrink_to_fit();
+        let deps = &mut self.graph[dependant].dependencies;
+        // TODO: test if .find() works
+        match deps.iter().position(|d| d.id == dependency) {
+            Some(i) => deps[i].quantity = quantity,
+            None => {
+                deps.push(Dependency {
+                    id: dependency,
+                    quantity,
+                });
+                deps.shrink_to_fit();
+            }
+        }
     }
 
     /// Generate a random product graph for testing and benchmarking purposes.
