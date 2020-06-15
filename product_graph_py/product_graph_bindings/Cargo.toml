@@ -1,13 +1,13 @@
 [package]
 name = "product_graph_bindings"
 version = "0.1.0"
-authors = ["\"Cameron R\" <cameron.g.rodgers@gmail.com>"]
+authors = ["Cameron Rodgers"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "arr_sum"
+name = "product_graph_bindings"
 crate-type = ["cdylib"]
 
 
@@ -16,3 +16,4 @@ version = "0.10.1"
 features = ["extension-module"]
 
 [dependencies]
+product_graph_rs = {path = "../../production_graph_rs", version = "0.1" }
