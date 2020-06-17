@@ -205,6 +205,7 @@ impl ProductGraph {
                 deps.push(Dependency {                    id: dependency,
                     quantity,
                 });
+                // This will slow stuff down
                 deps.shrink_to_fit();
             }
         }

@@ -23,23 +23,23 @@ def generate_graph(num_prods):
     for i in range(0, int(num_prods / 2)):
         deps = []
         for j in range(0, 8):
-            deps.append(( str(random.randint(int(num_prods /2) , num_prods -1)), 0.000000000001))
-        graph[str(i)] = product_graph_bindings.SimpleProduct(10.0, deps)
+            deps.append(( random.randint(int(num_prods /2) , num_prods -1), 0.000000000001))
+        graph[i] = product_graph_bindings.SimpleProduct(10.0, deps)
 
     for i in range(int(num_prods / 2), num_prods):
         deps = []
         for j in range(0, 8):
-            deps.append((str(random.randint(0, int(num_prods /2))), 0.001))
-        graph[str(i)] = product_graph_bindings.SimpleProduct(10.0, deps)
+            deps.append((random.randint(0, int(num_prods /2)), 0.001))
+        graph[i] = product_graph_bindings.SimpleProduct(10.0, deps)
 
     return graph
 
 def generate_graph1(num_prods):
     graph = {}
     for i in range(0, num_prods):
-        graph[str(i)] = product_graph_bindings.SimpleProduct(10.0, [])
+        graph[i] = product_graph_bindings.SimpleProduct(10.0, [])
 
     return graph
 
 
-bench(1000000, 1, 2)
+bench(5000000, 1, 2)

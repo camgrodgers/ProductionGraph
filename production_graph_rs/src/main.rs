@@ -6,8 +6,8 @@ use product_graph_rayon::*;
 use std::time::Instant;
 
 fn main() {
-    benchmark_rayon(1_000_000, 10, 10);
-    benchmark_plain(1_000_000, 10, 10);
+    benchmark_rayon(5_000_000, 1, 1);
+    benchmark_plain(5_000_000, 1, 1);
 }
 
 fn benchmark_rayon(step: usize, begin: usize, end: usize) {
@@ -15,7 +15,9 @@ fn benchmark_rayon(step: usize, begin: usize, end: usize) {
     let mut times = Vec::new();
     for i in begin..=end {
         let num_prods = step * i;
+        let start = Instant::now();
         let data = ProductGraph::generate_product_graph(num_prods);
+        println!("Generating product graph on {} prods took {:?}", num_prods, start.elapsed());
         let start = Instant::now();
         let _results = data.calc_for_n_iterations(num_iters);
         let duration = start.elapsed();
