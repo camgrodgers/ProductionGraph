@@ -96,9 +96,7 @@ impl ProductGraph {
         if prods_in_cycles.len() == 0 {
             Ok(())
         } else {
-            Err(InfiniteValueError {
-                prods_in_cycles,
-            })
+            Err(InfiniteValueError { prods_in_cycles })
         }
     }
 
