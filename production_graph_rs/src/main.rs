@@ -17,7 +17,11 @@ fn benchmark_rayon(step: usize, begin: usize, end: usize) {
         let num_prods = step * i;
         let start = Instant::now();
         let data = ProductGraph::generate_product_graph(num_prods);
-        println!("Generating product graph on {} prods took {:?}", num_prods, start.elapsed());
+        println!(
+            "Generating product graph on {} prods took {:?}",
+            num_prods,
+            start.elapsed()
+        );
         let start = Instant::now();
         let _results = data.calc_for_n_iterations(num_iters);
         let duration = start.elapsed();

@@ -202,7 +202,8 @@ impl ProductGraph {
         match deps.iter().position(|d| d.id == dependency) {
             Some(i) => deps[i].quantity = quantity,
             None => {
-                deps.push(Dependency {                    id: dependency,
+                deps.push(Dependency {
+                    id: dependency,
                     quantity,
                 });
                 // This will slow stuff down
@@ -212,7 +213,6 @@ impl ProductGraph {
     }
 
     // TODO: batch dependency setting, removers, getters etc...
-
 
     /// Generate a random product graph for testing and benchmarking purposes.
     pub fn generate_product_graph(count: usize) -> ProductGraph {

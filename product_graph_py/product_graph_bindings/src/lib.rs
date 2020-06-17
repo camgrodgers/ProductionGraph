@@ -49,11 +49,11 @@ fn calc_indirect_vals_for_n_iterations(
     graph: HashMap<u64, SimpleProduct>,
     count: u16,
 ) -> (Vec<(u64, f32)>, f64) {
-    // NOTE: ugly, bad for memory... 
+    // NOTE: ugly, bad for memory...
     let mut ids_to_indexes = HashMap::with_capacity(graph.len());
     let mut indexes_to_ids = HashMap::with_capacity(graph.len());
     let mut new_graph = ProductGraph::with_capacity(graph.len());
-    for (i,(k, prod)) in graph.iter().enumerate() {
+    for (i, (k, prod)) in graph.iter().enumerate() {
         ids_to_indexes.insert(k, i);
         indexes_to_ids.insert(i, k);
         new_graph.push(Product::new(prod.direct_labor));
@@ -82,14 +82,8 @@ fn calc_indirect_vals_for_n_iterations(
     (indirect_costs, start.elapsed().as_secs_f64())
 }
 
-#[pyfunction]
-fn sum_vec(a: Vec<i32>) -> i32 {
-    a.iter().sum()
-}
-
 #[pymodule]
 fn product_graph_bindings(py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_wrapped(wrap_pyfunction!(sum_vec))?;
     m.add_wrapped(wrap_pyfunction!(calc_indirect_vals_for_n_iterations))?;
     m.add_class::<SimpleProduct>()?;
 
