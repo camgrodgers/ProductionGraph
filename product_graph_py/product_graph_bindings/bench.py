@@ -9,7 +9,8 @@ def bench(step, begin, end):
         num_prods = step * i
         data = generate_graph(num_prods)
         start = time.time()
-        results = product_graph_bindings.calc_indirect_vals_for_n_iterations(data, num_iters)
+        (results, dur) = product_graph_bindings.calc_indirect_vals_for_n_iterations(data, num_iters)
+        print(dur)
         end = time.time()
         times.append((i, end - start))
 
@@ -22,7 +23,7 @@ def generate_graph(num_prods):
     for i in range(0, int(num_prods / 2)):
         deps = []
         for j in range(0, 8):
-            deps.append(( str(random.randint(int(num_prods /2) , num_prods -1)), 500))
+            deps.append(( str(random.randint(int(num_prods /2) , num_prods -1)), 0.000000000001))
         graph[str(i)] = product_graph_bindings.SimpleProduct(10.0, deps)
 
     for i in range(int(num_prods / 2), num_prods):
@@ -41,4 +42,4 @@ def generate_graph1(num_prods):
     return graph
 
 
-bench(100000, 1, 10)
+bench(1000000, 1, 2)

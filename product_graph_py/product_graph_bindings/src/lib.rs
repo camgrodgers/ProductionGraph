@@ -2,6 +2,7 @@ use product_graph_rs::*;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use std::collections::HashMap;
+use std::time::Instant;
 
 /*
 #[pyclass]
@@ -43,11 +44,12 @@ impl SimpleProduct {
     }
 }
 
+// NOTE: consider replacing String with usize in the hashmap, after experimenting with the ORM
 #[pyfunction]
 fn calc_indirect_vals_for_n_iterations(
     graph: HashMap<String, SimpleProduct>,
     count: u16,
-) -> Vec<(String, f32)> {
+) -> (Vec<(String, f32)>, f64) {
     // NOTE: ugly, bad for memory... maybe these maps should share data via reference or use bimap
     let indexes: HashMap<String, usize> = graph
         .keys()
@@ -70,17 +72,18 @@ fn calc_indirect_vals_for_n_iterations(
     match new_graph.check_graph() {
         Ok(()) => (),
         Err(_) => {
-            return Vec::new();
+            return (Vec::new(), 0.0);
         }
     }
 
+    let start = Instant::now();
     let indirect_costs = new_graph.calc_for_n_iterations(count);
     let indirect_costs: Vec<(String, f32)> = indirect_costs
         .iter()
         .enumerate()
         .map(|(i, quant)| (names[&i].clone(), *quant))
         .collect();
-    indirect_costs
+    (indirect_costs, start.elapsed().as_secs_f64())
 }
 
 #[pyfunction]
