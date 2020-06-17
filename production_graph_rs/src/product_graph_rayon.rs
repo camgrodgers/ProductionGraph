@@ -84,10 +84,10 @@ impl ProductGraph {
     /// on quantities of itself that approach 1.0. For instance, if corn depends on 0.01 of itself, 15 iterations
     /// should give a good result. However, if it depends on 0.9 of itself, it could take 50 iterations
     /// to be sure.
-    pub fn calc_for_n_iterations(&self, count: u16) -> Vec<f32> {
+    pub fn calc_for_n_iterations(&self, n: u16) -> Vec<f32> {
         let indir_costs = &mut vec![0.0; self.graph.len()];
         let indir_costs_copy = &mut vec![0.0; self.graph.len()];
-        for _ in 0..count {
+        for _ in 0..n {
             self.calc_iteration(indir_costs, indir_costs_copy);
             // At the end of each iteration, the copy var has the most-updated data in it.
             // Therefore, in the next iteration, it should be the old data, and the new data should
@@ -202,14 +202,16 @@ impl ProductGraph {
         match deps.iter().position(|d| d.id == dependency) {
             Some(i) => deps[i].quantity = quantity,
             None => {
-                deps.push(Dependency {
-                    id: dependency,
+                deps.push(Dependency {                    id: dependency,
                     quantity,
                 });
                 deps.shrink_to_fit();
             }
         }
     }
+
+    // TODO: batch dependency setting, removers, getters etc...
+
 
     /// Generate a random product graph for testing and benchmarking purposes.
     pub fn generate_product_graph(count: usize) -> ProductGraph {
