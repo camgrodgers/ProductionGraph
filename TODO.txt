@@ -16,8 +16,8 @@ Server:
 Frontend:
 - Create edit dependency modal
 - Create add dependency modal
-- Make all modals actually POST to server!
-	- research this ^
+- Look into more efficient methods of posting to DB
+	- see notes / TODOs / FIXMEs in code
 
 Organization:
 - Make sure everyone knows how to branch and do pull requests

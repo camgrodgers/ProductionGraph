@@ -16,10 +16,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from . import api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('fourohfour/', views.fourohfour),
     path('', views.home),
-    path('product/', views.product_view),
-    path('product/analytics/', views.product_analytics)
+    path('product/<str:name>', views.product_view),
+    path('product/<str:name>/analytics/', views.product_analytics),
+
+    ### api ###
+    path('api/create/product', api.create_product),
+    path('api/edit/product/<str:name>', api.edit_product),
+    path('api/delete/product/<str:name>', api.delete_product)
+    # path('api/create/dependency/<str:prod_name>', api.create_dependency)
+    # path('api/edit/dependency/<str:dep_name>', api.dep_dependency)
+    # path('api/delete/dependency/<str:dep_name>', api.delete_dependency)
 ]
