@@ -2,7 +2,10 @@ import product_graph_bindings
 import random
 import time
 
-def bench(step, begin, end):
+def calc_indirect_vals_for_n_iterations(data, num_iters):
+    pass
+
+def bench_rust(step, begin, end):
     num_iters = 25
     times = []
     for i in range(begin, end):
@@ -42,4 +45,4 @@ def generate_graph1(num_prods):
     return graph
 
 
-bench(5000000, 1, 2)
+bench_rust(5000000, 1, 2)

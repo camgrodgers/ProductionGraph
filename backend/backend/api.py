@@ -5,6 +5,8 @@ from .models import Product
 from .forms import ProductForm
 
 ### CRUD FOR PRODUCT ###
+def update_product_indirect_values():
+    
 
 def create_product(request):
     # handle the post to this url ONLY
@@ -16,8 +18,6 @@ def create_product(request):
                 real_price=form.cleaned_data['real_price'],
                 direct_labor=form.cleaned_data['direct_labor'],
                 direct_wages=form.cleaned_data['direct_wages'],
-                indirect_wages=form.cleaned_data['indirect_wages'],
-                indirect_labor=form.cleaned_data['indirect_labor']
             )
 
             product.save()
@@ -29,6 +29,8 @@ def create_product(request):
     # redirect to 404 if method isn't post
     else:
         return HttpResponseRedirect("/fourohfour")
+
+
 
 # TODO: add safety try/except blocks (see delete_product)
 def edit_product(request, name):

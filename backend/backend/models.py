@@ -2,7 +2,7 @@ from django.db import models
 
 # TODO: Normalize? 
 class Product(models.Model):
-    name = models.CharField(max_length = 100, primary_key = True, unique = True) # NOTE: this max length is arbitrary placeholder
+    name = models.CharField(max_length = 100, unique = True) # NOTE: this max length is arbitrary placeholder
     real_price = models.FloatField()
     direct_labor = models.FloatField() # Consider placing a lower bound of 0.0?
     direct_wages = models.FloatField()
@@ -10,6 +10,16 @@ class Product(models.Model):
     indirect_labor = models.FloatField()
 
 class Dependency(models.Model):
+    #dependent = models.ManyToManyField(
+    #        Product,
+    #        on_delete=models.CASCADE,
+    #        related_name = 'dependents'
+    #        )
+    #dependency = models.ManyToManyField(
+    #        Product,
+    #        on_delete=models.CASCADE,
+    #        related_name = 'dependencies'
+    #        )
     dependent = models.ForeignKey(
             'Product',
             on_delete=models.CASCADE,

@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
 from .models import Product
 from .forms import ProductForm
+import product_graph_bindings
 
 # HELPERS
 # I think eventually we should change this
