@@ -7,4 +7,6 @@ class ProductForm(forms.Form):
     direct_wages = forms.FloatField()
 
 class DependencyForm(forms.Form):
-    pass
+    # Im not sure how to set this form up
+    dependent = forms.ModelChoiceField() #This will not be given in the modal, and should be filled in automatically
+    dependency = forms.ModelChoiceField()

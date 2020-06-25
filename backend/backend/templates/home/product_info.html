@@ -336,6 +336,33 @@
         <!-- Model Content -->
         <form method="POST" action="/api/create/dependency">
           *Form has not yet been created*
+          <!-- CSRF token to be put here -->
+          <div class="mt-4 mb-6">
+            <div class="flex items-center mx-auto mb-4">
+              <div class="w-1/2 px-2">
+
+                <!--Input for Product to be Dependent on -->
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
+                  Name of Dependency
+                </label>
+                <input name="dependency" value="{{ dependency.dependency }}" required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"/>
+
+                <!-- Input for the Quanity -->
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
+                  Quanity
+                </label>
+                <input name="quantity" value="{{ dependency.quantity }}" required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"/>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Actions -->
+
+
+
         </form>
       </div>
     </div>
@@ -350,7 +377,7 @@
   // I use id for open trigger bc one occurrence on this template
   // I use classes for close triggers bc multiple occurrences (the cancel button and outside click)
 
-  //Find the Editor Button
+  //Enable the Editor Button
   let editModalTrigger = document.querySelector("#editing-modal-trigger");
   if (editModalTrigger) {
       //console.log(modalTrigger);
@@ -365,7 +392,7 @@
       });
   }
 
-  //Find the Dependency Creator Button
+  //Enable the Dependency Creator Button
   let createDepModalTrigger = document.querySelector("#dependency-create-modal-trigger");
   if (createDepModalTrigger) {
     createDepModalTrigger.addEventListener("click", () => {
@@ -377,7 +404,7 @@
     });
   }
 
-  //Allow for closing Editing Modal
+  //Allow for closing Product Editing Modal
   let proEditModalClosers = document.querySelectorAll("#productEditModal_closer");
   if (proEditModalClosers) {
     proEditModalClosers.forEach((modalCloser) => {

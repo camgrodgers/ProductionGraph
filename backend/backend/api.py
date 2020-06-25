@@ -39,17 +39,14 @@ def edit_product(request, name):
                 real_price = form.cleaned_data['real_price'],
                 direct_labor = form.cleaned_data['direct_labor'],
                 direct_wages = form.cleaned_data['direct_wages'],
-                # indirect_wages = form.cleaned_data['indirect_wages'],
-                # indirect_labor = form.cleaned_data['indirect_labor']
             )
-
             # redirect using NEW name, since it may have been updated
             return HttpResponseRedirect("/product/{}".format(form.cleaned_data['name']))
 
         else:
             print(form._errors)
             
-            # redirect to the product page using ORIGINAL name, since update did not work if here
+            # redirect to the product page using ORIGINAL name, since update did not work
             return HttpResponseRedirect("/product/{}".format(name))
 
     else:
