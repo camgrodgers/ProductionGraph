@@ -7,25 +7,6 @@ from .forms import ProductForm
 import product_graph_bindings
 
 ### CRUD FOR PRODUCT ###
-def update_product_indirect_values():
-    #if request.method != 'PUT':
-    #    return HttpResponseRedirect("/fourohofur")
-
-    # NOTE: this code has very bad perf and does many queries when maybe it can do group_by and stuff?
-    labor_graph = {}
-    for p in Product.objects.all():
-        deps = []
-        for d in Dependency.objects.filter(dependent=p.id):
-            deps.append((d.dependency_id, d.quantity))
-        labor_graph[p.id] = product_graph_bindings.SimpleProduct(p.direct_labor, deps)
-
-    #for product_id_key in labor_graph:
-        #for d in Dependency.objects.filter(dependent=product_id_key):
-            #labor_graph[product_id_key].dependencies.append((d.dependency, d.quantity))
-
-    (indirect_labor_values, time) = product_graph_bindings.calc_indirect_vals_for_n_iterations(labor_graph, 25)
-    for (id_val, indirect_labor_val) in indirect_labor_values:
-        prod = Product.objects.filter(id=id_val).update(indirect_labor=indirect_labor_val)
 
 def create_product(request):
     # handle the post to this url ONLY
@@ -118,3 +99,24 @@ def edit_dependency(request, prod_name):
 
 def delete_dependency(request, dep_name):
     pass
+
+
+### Calculating indirect costs ###
+
+def update_product_indirect_values():
+    # TODO: might want to make a separate function that handles a request, if we stop doing this
+    # calculation automatically when data is added
+    #if request.method != 'PUT':
+    #    return HttpResponseRedirect("/fourohofur")
+
+    # NOTE: this code has very bad perf and does many queries when maybe it can do group_by and stuff?
+    labor_graph = {}
+    for p in Product.objects.all():
+        deps = []
+        for d in Dependency.objects.filter(dependent=p.id):
+            deps.append((d.dependency_id, d.quantity))
+        labor_graph[p.id] = product_graph_bindings.SimpleProduct(p.direct_labor, deps)
+
+    (indirect_labor_values, time) = product_graph_bindings.calc_indirect_vals_for_n_iterations(labor_graph, 25)
+    for (id_val, indirect_labor_val) in indirect_labor_values:
+        prod = Product.objects.filter(id=id_val).update(indirect_labor=indirect_labor_val)

@@ -2,6 +2,7 @@ import product_graph_bindings
 import random
 import time
 
+# Might write a python version of the calculation code here
 def calc_indirect_vals_for_n_iterations(data, num_iters):
     pass
 
