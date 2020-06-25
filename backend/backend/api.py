@@ -78,8 +78,8 @@ def delete_product(request, name):
 
 ### CRUD FOR DEPENDENCY ###
 
-def create_dependency(request):
-    pass
+def create_dependency(request, prod_name):
+    return HttpResponseRedirect("/fourohfour")
 
 
 def edit_dependency(request, prod_name):

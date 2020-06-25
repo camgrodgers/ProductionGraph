@@ -210,11 +210,12 @@
         <!-- End Modal Title -->
 
         <!--Modal Content -->
-        
         <form method="POST" action="/api/edit/product/{{product.name}}">
           {% csrf_token %}
           <div class="mt-4 mb-6">
             <div class="flex items-center mx-auto mb-4">
+
+              <!-- Name Input -->
               <div class="w-1/2 px-2">
                 <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
                   Name
@@ -226,6 +227,8 @@
                   value="{{ product.name }}"
                 />
               </div>
+
+              <!-- Current Real Price Input -->
               <div class="w-1/2 px-2">
                 <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
                   Current Real Price
@@ -239,6 +242,8 @@
               </div>
             </div>
             <div class="flex items-center mx-auto mb-4">
+
+              <!-- Direct Labor Time Input -->
               <div class="w-1/2 px-2">
                 <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
                   Direct Labor Time
@@ -250,6 +255,8 @@
                   value="{{ product.direct_labor }}"
                 />
               </div>
+
+              <!-- Direct Wages Input -->
               <div class="w-1/2 px-2">
                 <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
                   Direct Wages
@@ -261,15 +268,18 @@
                   value="{{ product.direct_wages }}"
                 />
               </div>
+
             </div>
             
             <!----------------------------------------------------------------->
-            <!--INDIRECT WAGES AND INCOME INPUTES WERE HERE, BUT WERE REMOVED-->
+            <!-- INDIRECT WAGES AND INCOME INPUTS WERE HERE, BUT WERE REMOVED-->
             <!----------------------------------------------------------------->
           
           </div>
-          <!--Modal Actions-->
+          <!--Modal Actions -->
           <div class="bg-gray-50 sm:px-2 sm:flex sm:flex-row-reverse">
+
+            <!-- Confirm Button-->
             <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
               <button
                 type="submit"
@@ -278,6 +288,8 @@
                 Confirm
               </button>
             </span>
+
+            <!-- Cancel Button -->
             <span
               class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto"
             >
@@ -314,6 +326,7 @@
     <div class = "bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
       <!-- Inner DIV for the modal-->
       <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+
         <!--Modal Title-->
         <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
           Create Dependency
@@ -325,10 +338,9 @@
           </p>
         </div>
 
-        <!-- Model Content -->
-        <form method="POST" action="/api/create/dependency">
-          *Form has not yet been created*
-          <!-- CSRF token to be put here -->
+        <!-- Modal Content -->
+        <form method="POST" action="/api/create/dependency/{{product.name}}">
+          {% csrf_token %}
           <div class="mt-4 mb-6">
             <div class="flex items-center mx-auto mb-4">
               <div class="w-1/2 px-2">
@@ -337,25 +349,50 @@
                 <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
                   Name of Dependency
                 </label>
-                <input name="dependency" value="{{ dependency.dependency }}" required 
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"/>
+                <input 
+                  name="dependency" 
+                  required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                />
 
                 <!-- Input for the Quanity -->
                 <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
                   Quanity
                 </label>
-                <input name="quantity" value="{{ dependency.quantity }}" required 
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"/>
+                <input 
+                  name="quantity" 
+                  required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                />
 
               </div>
             </div>
           </div>
 
           <!-- Modal Actions -->
+          <div class="bg-gray-50 sm:px-2 sm:flex sm:flex-row-reverse">
 
+            <!-- Confirm Button -->
+            <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+              <button type="submit" class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                Confirm
+              </button>
+            </span>
 
+            <!-- Cancel Button -->
+            <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+              <button
+                type="button"
+                id="depCreateModal_closer"
+                class="modal-closer inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+              >
+                Cancel
+              </button>
+            </span>
 
+          </div>
         </form>
+
       </div>
     </div>
   </div>
