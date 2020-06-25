@@ -16,7 +16,7 @@ def update_product_indirect_values():
     for p in Product.objects.all():
         deps = []
         for d in Dependency.objects.filter(dependent=p.id):
-            deps.append((d.dependency, d.quantity))
+            deps.append((d.dependency_id, d.quantity))
         labor_graph[p.id] = product_graph_bindings.SimpleProduct(p.direct_labor, deps)
 
     #for product_id_key in labor_graph:

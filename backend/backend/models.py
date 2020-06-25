@@ -21,12 +21,12 @@ class Dependency(models.Model):
     #        related_name = 'dependencies'
     #        )
     dependent = models.ForeignKey(
-            'Product',
+            Product,
             on_delete=models.CASCADE,
             related_name = 'dependents'
             )
     dependency = models.ForeignKey(
-            'Product',
+            Product,
             on_delete=models.CASCADE,
             related_name = 'dependencies'
             )
