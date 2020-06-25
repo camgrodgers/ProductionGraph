@@ -7,6 +7,16 @@ from .forms import ProductForm
 ### CRUD FOR PRODUCT ###
 
 def create_product(request):
+    """
+    Creates a product in the database. This function handles POST requests sent to the URL 'api/create/product'
+
+    :param request: The request sent to server
+    :type request: HttpRequest
+
+    :return: a redirect to the homepage '/' on successful save to DB, to '/fourohfour' on failure or on request 
+        types that are not POST
+    :rtype: HttpResponseRedirect
+    """
     # handle the post to this url ONLY
     if request.method == 'POST':
         form = ProductForm(request.POST)
@@ -30,6 +40,19 @@ def create_product(request):
 
 # TODO: add safety try/except blocks (see delete_product)
 def edit_product(request, name):
+    """
+    Updates a product in the database. This function handles POST requests sent to the URL 'api/edit/product/:id'
+
+    :param request: The request sent to server
+    :type request: HttpRequest
+
+    :param name: the name of the product selected to update
+    :type name: str (This will change to int to reflect the future change in the Product model)
+
+    :return: a redirect to the selected product info page using new id '/product/:id' on successful find and update to DB, 
+        to '/product/:id' using original id on failure and to '/fourohfour' on request types that are not POST
+    :rtype: HttpResponseRedirect
+    """
     # url should only accept post requests
     if request.method == 'POST':
         form = ProductForm(request.POST)
@@ -57,6 +80,19 @@ def edit_product(request, name):
 
 
 def delete_product(request, name):
+    """
+    Deletes a product in the database. This function handles POST requests sent to the URL 'api/delete/product/:id'
+
+    :param request: The request sent to server
+    :type request: HttpRequest
+
+    :param name: the name of the product selected to delete
+    :type name: str (This will change to int to reflect the future change in the Product model)
+
+    :return: a redirect to the homepage '/' on successful find and delete to DB, to '/fourohfour' on failure or on request 
+        types that are not POST
+    :rtype: HttpResponseRedirect
+    """
     # TODO: change to DELETE request??
     if request.method == 'POST':
         form = ProductForm(request.POST)
@@ -82,12 +118,18 @@ def delete_product(request, name):
 ### CRUD FOR DEPENDENCY ###
 
 def create_dependency(request):
+    """
+    """
     pass
 
 
 def edit_dependency(request, prod_name):
+    """
+    """
     pass
 
 
 def delete_dependency(request, dep_name):
+    """
+    """
     pass
