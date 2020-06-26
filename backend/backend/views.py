@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
 from .models import Product
+from .models import Dependency
 from .forms import ProductForm
 
 # HELPERS
@@ -15,6 +16,12 @@ def retrieve_product(product_name):
         return Product.objects.get(name=product_name)
     except:    
         return None
+
+def retrieveDependencies (product):
+    try:
+        return Dependency.objects.filter(dependent=product)
+    except:
+        return []
 
 # def handle_edit_product(form, name):
 
@@ -43,13 +50,15 @@ def home(request):
 
 def product_view(request, name):
     target_product = retrieve_product(name)
+    product_dependencies = retrieveDependencies(target_product)
+    print(product_dependencies)
     
     if target_product is None or request.method != 'GET':
         return redirect('/fourohfour')
     else:
         context = {
             'product': target_product,
-            'dependencies': []
+            'dependencies': product_dependencies
         }
         return render(request, 'home/product_info.html', context)
 
