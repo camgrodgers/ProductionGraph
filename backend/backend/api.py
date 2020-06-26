@@ -3,6 +3,8 @@ from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
 from .models import Product
 from .forms import ProductForm
+from .models import Dependency
+from .forms import DependencyForm
 
 ### CRUD FOR PRODUCT ###
 
@@ -83,13 +85,70 @@ def delete_product(request, name):
 
 ### CRUD FOR DEPENDENCY ###
 
-def create_dependency(request):
-    pass
+def create_dependency(request, prod_name):
+    # handle the post to this url ONLY
+    if request.method == 'POST':
+        form = DependencyForm(request.POST)
+        if form.is_valid():
+           dependency = Dependency(
+               dependent = prod_name, # Assuming that the dependencies are dependent on the product
+               dependency = form.cleaned_data['dependency'],
+               quantity = form.cleaned_data['quantity']
+            )
+
+           dependency.save()
+        else:
+            print(form._errors)
+
+        return HttpResponseRedirect("/")
+
+    # redirect to 404 if method isn't post
+    else:
+        return HttpResponseRedirect("/fourohfour")
 
 
 def edit_dependency(request, prod_name):
-    pass
+    # url should only accept post requests
+    if request.method == 'POST':
+        form = DependencyForm(request.POST)
+        if form.is_valid():
+            Dependency.objects.filter(name=prod_name).update(
+                dependent=prod_name,  # Assuming that the dependencies are dependent on the product
+                dependency=form.cleaned_data['dependency'],
+                quantity=form.cleaned_data['quantity']
+            )
+
+            # redirect using NEW dependency, since it may have been updated
+            return HttpResponseRedirect("/dependency/{}".format(form.cleaned_data['dependency']))
+
+        else:
+            print(form._errors)
+
+            # redirect to the dependency page using ORIGINAL name, since update did not work if here
+            return HttpResponseRedirect("/dependency/{}".format(prod_name))
+
+    else:
+        return HttpResponseRedirect("/fourohfour")
 
 
 def delete_dependency(request, dep_name):
-    pass
+    # TODO: change to DELETE request??
+    if request.method == 'POST':
+        form = DependencyForm(request.POST)
+        if form.is_valid():
+            try:
+                # find by name (primary key)
+                # if not found, goes to except block
+                # delete on find
+                Dependency.objects.get(name=dep_name).delete()
+            except:
+                # TODO: is this the best action to take?
+                return HttpResponseRedirect("/fourohfour")
+
+        else:
+            print(form._errors)
+            # TODO: maybe add routing to uh oh error page??
+
+        return HttpResponseRedirect("/")
+    else:
+        return HttpResponseRedirect("/fourohfour")
