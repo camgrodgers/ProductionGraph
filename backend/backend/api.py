@@ -19,6 +19,7 @@ def create_product(request):
             )
 
             product.save()
+            print("Item ID: ", product.id)
         else:
             print(form._errors)
         return HttpResponseRedirect("/")
