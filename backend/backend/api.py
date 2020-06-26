@@ -21,9 +21,7 @@ def create_product(request):
             product.save()
         else:
             print(form._errors)
-    
         return HttpResponseRedirect("/")
-
     # redirect to 404 if method isn't post
     else:
         return HttpResponseRedirect("/fourohfour")

@@ -139,6 +139,12 @@
           >
             Create
           </button>
+          <button
+            id="dependency-edit-modal-trigger"
+            class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded"
+          >
+            Edit
+          </button>
         </div>
         <div
           class="mt-4 align-middle inline-block min-w-full shadow overflow-scroll sm:rounded-lg border-b border-gray-200"
@@ -146,6 +152,8 @@
         >
           <table class="min-w-full">
             <tbody class="bg-white">
+
+              <!-- Rows for Dependencies -->
               {% for dep in dependencies %}
               <tr
                 class="{% if forloop.counter|divisibleby:2 %}bg-gray-50{% endif %}"
@@ -164,6 +172,7 @@
                 ></td>
               </tr>
               {% endfor %}
+
             </tbody>
           </table>
         </div>
@@ -397,6 +406,40 @@
     </div>
   </div>
 
+  <!-- DEPENDENCY EDITING MODAL -->
+  <div id="depEditModal" class="modal opacity-0 pointer-events-none fixed inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center">
+    <!-- Blurred Background-->
+    <div
+      id = "depEditModal_closer"
+      class = "modal-closer absolute bg-gray-900 opacity-50"
+      style = "width: 110vw; height: 110vh;">
+    >
+    </div>
+
+    <!-- Outer Div for the modal -->
+    <div class = "bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+      <!-- Inner Div for the modal -->
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+
+        <!-- Modal Title -->
+        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+          Edit Dependency
+        </h3>
+        <div class="mt-2">
+          <p class="text-sm leading-5 text-gray-500">
+            Fill out the form beneath this prompt and hit confirm
+            to edit this dependency.
+          </p>
+        </div>
+
+        <!-- Modal Content -->
+        <form method="POST" action="/api/edit/dependency/{{product.name}}">
+
+        </form>
+
+      </div>
+    </div>
+  </div>
 
   <!-- TODO: create add dep modal -->
   <!-- TODO: create edit dep modal -->
@@ -433,6 +476,18 @@
     });
   }
 
+  //Enable the Dependency Editor Button
+  let editDepModalTrigger = document.querySelector("#dependency-edit-modal-trigger");
+  if (editDepModalTrigger) {
+    editDepModalTrigger.addEventListener("click", () => {
+      const modalContent = document.querySelector("#depEditModal");
+      if (modalContent){
+        modalContent.classList.toggle("opacity-0");
+        modalContent.classList.toggle("pointer-events-none");
+      }
+    });
+  }
+
   //Allow for closing Product Editing Modal
   let proEditModalClosers = document.querySelectorAll("#productEditModal_closer");
   if (proEditModalClosers) {
@@ -455,6 +510,22 @@
     depCreateModalClosers.forEach((modalCloser) => {
       modalCloser.addEventListener("click", () => {
         const modalContent = document.querySelector("#depCreateModal");
+
+        // should always exist but check for safety
+        if (modalContent) {
+          modalContent.classList.toggle("opacity-0");
+          modalContent.classList.toggle("pointer-events-none");
+        }
+      });
+    });
+  }
+
+  //Allow for closing Dependency Editor Modal
+  let depEditModalClosers = document.querySelectorAll("#depEditModal_closer");
+  if (depEditModalClosers) {
+    depEditModalClosers.forEach((modalCloser) => {
+      modalCloser.addEventListener("click", () => {
+        const modalContent = document.querySelector("#depEditModal");
 
         // should always exist but check for safety
         if (modalContent) {
