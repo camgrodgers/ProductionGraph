@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 # TODO: Normalize? 
 class Product(models.Model):
@@ -8,6 +9,10 @@ class Product(models.Model):
     direct_wages = models.FloatField()
     indirect_wages = models.FloatField(default=0)
     indirect_labor = models.FloatField(default=0)
+    # id = models.UUIDField( 
+    #      primary_key = True, 
+    #      default = uuid.uuid4, 
+    #      editable = False)
 
 class Dependency(models.Model):
     #dependent = models.ManyToManyField(

@@ -21,7 +21,7 @@
       <div class="flex items-center">
         <!-- EDIT BUTTON -->
         <button
-          id="modal-trigger"
+          id="editing-modal-trigger"
           class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded"
         >
           <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
@@ -134,10 +134,16 @@
         <div class="flex items-center justify-between">
           <h3 class="font-bold text-md">Dependencies</h3>
           <button
+            id="dependency-create-modal-trigger"
             class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded"
-            onclick="alert('NOT IMPLEMENTED YET')"
           >
             Create
+          </button>
+          <button
+            id="dependency-edit-modal-trigger"
+            class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded"
+          >
+            Edit
           </button>
         </div>
         <div
@@ -146,6 +152,8 @@
         >
           <table class="min-w-full">
             <tbody class="bg-white">
+
+              <!-- Rows for Dependencies -->
               {% for dep in dependencies %}
               <tr
                 class="{% if forloop.counter|divisibleby:2 %}bg-gray-50{% endif %}"
@@ -155,8 +163,9 @@
                 >
                   <div>
                     <div class="ml-4">
-                      {{dep.0}} : {{dep.1}}
+                      Name: {{dep.dependency.name}} &emsp; Quantity: {{dep.quantity}} &emsp; ID: {{dep.id}}
                     </div>
+                    
                   </div>
                 </td>
                 <td
@@ -164,6 +173,7 @@
                 ></td>
               </tr>
               {% endfor %}
+
             </tbody>
           </table>
         </div>
@@ -173,20 +183,26 @@
   </div>
   <!-- End Product Details -->
 
-  <!-- MODAL -->
+  
+  <!--------------------------->
+  <!-- PRODUCT EDITING MODAL -->
+  <!--------------------------->
   <div
+    id="productEditModal"
     class="modal opacity-0 pointer-events-none fixed inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center"
   >
     <!-- This is the blurred, gray bg  -->
     <!-- TODO: Broken on mobile -->
     <div
+      id = "productEditModal_closer"
       class="modal-closer absolute bg-gray-900 opacity-50"
       style="width: 110vw; height: 110vh;"
     ></div>
 
     <div
       class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full"
-    >
+      
+      >
       <!-- Add margin if you want to see some of the overlay behind the modal-->
       <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
         <!-- Modal Title  -->
@@ -199,7 +215,7 @@
         <div class="mt-2">
           <p class="text-sm leading-5 text-gray-500">
             Fill out the form beneath this prompt and hit confirm to edit your
-            product
+            product.
           </p>
         </div>
         <!-- End Modal Title -->
@@ -209,10 +225,10 @@
           {% csrf_token %}
           <div class="mt-4 mb-6">
             <div class="flex items-center mx-auto mb-4">
+
+              <!-- Name Input -->
               <div class="w-1/2 px-2">
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
                   Name
                 </label>
                 <input
@@ -222,10 +238,10 @@
                   value="{{ product.name }}"
                 />
               </div>
+
+              <!-- Current Real Price Input -->
               <div class="w-1/2 px-2">
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
                   Current Real Price
                 </label>
                 <input
@@ -237,10 +253,10 @@
               </div>
             </div>
             <div class="flex items-center mx-auto mb-4">
+
+              <!-- Direct Labor Time Input -->
               <div class="w-1/2 px-2">
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
                   Direct Labor Time
                 </label>
                 <input
@@ -250,10 +266,10 @@
                   value="{{ product.direct_labor }}"
                 />
               </div>
+
+              <!-- Direct Wages Input -->
               <div class="w-1/2 px-2">
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
                   Direct Wages
                 </label>
                 <input
@@ -264,14 +280,11 @@
                 />
               </div>
             </div>
-            
-            <!----------------------------------------------------------------->
-            <!--INDIRECT WAGES AND INCOME INPUTES WERE HERE, BUT WERE REMOVED-->
-            <!----------------------------------------------------------------->
-          
           </div>
-          <!--Modal Actions-->
+          <!--Modal Actions -->
           <div class="bg-gray-50 sm:px-2 sm:flex sm:flex-row-reverse">
+
+            <!-- Confirm Button-->
             <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
               <button
                 type="submit"
@@ -280,11 +293,14 @@
                 Confirm
               </button>
             </span>
+
+            <!-- Cancel Button -->
             <span
               class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto"
             >
               <button
                 type="button"
+                id = "productEditModal_closer"
                 class="modal-closer inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
               >
                 Cancel
@@ -294,11 +310,203 @@
           <!-- End Actions -->
         </form>
 
+        
+
         <!-- End Content -->
       </div>
     </div>
   </div>
-  <!-- End Modal -->
+  <!-- END PRODUCT EDITING MODAL -->
+
+
+  <!------------------------------->
+  <!-- DEPENDENCY CREATION MODAL -->
+  <!------------------------------->
+  <div id="depCreateModal" class="modal opacity-0 pointer-events-none fixed inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center">
+    <!-- DIV for the blurred background -->
+    <div
+      id = "depCreateModal_closer"
+      class = "modal-closer absolute bg-gray-900 opacity-50"
+      style = "width: 110vw; height: 110vh;">
+    </div>
+
+    <!-- Outer DIV for the modal-->
+    <div class = "bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+      <!-- Inner DIV for the modal-->
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+
+        <!--Modal Title-->
+        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+          Create Dependency
+        </h3>
+        <div class="mt-2">
+          <p class="text-sm leading-5 text-gray-500">
+            Fill out the form beneath this prompt and hit confirm 
+            to create a dependency for your product.
+          </p>
+        </div>
+
+        <!-- Modal Content -->
+        <form method="POST" action="/api/create/dependency/{{product.name}}">
+          {% csrf_token %}
+          <div class="mt-4 mb-6">
+            <div class="flex items-center mx-auto mb-4">
+              <div class="w-1/2 px-2">
+
+                <!--Input for Product to be Dependent on -->
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
+                  Name of Dependency
+                </label>
+                <input 
+                  name="dependency" 
+                  required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                />
+
+                <!-- Input for the Quanity -->
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
+                  Quanity
+                </label>
+                <input 
+                  name="quantity" 
+                  required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                />
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Actions -->
+          <div class="bg-gray-50 sm:px-2 sm:flex sm:flex-row-reverse">
+
+            <!-- Confirm Button -->
+            <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+              <button type="submit" class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                Confirm
+              </button>
+            </span>
+
+            <!-- Cancel Button -->
+            <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+              <button
+                type="button"
+                id="depCreateModal_closer"
+                class="modal-closer inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+              >
+                Cancel
+              </button>
+            </span>
+
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!------------------------------>
+  <!-- DEPENDENCY EDITING MODAL -->
+  <!------------------------------>
+  <div id="depEditModal" class="modal opacity-0 pointer-events-none fixed inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center">
+    <!-- Blurred Background-->
+    <div
+      id = "depEditModal_closer"
+      class = "modal-closer absolute bg-gray-900 opacity-50"
+      style = "width: 110vw; height: 110vh;">
+    >
+    </div>
+
+    <!-- Outer Div for the modal -->
+    <div class = "bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+      <!-- Inner Div for the modal -->
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+
+        <!-- Modal Title -->
+        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+          Edit Dependency
+        </h3>
+        <div class="mt-2">
+          <p class="text-sm leading-5 text-gray-500">
+            Fill out the form beneath this prompt and hit confirm
+            to edit this dependency.
+            *Note: For now, the correct Dependency ID is required
+            for editing, this will be fixed post-prototype.
+          </p>
+        </div>
+
+        <!-- Modal Content -->
+        <form method="POST" action="/api/edit/dependency/{{product.name}}">
+          {% csrf_token %}
+          <div class="mt-4 mb-6">
+            <div class="flex items-center mx-auto mb-4">
+              <div class="w-1/2 px-2">
+
+                <!--Input for Dependency ID: To be Removed eventually -->
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
+                  ID of Dependency
+                </label>
+                <input 
+                  name="id" 
+                  required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                />
+
+                <!--Input for Product to be Dependent on -->
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
+                  Name of Dependency
+                </label>
+                <input 
+                  name="dependency" 
+                  required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                />
+
+                <!--Input for Product to be Dependent on -->
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
+                  Quantity
+                </label>
+                <input 
+                  name="quantity" 
+                  required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                />
+
+              </div>
+            </div>
+          </div>
+          <!-- Modal Actions -->
+          <div class="bg-gray-50 sm:px-2 sm:flex sm:flex-row-reverse">
+
+            <!-- Confirm Button-->
+            <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+              <button
+                type="submit"
+                class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+              >
+                Confirm
+              </button>
+            </span>
+            <!-- Cancel Button -->
+            <span
+              class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto"
+            >
+              <button
+                type="button"
+                id = "depEditModal_closer"
+                class="modal-closer inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+              >
+                Cancel
+              </button>
+            </span>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
 
   <!-- TODO: create add dep modal -->
   <!-- TODO: create edit dep modal -->
@@ -307,28 +515,86 @@
 <script>
   // I use id for open trigger bc one occurrence on this template
   // I use classes for close triggers bc multiple occurrences (the cancel button and outside click)
+  
 
-  let modalTrigger = document.getElementById("modal-trigger");
-
-  // should always exist, but check for safety
-  if (modalTrigger) {
-    modalTrigger.addEventListener("click", () => {
-      const modalContent = document.querySelector(".modal");
+  //Enable the Editor Button
+  let editModalTrigger = document.querySelector("#editing-modal-trigger");
+  if (editModalTrigger) {
+      //console.log(modalTrigger);
+      editModalTrigger.addEventListener("click", () => {
+      const modalContent = document.querySelector("#productEditModal");
 
       // should always exist but check for safety
       if (modalContent) {
         modalContent.classList.toggle("opacity-0");
         modalContent.classList.toggle("pointer-events-none");
       }
+      });
+  }
+
+  //Enable the Dependency Creator Button
+  let createDepModalTrigger = document.querySelector("#dependency-create-modal-trigger");
+  if (createDepModalTrigger) {
+    createDepModalTrigger.addEventListener("click", () => {
+      const modalContent = document.querySelector("#depCreateModal");
+      if (modalContent){
+        modalContent.classList.toggle("opacity-0");
+        modalContent.classList.toggle("pointer-events-none");
+      }
     });
   }
 
-  let modalClosers = document.querySelectorAll(".modal-closer");
-  if (modalClosers) {
-    modalClosers.forEach((modalCloser) => {
-      // console.log(modalCloser);
+  //Enable the Dependency Editor Button
+  let editDepModalTrigger = document.querySelector("#dependency-edit-modal-trigger");
+  if (editDepModalTrigger) {
+    editDepModalTrigger.addEventListener("click", () => {
+
+      const modalContent = document.querySelector("#depEditModal");
+      if (modalContent){
+        modalContent.classList.toggle("opacity-0");
+        modalContent.classList.toggle("pointer-events-none");
+      }
+    });
+  }
+
+  //Allow for closing Product Editing Modal
+  let proEditModalClosers = document.querySelectorAll("#productEditModal_closer");
+  if (proEditModalClosers) {
+    proEditModalClosers.forEach((modalCloser) => {
       modalCloser.addEventListener("click", () => {
-        const modalContent = document.querySelector(".modal");
+        const modalContent = document.querySelector("#productEditModal");
+
+        // should always exist but check for safety
+        if (modalContent) {
+          modalContent.classList.toggle("opacity-0");
+          modalContent.classList.toggle("pointer-events-none");
+        }
+      });
+    });
+  }
+
+  //Allow for closing Dependency Creator Modal
+  let depCreateModalClosers = document.querySelectorAll("#depCreateModal_closer");
+  if (depCreateModalClosers) {
+    depCreateModalClosers.forEach((modalCloser) => {
+      modalCloser.addEventListener("click", () => {
+        const modalContent = document.querySelector("#depCreateModal");
+
+        // should always exist but check for safety
+        if (modalContent) {
+          modalContent.classList.toggle("opacity-0");
+          modalContent.classList.toggle("pointer-events-none");
+        }
+      });
+    });
+  }
+
+  //Allow for closing Dependency Editor Modal
+  let depEditModalClosers = document.querySelectorAll("#depEditModal_closer");
+  if (depEditModalClosers) {
+    depEditModalClosers.forEach((modalCloser) => {
+      modalCloser.addEventListener("click", () => {
+        const modalContent = document.querySelector("#depEditModal");
 
         // should always exist but check for safety
         if (modalContent) {

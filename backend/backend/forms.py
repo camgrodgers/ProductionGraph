@@ -7,4 +7,12 @@ class ProductForm(forms.Form):
     direct_wages = forms.FloatField()
 
 class DependencyForm(forms.Form):
-    pass
+    # The Dependent is not needed in the form, since it can be gotten from product.name in the html file
+    dependency = forms.CharField()
+    quantity = forms.FloatField()
+
+class EditDependencyForm(forms.Form):
+    # The Dependent is not needed in the form, since it can be gotten from product.name in the html file
+    id = forms.FloatField()
+    dependency = forms.CharField()
+    quantity = forms.FloatField()
