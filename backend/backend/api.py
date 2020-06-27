@@ -3,6 +3,9 @@ from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
 from .models import Product
 from .forms import ProductForm
+from .models import Dependency
+from .forms import DependencyForm
+from .forms import EditDependencyForm
 
 ### CRUD FOR PRODUCT ###
 
@@ -16,16 +19,13 @@ def create_product(request):
                 real_price=form.cleaned_data['real_price'],
                 direct_labor=form.cleaned_data['direct_labor'],
                 direct_wages=form.cleaned_data['direct_wages'],
-                indirect_wages=form.cleaned_data['indirect_wages'],
-                indirect_labor=form.cleaned_data['indirect_labor']
             )
 
             product.save()
+            print("Item ID: ", product.id)
         else:
             print(form._errors)
-    
         return HttpResponseRedirect("/")
-
     # redirect to 404 if method isn't post
     else:
         return HttpResponseRedirect("/fourohfour")
@@ -41,17 +41,14 @@ def edit_product(request, name):
                 real_price = form.cleaned_data['real_price'],
                 direct_labor = form.cleaned_data['direct_labor'],
                 direct_wages = form.cleaned_data['direct_wages'],
-                indirect_wages = form.cleaned_data['indirect_wages'],
-                indirect_labor = form.cleaned_data['indirect_labor']
             )
-
             # redirect using NEW name, since it may have been updated
             return HttpResponseRedirect("/product/{}".format(form.cleaned_data['name']))
 
         else:
             print(form._errors)
             
-            # redirect to the product page using ORIGINAL name, since update did not work if here
+            # redirect to the product page using ORIGINAL name, since update did not work
             return HttpResponseRedirect("/product/{}".format(name))
 
     else:
@@ -83,13 +80,90 @@ def delete_product(request, name):
 
 ### CRUD FOR DEPENDENCY ###
 
-def create_dependency(request):
-    pass
+def create_dependency(request, prod_name):
+    # handle the post to this url ONLY
+    if request.method == 'POST':
+        form = DependencyForm(request.POST)
+        if form.is_valid():
+        
+           try:
+               dependent = Product.objects.get(name=prod_name)
+               dependency = Product.objects.get(name=form.cleaned_data['dependency'])
+
+           except:
+               return HttpResponseRedirect("/fourohfour")
+           
+           # Check if a dependency of this directionbetween these Products already exists
+           if (Dependency.objects.filter(dependent=dependent).filter(dependency=dependency)):
+              print("This dependency already exists!")
+              return HttpResponseRedirect("/product/{}".format(prod_name))
+
+           newDependency = Dependency(
+               dependent = dependent,
+               dependency = dependency,
+               quantity = form.cleaned_data['quantity']
+
+            )
+           newDependency.save()
+        else:
+            print(form._errors)
+
+        return HttpResponseRedirect("/product/{}".format(prod_name))
+
+    # redirect to 404 if method isn't post
+    else:
+        return HttpResponseRedirect("/fourohfour")
 
 
 def edit_dependency(request, prod_name):
-    pass
+    # url should only accept post requests
+    if request.method == 'POST':
+        form = EditDependencyForm(request.POST)
+        if form.is_valid():
+            try:
+                dep = Dependency.objects.filter(id=form.cleaned_data['id'])
+                dep.update(
+                dependent=Product.objects.get(name=prod_name),  # Assuming that the dependencies are dependent on the product
+                dependency=Product.objects.get(name=form.cleaned_data['dependency']),
+                quantity=form.cleaned_data['quantity']
+                )
+            except:
+                print("Problem setting dep")
+                return HttpResponseRedirect("/product/{}".format(prod_name))
+
+            
+
+            # redirect using NEW dependency, since it may have been updated
+            return HttpResponseRedirect("/product/{}".format(prod_name))
+
+        else:
+            print("Error resulting from form", form._errors)
+
+            # redirect to the dependency page using ORIGINAL name, since update did not work if here
+            return HttpResponseRedirect("/product/{}".format(prod_name))
+
+    else:
+        return HttpResponseRedirect("/fourohfour")
 
 
 def delete_dependency(request, dep_name):
-    pass
+    # TODO: change to DELETE request??
+    if request.method == 'POST':
+        form = DependencyForm(request.POST)
+        if form.is_valid():
+            try:
+                # find by name (primary key)
+                # if not found, goes to except block
+                # delete on find
+                Dependency.objects.get(name=dep_name).delete()
+            except:
+                # TODO: is this the best action to take?
+                return HttpResponseRedirect("/fourohfour")
+
+        else:
+            print(form._errors)
+            # TODO: maybe add routing to uh oh error page??
+
+        return HttpResponseRedirect("/")
+    else:
+        return HttpResponseRedirect("/fourohfour")
