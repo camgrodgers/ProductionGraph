@@ -4,13 +4,10 @@ from django.http import HttpResponseRedirect
 from .models import Product
 from .models import Dependency
 from .forms import ProductForm
-<<<<<<< HEAD
 import product_graph_bindings
-=======
 from .models import Dependency
 from .forms import DependencyForm
 from .forms import EditDependencyForm
->>>>>>> 2064b81f2035cdb543d71bf91a8b40f75107dc2b
 
 ### CRUD FOR PRODUCT ###
 
@@ -27,17 +24,11 @@ def create_product(request):
             )
 
             product.save()
-<<<<<<< HEAD
             # NOTE: Updating the indirect values here!
             update_product_indirect_values()
         else:
             print(form._errors)
 
-=======
-            print("Item ID: ", product.id)
-        else:
-            print(form._errors)
->>>>>>> 2064b81f2035cdb543d71bf91a8b40f75107dc2b
         return HttpResponseRedirect("/")
     # redirect to 404 if method isn't post
     else:
@@ -57,12 +48,8 @@ def edit_product(request, name):
                 direct_labor = form.cleaned_data['direct_labor'],
                 direct_wages = form.cleaned_data['direct_wages'],
             )
-<<<<<<< HEAD
             # NOTE: Updating the indirect values here!
             update_product_indirect_values()
-
-=======
->>>>>>> 2064b81f2035cdb543d71bf91a8b40f75107dc2b
             # redirect using NEW name, since it may have been updated
             return HttpResponseRedirect("/product/{}".format(form.cleaned_data['name']))
 
@@ -166,10 +153,27 @@ def edit_dependency(request, prod_name):
     else:
         return HttpResponseRedirect("/fourohfour")
 
-
 def delete_dependency(request, dep_name):
-<<<<<<< HEAD
-    pass
+    # TODO: change to DELETE request??
+    if request.method == 'POST':
+        form = DependencyForm(request.POST)
+        if form.is_valid():
+            try:
+                # find by name (primary key)
+                # if not found, goes to except block
+                # delete on find
+                Dependency.objects.get(name=dep_name).delete()
+            except:
+                # TODO: is this the best action to take?
+                return HttpResponseRedirect("/fourohfour")
+
+        else:
+            print(form._errors)
+            # TODO: maybe add routing to uh oh error page??
+
+        return HttpResponseRedirect("/")
+    else:
+        return HttpResponseRedirect("/fourohfour")
 
 
 ### Calculating indirect costs ###
@@ -191,25 +195,3 @@ def update_product_indirect_values():
     (indirect_labor_values, time) = product_graph_bindings.calc_indirect_vals_for_n_iterations(labor_graph, 25)
     for (id_val, indirect_labor_val) in indirect_labor_values:
         prod = Product.objects.filter(id=id_val).update(indirect_labor=indirect_labor_val)
-=======
-    # TODO: change to DELETE request??
-    if request.method == 'POST':
-        form = DependencyForm(request.POST)
-        if form.is_valid():
-            try:
-                # find by name (primary key)
-                # if not found, goes to except block
-                # delete on find
-                Dependency.objects.get(name=dep_name).delete()
-            except:
-                # TODO: is this the best action to take?
-                return HttpResponseRedirect("/fourohfour")
-
-        else:
-            print(form._errors)
-            # TODO: maybe add routing to uh oh error page??
-
-        return HttpResponseRedirect("/")
-    else:
-        return HttpResponseRedirect("/fourohfour")
->>>>>>> 2064b81f2035cdb543d71bf91a8b40f75107dc2b

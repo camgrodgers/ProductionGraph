@@ -9,22 +9,8 @@ class Product(models.Model):
     direct_wages = models.FloatField()
     indirect_wages = models.FloatField(default=0)
     indirect_labor = models.FloatField(default=0)
-    # id = models.UUIDField( 
-    #      primary_key = True, 
-    #      default = uuid.uuid4, 
-    #      editable = False)
 
 class Dependency(models.Model):
-    #dependent = models.ManyToManyField(
-    #        Product,
-    #        on_delete=models.CASCADE,
-    #        related_name = 'dependents'
-    #        )
-    #dependency = models.ManyToManyField(
-    #        Product,
-    #        on_delete=models.CASCADE,
-    #        related_name = 'dependencies'
-    #        )
     dependent = models.ForeignKey(
             Product,
             on_delete=models.CASCADE,
