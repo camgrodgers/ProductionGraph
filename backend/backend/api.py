@@ -2,7 +2,9 @@ from django.shortcuts import render,redirect
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
 from .models import Product
+from .models import Dependency
 from .forms import ProductForm
+import product_graph_bindings
 from .models import Dependency
 from .forms import DependencyForm
 from .forms import EditDependencyForm
@@ -22,13 +24,17 @@ def create_product(request):
             )
 
             product.save()
-            print("Item ID: ", product.id)
+            # NOTE: Updating the indirect values here!
+            update_product_indirect_values()
         else:
             print(form._errors)
+
         return HttpResponseRedirect("/")
     # redirect to 404 if method isn't post
     else:
         return HttpResponseRedirect("/fourohfour")
+
+
 
 # TODO: add safety try/except blocks (see delete_product)
 def edit_product(request, name):
@@ -42,6 +48,8 @@ def edit_product(request, name):
                 direct_labor = form.cleaned_data['direct_labor'],
                 direct_wages = form.cleaned_data['direct_wages'],
             )
+            # NOTE: Updating the indirect values here!
+            update_product_indirect_values()
             # redirect using NEW name, since it may have been updated
             return HttpResponseRedirect("/product/{}".format(form.cleaned_data['name']))
 
@@ -145,7 +153,6 @@ def edit_dependency(request, prod_name):
     else:
         return HttpResponseRedirect("/fourohfour")
 
-
 def delete_dependency(request, dep_name):
     # TODO: change to DELETE request??
     if request.method == 'POST':
@@ -167,3 +174,24 @@ def delete_dependency(request, dep_name):
         return HttpResponseRedirect("/")
     else:
         return HttpResponseRedirect("/fourohfour")
+
+
+### Calculating indirect costs ###
+
+def update_product_indirect_values():
+    # TODO: might want to make a separate function that handles a request, if we stop doing this
+    # calculation automatically when data is added
+    #if request.method != 'PUT':
+    #    return HttpResponseRedirect("/fourohofur")
+
+    # NOTE: this code has very bad perf and does many queries when maybe it can do group_by and stuff?
+    labor_graph = {}
+    for p in Product.objects.all():
+        deps = []
+        for d in Dependency.objects.filter(dependent=p.id):
+            deps.append((d.dependency_id, d.quantity))
+        labor_graph[p.id] = product_graph_bindings.SimpleProduct(p.direct_labor, deps)
+
+    (indirect_labor_values, time) = product_graph_bindings.calc_indirect_vals_for_n_iterations(labor_graph, 25)
+    for (id_val, indirect_labor_val) in indirect_labor_values:
+        prod = Product.objects.filter(id=id_val).update(indirect_labor=indirect_labor_val)

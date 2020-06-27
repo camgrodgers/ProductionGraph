@@ -6,8 +6,8 @@ use product_graph_rayon::*;
 use std::time::Instant;
 
 fn main() {
-    benchmark_rayon(5_000_000, 1, 1);
-    benchmark_plain(5_000_000, 1, 1);
+    benchmark_rayon(1_000_000, 1, 1);
+    benchmark_plain(1_000_000, 1, 1);
 }
 
 fn benchmark_rayon(step: usize, begin: usize, end: usize) {
