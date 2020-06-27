@@ -5,6 +5,7 @@ from .models import Product
 from .forms import ProductForm
 from .models import Dependency
 from .forms import DependencyForm
+from .forms import EditDependencyForm
 
 ### CRUD FOR PRODUCT ###
 
@@ -84,15 +85,21 @@ def create_dependency(request, prod_name):
     if request.method == 'POST':
         form = DependencyForm(request.POST)
         if form.is_valid():
+        
            try:
                dependent = Product.objects.get(name=prod_name)
                dependency = Product.objects.get(name=form.cleaned_data['dependency'])
+
            except:
                return HttpResponseRedirect("/fourohfour")
+           
+           # Check if a dependency of this directionbetween these Products already exists
+           if (Dependency.objects.filter(dependent=dependent).filter(dependency=dependency)):
+              print("This dependency already exists!")
+              return HttpResponseRedirect("/product/{}".format(prod_name))
+
            newDependency = Dependency(
-               #dependent = prod_name, # Assuming that the dependencies are dependent on the product
                dependent = dependent,
-               #dependency = form.cleaned_data['dependency'],
                dependency = dependency,
                quantity = form.cleaned_data['quantity']
 
@@ -111,22 +118,29 @@ def create_dependency(request, prod_name):
 def edit_dependency(request, prod_name):
     # url should only accept post requests
     if request.method == 'POST':
-        form = DependencyForm(request.POST)
+        form = EditDependencyForm(request.POST)
         if form.is_valid():
-            Dependency.objects.filter(name=prod_name).update(
-                dependent=prod_name,  # Assuming that the dependencies are dependent on the product
-                dependency=form.cleaned_data['dependency'],
+            try:
+                dep = Dependency.objects.filter(id=form.cleaned_data['id'])
+                dep.update(
+                dependent=Product.objects.get(name=prod_name),  # Assuming that the dependencies are dependent on the product
+                dependency=Product.objects.get(name=form.cleaned_data['dependency']),
                 quantity=form.cleaned_data['quantity']
-            )
+                )
+            except:
+                print("Problem setting dep")
+                return HttpResponseRedirect("/product/{}".format(prod_name))
+
+            
 
             # redirect using NEW dependency, since it may have been updated
-            return HttpResponseRedirect("/dependency/{}".format(form.cleaned_data['dependency']))
+            return HttpResponseRedirect("/product/{}".format(prod_name))
 
         else:
-            print(form._errors)
+            print("Error resulting from form", form._errors)
 
             # redirect to the dependency page using ORIGINAL name, since update did not work if here
-            return HttpResponseRedirect("/dependency/{}".format(prod_name))
+            return HttpResponseRedirect("/product/{}".format(prod_name))
 
     else:
         return HttpResponseRedirect("/fourohfour")

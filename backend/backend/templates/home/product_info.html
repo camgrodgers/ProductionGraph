@@ -163,8 +163,9 @@
                 >
                   <div>
                     <div class="ml-4">
-                      {{dep.dependency.name}} : {{dep.quantity}}
+                      Name: {{dep.dependency.name}} &emsp; Quantity: {{dep.quantity}} &emsp; ID: {{dep.id}}
                     </div>
+                    
                   </div>
                 </td>
                 <td
@@ -183,8 +184,9 @@
   <!-- End Product Details -->
 
   
-
+  <!--------------------------->
   <!-- PRODUCT EDITING MODAL -->
+  <!--------------------------->
   <div
     id="productEditModal"
     class="modal opacity-0 pointer-events-none fixed inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center"
@@ -277,13 +279,7 @@
                   value="{{ product.direct_wages }}"
                 />
               </div>
-
             </div>
-            
-            <!----------------------------------------------------------------->
-            <!-- INDIRECT WAGES AND INCOME INPUTS WERE HERE, BUT WERE REMOVED-->
-            <!----------------------------------------------------------------->
-          
           </div>
           <!--Modal Actions -->
           <div class="bg-gray-50 sm:px-2 sm:flex sm:flex-row-reverse">
@@ -322,7 +318,10 @@
   </div>
   <!-- END PRODUCT EDITING MODAL -->
 
+
+  <!------------------------------->
   <!-- DEPENDENCY CREATION MODAL -->
+  <!------------------------------->
   <div id="depCreateModal" class="modal opacity-0 pointer-events-none fixed inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center">
     <!-- DIV for the blurred background -->
     <div
@@ -406,7 +405,10 @@
     </div>
   </div>
 
+
+  <!------------------------------>
   <!-- DEPENDENCY EDITING MODAL -->
+  <!------------------------------>
   <div id="depEditModal" class="modal opacity-0 pointer-events-none fixed inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center">
     <!-- Blurred Background-->
     <div
@@ -429,11 +431,76 @@
           <p class="text-sm leading-5 text-gray-500">
             Fill out the form beneath this prompt and hit confirm
             to edit this dependency.
+            *Note: For now, the correct Dependency ID is required
+            for editing, this will be fixed post-prototype.
           </p>
         </div>
 
         <!-- Modal Content -->
         <form method="POST" action="/api/edit/dependency/{{product.name}}">
+          {% csrf_token %}
+          <div class="mt-4 mb-6">
+            <div class="flex items-center mx-auto mb-4">
+              <div class="w-1/2 px-2">
+
+                <!--Input for Dependency ID: To be Removed eventually -->
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
+                  ID of Dependency
+                </label>
+                <input 
+                  name="id" 
+                  required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                />
+
+                <!--Input for Product to be Dependent on -->
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
+                  Name of Dependency
+                </label>
+                <input 
+                  name="dependency" 
+                  required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                />
+
+                <!--Input for Product to be Dependent on -->
+                <label class="px-2 block text-gray-700 text-sm font-medium mb-2">
+                  Quantity
+                </label>
+                <input 
+                  name="quantity" 
+                  required 
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                />
+
+              </div>
+            </div>
+          </div>
+          <!-- Modal Actions -->
+          <div class="bg-gray-50 sm:px-2 sm:flex sm:flex-row-reverse">
+
+            <!-- Confirm Button-->
+            <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+              <button
+                type="submit"
+                class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+              >
+                Confirm
+              </button>
+            </span>
+            <!-- Cancel Button -->
+            <span
+              class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto"
+            >
+              <button
+                type="button"
+                id = "depEditModal_closer"
+                class="modal-closer inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+              >
+                Cancel
+              </button>
+            </span>
+          </div>
 
         </form>
 
@@ -448,6 +515,7 @@
 <script>
   // I use id for open trigger bc one occurrence on this template
   // I use classes for close triggers bc multiple occurrences (the cancel button and outside click)
+  
 
   //Enable the Editor Button
   let editModalTrigger = document.querySelector("#editing-modal-trigger");
@@ -480,6 +548,7 @@
   let editDepModalTrigger = document.querySelector("#dependency-edit-modal-trigger");
   if (editDepModalTrigger) {
     editDepModalTrigger.addEventListener("click", () => {
+
       const modalContent = document.querySelector("#depEditModal");
       if (modalContent){
         modalContent.classList.toggle("opacity-0");

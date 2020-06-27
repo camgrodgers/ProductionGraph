@@ -51,14 +51,15 @@ def home(request):
 def product_view(request, name):
     target_product = retrieve_product(name)
     product_dependencies = retrieveDependencies(target_product)
-    print(product_dependencies)
+    selected_dep = None
     
     if target_product is None or request.method != 'GET':
         return redirect('/fourohfour')
     else:
         context = {
             'product': target_product,
-            'dependencies': product_dependencies
+            'dependencies': product_dependencies,
+            'selected_dep': selected_dep
         }
         return render(request, 'home/product_info.html', context)
 
