@@ -33,8 +33,9 @@
         >
           <table class="min-w-full">
             <tbody class="bg-white">
-              <!-- TODO: Add condition for empty product list, render something else if empty (e.g. "Click Create button to get started!") -->
+              <!-- if product list has items: render the list -->
               {% if products|length > 0 %} {% for product in products %}
+              <!-- TODO: fix est cost & est wages to reflect real, calculated values -->
               <tr
                 class="cursor-pointer"
                 onclick="location.href = '/product/{{product.name}}';"
@@ -48,7 +49,7 @@
                     </div>
                     <div class="flex">
                       <div class="ml-4 text-sm leading-5 text-gray-500">
-                        Estimated Cost: ${{product.est_cost_price}}
+                        Estimated Cost: ${{product.real_price}}
                       </div>
                       <div class="ml-4 text-sm leading-5 text-gray-500">
                         Estimated Wages: ${{product.direct_wages}}
@@ -61,7 +62,7 @@
                 ></td>
               </tr>
               {% endfor %}
-              <!--  -->
+              <!-- if prod list is empty, render this message -->
               {% else %}
               <div class="flex items-center justify-center py-6">
                 Click the "Create" button to get started!
@@ -168,7 +169,6 @@
             <!----------------------------------------------------------------->
             <!--INDIRECT WAGES AND INCOME INPUTES WERE HERE, BUT WERE REMOVED-->
             <!----------------------------------------------------------------->
-
           </div>
           <!--Modal Actions-->
           <div class="bg-gray-50 sm:px-2 sm:flex sm:flex-row-reverse">
@@ -182,7 +182,9 @@
               </button>
             </span>
             <!-- BUTTON TO CANCEL CREATION-->
-            <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+            <span
+              class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto"
+            >
               <button
                 type="button"
                 class="modal-closer inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
@@ -190,7 +192,6 @@
                 Cancel
               </button>
             </span>
-
           </div>
           <!-- End Actions -->
         </form>

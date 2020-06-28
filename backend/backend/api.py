@@ -66,20 +66,16 @@ def edit_product(request, name):
 def delete_product(request, name):
     # TODO: change to DELETE request??
     if request.method == 'POST':
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            try:
-                # find by name (primary key)
-                # if not found, goes to except block
-                # delete on find
-                Product.objects.get(name=name).delete()
-            except:    
-                # TODO: is this the best action to take?
-                return HttpResponseRedirect("/fourohfour")
-
-        else:
-            print(form._errors)
-            # TODO: maybe add routing to uh oh error page??
+        try:
+            # find by name (primary key)
+            # if not found, goes to except block
+            # delete on find
+            Product.objects.get(name=name).delete()
+        except:    
+            # TODO: is this the best action to take?
+            # I think we should look into handling errors and notifying the user,
+            # rather than routing to 404 anytime a DB operation fails
+            return HttpResponseRedirect("/fourohfour")
     
         return HttpResponseRedirect("/")
     else:
