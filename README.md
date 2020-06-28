@@ -13,14 +13,20 @@ $ python3 manage.py tailwind install
 
 $ python3 manage.py tailwind start
 $ python3 manage.py runserver
+
+// building tailwind for production
+
+$ python manage.py tailwind build
 ```
 
 `tailwind start` command watches for changes to recompile css during development, so should be run concurrently with runserver command.
 
 Testing Procedure:
+
 ```bash
 // Run all tests
 $ python3 manage.py test backend.tests
 
 // Run specific test
 $ python3 manage.py test backend.tests.test_urls
+```
