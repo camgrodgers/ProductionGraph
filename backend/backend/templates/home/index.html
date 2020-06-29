@@ -46,12 +46,12 @@
                     <div class="ml-4">
                       {{ product.name }}
                     </div>
-                    <div class="flex">
+					<div class="flex"> <!-- TODO: add total labor and cost-price properties -->
                       <div class="ml-4 text-sm leading-5 text-gray-500">
-                        Estimated Cost: ${{product.est_cost_price}}
+                        Estimated cost: ${{product.cost_price}}
                       </div>
                       <div class="ml-4 text-sm leading-5 text-gray-500">
-                        Estimated Wages: ${{product.direct_wages}}
+                        Estimated labor time: {{product.value}} h
                       </div>
                     </div>
                   </div>

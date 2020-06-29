@@ -10,6 +10,14 @@ class Product(models.Model):
     indirect_wages = models.FloatField(default=0)
     indirect_labor = models.FloatField(default=0)
 
+    @property
+    def cost_price(self):
+        return self.direct_wages + self.indirect_wages
+
+    @property
+    def value(self):
+        return self.direct_labor + self.indirect_labor
+
 class Dependency(models.Model):
     dependent = models.ForeignKey(
             Product,
