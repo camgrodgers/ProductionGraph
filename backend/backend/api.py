@@ -66,20 +66,17 @@ def edit_product(request, name):
 def delete_product(request, name):
     # TODO: change to DELETE request??
     if request.method == 'POST':
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            try:
-                # find by name (primary key)
-                # if not found, goes to except block
-                # delete on find
-                Product.objects.get(name=name).delete()
-            except:    
-                # TODO: is this the best action to take?
-                return HttpResponseRedirect("/fourohfour")
-
-        else:
-            print(form._errors)
-            # TODO: maybe add routing to uh oh error page??
+        try:
+            # find by name (primary key)
+            # if not found, goes to except block
+            # delete on find
+            Product.objects.get(name=name).delete()
+            update_product_indirect_values()
+        except:    
+            # TODO: is this the best action to take?
+            # I think we should look into handling errors and notifying the user,
+            # rather than routing to 404 anytime a DB operation fails
+            return HttpResponseRedirect("/fourohfour")
     
         return HttpResponseRedirect("/")
     else:
@@ -113,6 +110,7 @@ def create_dependency(request, prod_name):
 
             )
            newDependency.save()
+           update_product_indirect_values()
         else:
             print(form._errors)
 
@@ -141,6 +139,7 @@ def edit_dependency(request, prod_name):
 
             
 
+            update_product_indirect_values()
             # redirect using NEW dependency, since it may have been updated
             return HttpResponseRedirect("/product/{}".format(prod_name))
 
@@ -171,6 +170,7 @@ def delete_dependency(request, dep_name):
             print(form._errors)
             # TODO: maybe add routing to uh oh error page??
 
+        update_product_indirect_values()
         return HttpResponseRedirect("/")
     else:
         return HttpResponseRedirect("/fourohfour")
