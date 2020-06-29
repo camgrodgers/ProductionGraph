@@ -71,6 +71,7 @@ def delete_product(request, name):
             # if not found, goes to except block
             # delete on find
             Product.objects.get(name=name).delete()
+            update_product_indirect_values()
         except:    
             # TODO: is this the best action to take?
             # I think we should look into handling errors and notifying the user,
@@ -109,6 +110,7 @@ def create_dependency(request, prod_name):
 
             )
            newDependency.save()
+           update_product_indirect_values()
         else:
             print(form._errors)
 
@@ -137,6 +139,7 @@ def edit_dependency(request, prod_name):
 
             
 
+            update_product_indirect_values()
             # redirect using NEW dependency, since it may have been updated
             return HttpResponseRedirect("/product/{}".format(prod_name))
 
@@ -167,6 +170,7 @@ def delete_dependency(request, dep_name):
             print(form._errors)
             # TODO: maybe add routing to uh oh error page??
 
+        update_product_indirect_values()
         return HttpResponseRedirect("/")
     else:
         return HttpResponseRedirect("/fourohfour")
@@ -181,6 +185,7 @@ def update_product_indirect_values():
     #    return HttpResponseRedirect("/fourohofur")
 
     # NOTE: this code has very bad perf and does many queries when maybe it can do group_by and stuff?
+    # Calculating labor time
     labor_graph = {}
     for p in Product.objects.all():
         deps = []
@@ -191,3 +196,14 @@ def update_product_indirect_values():
     (indirect_labor_values, time) = product_graph_bindings.calc_indirect_vals_for_n_iterations(labor_graph, 25)
     for (id_val, indirect_labor_val) in indirect_labor_values:
         prod = Product.objects.filter(id=id_val).update(indirect_labor=indirect_labor_val)
+    # Calculating cost-price
+    cost_graph = {}
+    for p in Product.objects.all():
+        deps = []
+        for d in Dependency.objects.filter(dependent=p.id):
+            deps.append((d.dependency_id, d.quantity))
+        cost_graph[p.id] = product_graph_bindings.SimpleProduct(p.direct_wages, deps)
+
+    (indirect_cost_values, time) = product_graph_bindings.calc_indirect_vals_for_n_iterations(cost_graph, 25)
+    for (id_val, indirect_cost_val) in indirect_cost_values:
+        prod = Product.objects.filter(id=id_val).update(indirect_wages=indirect_cost_val)

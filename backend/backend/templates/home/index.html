@@ -35,7 +35,6 @@
             <tbody class="bg-white">
               <!-- if product list has items: render the list -->
               {% if products|length > 0 %} {% for product in products %}
-              <!-- TODO: fix est cost & est wages to reflect real, calculated values -->
               <tr
                 class="cursor-pointer"
                 onclick="location.href = '/product/{{product.name}}';"
@@ -47,12 +46,12 @@
                     <div class="ml-4">
                       {{ product.name }}
                     </div>
-                    <div class="flex">
+					<div class="flex"> 
                       <div class="ml-4 text-sm leading-5 text-gray-500">
-                        Estimated Cost: ${{product.real_price}}
+                        Estimated cost: ${{product.cost_price|floatformat:2}}
                       </div>
                       <div class="ml-4 text-sm leading-5 text-gray-500">
-                        Estimated Wages: ${{product.direct_wages}}
+                        Estimated labor time: {{product.value|floatformat:3}} h
                       </div>
                     </div>
                   </div>
