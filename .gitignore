@@ -120,3 +120,6 @@ GitHub.sublime-settings
 
 # OS
 .DS_STORE/
+
+# RUST
+target
