@@ -76,7 +76,7 @@
         <div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
-              $ {{product.real_price}}
+              $ {{product.real_price|floatformat:2}}
             </p>
             <p class="text-center text-md leading-5 text-gray-500">
               Current Real Price
@@ -84,7 +84,7 @@
           </div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
-              {{product.direct_labor}} h
+              {{product.direct_labor|floatformat:3}} h
             </p>
             <p class="text-center text-md leading-5 text-gray-500">
               Direct Labor Time
@@ -94,7 +94,7 @@
         <div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
-              $ {{product.direct_wages}}
+              $ {{product.direct_wages|floatformat:2}}
             </p>
             <p class="text-center text-md leading-5 text-gray-500">
               Direct Wages
@@ -102,7 +102,7 @@
           </div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
-              $ {{product.indirect_wages}}
+              $ {{product.indirect_wages|floatformat:2}}
             </p>
             <p class="text-center text-md leading-5 text-gray-500">
               Indirect Wages
@@ -112,7 +112,7 @@
         <div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
-              {{product.indirect_labor}} h
+              {{product.indirect_labor|floatformat:3}} h
             </p>
             <p class="text-center text-md leading-5 text-gray-500">
               Indirect Labor Time
@@ -120,7 +120,7 @@
           </div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
-              $ {{product.cost_price}}
+              $ {{product.cost_price|floatformat:2}}
             </p>
             <p class="text-center text-md leading-5 text-gray-500">
 				Estimated Cost
@@ -128,7 +128,7 @@
           </div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
-              {{product.value}} h
+              {{product.value|floatformat:3}} h
             </p>
             <p class="text-center text-md leading-5 text-gray-500">
 				Estimated Labor Time
