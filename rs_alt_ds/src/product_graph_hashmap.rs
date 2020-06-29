@@ -88,10 +88,13 @@ impl HashedProductGraph {
         Ok(())
     }
 
-    // FIXME: collect into vec is not compatible with hashbrown hashmap, find other solution
+    // FIXME: collect into vec is not compatible with hashbrown hashmap, my other solution is to 
+    // dereference the target passed in vec and assign it to collect. Documentation states that 
+    // collect may be slower. 
     // TODO: ask cameron for clarification on this function
     fn calc_iteration(&self, indir_costs_old: &Vec<f32>, indir_costs_new: &mut Vec<f32>) {
-        self.graph
+        // is dereferencing like this in rust bad practice??
+        *indir_costs_new = self.graph
             .par_iter()
             .map(|(_, prod)| {
                 prod.dependencies.iter().fold(0.0, |acc, dep| {
@@ -100,7 +103,7 @@ impl HashedProductGraph {
                     let dep_cost = prod.direct_cost + indir_costs_old[dep.id as usize];
                     acc + (dep.quantity * dep_cost)
                 })
-            }); // remove semicolon
+            }).collect();
             //.collect_into_vec(indir_costs_new) //=> BROKEN
             // method not found in `rayon::iter::map::Map<hashbrown::external_trait_impls::rayon::map::ParIter<'_, u64, product::Product, ahash::random_state::RandomState>, 
             // [closure@src/product_graph_hashmap.rs:96:18: 103:14 indir_costs_old:_]>`
