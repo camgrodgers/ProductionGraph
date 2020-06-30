@@ -4,6 +4,12 @@ ProductionGraph is a set of programs for estimating costs and labor hours of com
 
 ### ProductionGraph components:
 
+#### backend
+
+The 'backend' directory contains a Django project that allows users to enter products and their associated direct costs and dependencies. As the user enters data, the indirect wages and labor times, and total estimated costs and labor times, are automatically calculated and displayed. The backend app is on PyPI:
+
+https://pypi.org/project/productiongraph/
+
 #### production_graph_rs
 The 'production_graph_rs' folder contains a high-performance Rust library that performs the estimation. It represents production of commodities as a dependency graph. Each commodity has a "direct cost," which could be labor or wages used directly in its production, and a list of dependencies and their associated quantities, which represent other commodities in the graph that the commodity depends on. The library is documented here:
 
