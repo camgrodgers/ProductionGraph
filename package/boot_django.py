@@ -27,12 +27,10 @@ def boot_django():
             }
         },
         INSTALLED_APPS=(
-            "backend", "theme", "tailwind"
+            "backend", "theme", "tailwind", 'django.contrib.staticfiles',
         ),
         TAILWIND_APP_NAME = 'theme',
-        STATICFILES_DIRS = (
-            os.path.join(THEME_DIR, 'static'),
-        ),
+        STATIC_URL= "/static/",
         TIME_ZONE="UTC",
         USE_TZ=True,
     )
