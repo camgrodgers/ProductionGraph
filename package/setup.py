@@ -2,11 +2,13 @@ import scripts
 if __name__ == "__main__":
     import setuptools
     setuptools.setup(
-        name='django_pip_example',
-        version='0.9.9.1',
-        packages=['backend', 'scripts'],
-        description='descr',
-        install_requires=[ 'Django' ],
+        name='productiongraph',
+        version='0.1.3',
+        author='Cameron, Aaron, Osiris, Benjamin, Matt',
+        author_email='cameron.g.rodgers@gmail.com',
+        packages=setuptools.find_packages(),
+        description='Web interface for calculating prices',
+        install_requires=[ 'Django', 'product_graph_bindings' ],
         entry_points =
         { 'console_scripts':
             [
