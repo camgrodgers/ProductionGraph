@@ -22,7 +22,7 @@ class TestGetURLs(TestCase):
     def test_fourohfour(self):
         #Get Request to fourohfour
         response = self.client.get('/fourohfour')
-        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.status_code, 404)
 
 class TestPostURLS(TestCase):
     def setUp(self):
