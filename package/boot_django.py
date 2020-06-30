@@ -7,11 +7,18 @@ import django
 from django.conf import settings
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "backend"))
+THEME_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "theme"))
 
 def boot_django():
     settings.configure(
         BASE_DIR=BASE_DIR,
         ROOT_URLCONF="backend.urls",
+        # TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates'),
+        TEMPLATES=[{
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            # if you want to render using template file
+            'DIRS': [os.path.join(BASE_DIR, "templates"), os.path.join(THEME_DIR, "templates")]
+        }],
         DEBUG=True,
         DATABASES={
             "default":{
@@ -20,7 +27,11 @@ def boot_django():
             }
         },
         INSTALLED_APPS=(
-            "backend", "theme"
+            "backend", "theme", "tailwind"
+        ),
+        TAILWIND_APP_NAME = 'theme',
+        STATICFILES_DIRS = (
+            os.path.join(THEME_DIR, 'static'),
         ),
         TIME_ZONE="UTC",
         USE_TZ=True,
