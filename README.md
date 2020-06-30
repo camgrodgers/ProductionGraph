@@ -6,7 +6,7 @@ ProductionGraph is a set of programs for estimating costs and labor hours of com
 
 #### backend
 
-The 'backend' directory contains a Django project that allows users to enter products and their associated direct costs and dependencies. As the user enters data, the indirect wages and labor times, and total estimated costs and labor times, are automatically calculated and displayed. The backend app is on PyPI:
+The 'backend' directory contains a Django project that allows users to enter products and their associated direct costs and dependencies. As the user enters data, the indirect wages, indirect labor times, total estimated costs, and total estimated labor times are automatically calculated and displayed. The backend app is on PyPI:
 
 https://pypi.org/project/productiongraph/
 
