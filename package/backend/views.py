@@ -41,7 +41,7 @@ def home(request):
         'products': Product.objects.all()
     }
 
-    return render(request, 'home/index.html', context)
+    return render(request, 'index.html', context)
 
 
 #TODO: 
