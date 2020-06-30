@@ -6,11 +6,12 @@ import os
 import django
 from django.conf import settings
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "package"))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "backend"))
 
 def boot_django():
     settings.configure(
         BASE_DIR=BASE_DIR,
+        ROOT_URLCONF="backend.urls",
         DEBUG=True,
         DATABASES={
             "default":{

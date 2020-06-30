@@ -1,7 +1,7 @@
 from django.test import TestCase
-from .models import Product
-from .models import Dependency
-from .api import *
+from ..models import Product
+from ..models import Dependency
+from ..api import *
 
 
 class CalcDirectTestCase(TestCase):
