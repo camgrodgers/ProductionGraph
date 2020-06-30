@@ -3,8 +3,11 @@ name = "product_graph_rs"
 version = "0.1.0"
 authors = ["Cameron Rodgers"]
 edition = "2018"
+description = "Calculate costs and labor times using a weighted dependency graph"
+repository = "https://github.com/camgrodgers/ProductionGraph/"
+categories = ["libraries"]
+license = "MIT"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
 

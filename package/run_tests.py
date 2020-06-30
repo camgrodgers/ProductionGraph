@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 from unittest import TestSuite
 from boot_django import boot_django
