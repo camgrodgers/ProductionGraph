@@ -14,11 +14,11 @@ pip install productiongraph
 Once the server is installed via pip, a number of commands will be available for initializing and running the server:
 ```
 // Set up the database
-
+prodgraph_initserver
 // Run the server
-
+prodgraph_runserver
 // Run tests
-
+prodgraph_runtests
 ```
 
 #### backend
