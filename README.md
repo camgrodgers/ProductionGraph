@@ -45,11 +45,14 @@ cargo test
 // Benchmark library (Warning, heavy memory consumption. Not recommended on a machine without several free GB of RAM.)
 cargo run --release
 ```
+Note: this is not presently part of the same build process as the server, as changes in the library should not be automatically applied to the server's codebase and build process.
 
 #### product_graph_py
 The 'product_graph_py' directory contains code for thin Python bindings that make it possible for python programs, such as the backend, to use the rust library. The bindings are on PyPI:
 
 https://pypi.org/project/product_graph_bindings/
+
+Note: building this is not presently part of the same build process as the server, as changes in the library should not be automatically applied to the server's codebase and build process.
 
 
 ### Development info
