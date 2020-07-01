@@ -3,7 +3,7 @@ if __name__ == "__main__":
     import setuptools
     setuptools.setup(
         name='productiongraph',
-        version='0.1.5',
+        version='0.1.6',
         author='Cameron, Aaron, Osiris, Benjamin, Matt',
         author_email='cameron.g.rodgers@gmail.com',
         packages=setuptools.find_packages(),
