@@ -12,7 +12,7 @@ def main():
         raise ImportError("Couldn't import Django.") from exc
     
     # init the database
-    execute_from_command_line(["manage.py", "runserver"])
+    execute_from_command_line(["manage.py", "test", "backend.tests"])
     
 
 if __name__ == '__main__':
