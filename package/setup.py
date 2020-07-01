@@ -20,6 +20,7 @@ if __name__ == "__main__":
             [
                 'prodgraph_run = scripts.run:main',
                 'prodgraph_init = scripts.init:main',
+                'prodgraph_test = scripts.test:main',
             ]
         },
     )
