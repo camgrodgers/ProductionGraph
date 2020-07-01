@@ -11,9 +11,10 @@ def main():
     except ImportError as exc:
         raise ImportError("Couldn't import Django.") from exc
     
-    # run server
+    print("Initializing the database...\n")
+    execute_from_command_line(["manage.py", "makemigrations"])
+    execute_from_command_line(["manage.py", "makemigrations", "backend"])
+    execute_from_command_line(["manage.py", "migrate"])
+    print("Starting server...\n")
     execute_from_command_line(["manage.py", "runserver"])
-    
 
-if __name__ == '__main__':
-    main()
