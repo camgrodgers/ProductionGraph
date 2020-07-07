@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Product
 from .models import Dependency
 from .forms import ProductForm
@@ -36,12 +37,25 @@ def fourohfour(request):
 def home(request):
     if request.method != 'GET':
         return HttpResponseRedirect("/fourohfour")
+    
+    page = request.GET.get('page', 1)
+
+    product_list = Product.objects.all()
+    paginator = Paginator(product_list, 10)
+
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
 
     context = {
-        'products': Product.objects.all()
+        'products': products
     }
 
     return render(request, 'home/index.html', context)
+
 
 
 #TODO: 
