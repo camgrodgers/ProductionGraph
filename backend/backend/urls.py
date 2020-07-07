@@ -21,7 +21,9 @@ from . import api
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('fourohfour/', views.fourohfour),
-    path('', views.home),
+    path('', views.temporary_fix),
+    path('products/', views.home),
+    path('products/?page=<int:num>', views.home),
     path('product/<str:name>', views.product_view),
     path('product/<str:name>/analytics/', views.product_analytics),
 

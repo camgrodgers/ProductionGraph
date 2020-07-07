@@ -33,12 +33,20 @@ def retrieveDependencies (product):
 def fourohfour(request):
     return render(request, 'fourohfour/fourohfour.html')
 
+# root url is now empty, so redirect to products list view
+def temporary_fix(request):
+    return HttpResponseRedirect("/products")
 
 def home(request):
     if request.method != 'GET':
         return HttpResponseRedirect("/fourohfour")
     
     page = request.GET.get('page', 1)
+
+    # this is not necessary, this is just to keep consistency
+    # that /products alone defaults to page 1
+    if page is not None and page == '1':
+        return HttpResponseRedirect("/products")
 
     product_list = Product.objects.all()
     paginator = Paginator(product_list, 10)
@@ -47,11 +55,15 @@ def home(request):
         products = paginator.page(page)
     except PageNotAnInteger:
         products = paginator.page(1)
+        page = 1
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
+        page = paginator.num_pages
 
     context = {
-        'products': products
+        'products': products,
+        'current_page': page,
+        'page_range': range(paginator.num_pages)
     }
 
     return render(request, 'home/index.html', context)
