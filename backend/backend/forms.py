@@ -5,6 +5,7 @@ class ProductForm(forms.Form):
     real_price = forms.FloatField()
     direct_labor = forms.FloatField() # Consider placing a lower bound of 0.0?
     direct_wages = forms.FloatField()
+    page = forms.IntegerField(required = False)
 
 class DependencyForm(forms.Form):
     # The Dependent is not needed in the form, since it can be gotten from product.name in the html file

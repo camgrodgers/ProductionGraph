@@ -11,7 +11,7 @@
       class="flex items-center justify-between max-w-5xl mx-auto pt-4 px-4 sm:px-6 lg:px-8"
     >
       <h3 class="text-xl">
-        <span class="cursor-pointer" onclick="window.location.href = '/'"
+        <span class="cursor-pointer" onclick="window.location.href = '/products'"
           >My Products</span
         >
         > {{product.name}}
@@ -32,7 +32,6 @@
         </button>
 
         <!-- DELETE BUTTON -->
-        <!-- TODO: add modal for this -->
         <button
           id="delete-prod-trigger"
           class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
@@ -227,7 +226,7 @@
         <!-- End Modal Title -->
 
         <!--Modal Content -->
-        <form method="POST" action="/api/delete/product/{{product.name}}">
+        <form method="POST" action="{{ request.scheme }}://{{ request.get_host }}/api/delete/product/{{product.name}}">
           {% csrf_token %}
           <div class="mt-4 mb-6">
             <div class="flex items-center mx-auto mb-4"></div>
@@ -303,7 +302,7 @@
         <!-- End Modal Title -->
 
         <!--Modal Content -->
-        <form method="POST" action="/api/edit/product/{{product.name}}">
+        <form method="POST" action="{{ request.scheme }}://{{ request.get_host }}/api/edit/product/{{product.name}}">
           {% csrf_token %}
           <div class="mt-4 mb-6">
             <div class="flex items-center mx-auto mb-4">
@@ -438,7 +437,7 @@
         </div>
 
         <!-- Modal Content -->
-        <form method="POST" action="/api/create/dependency/{{product.name}}">
+        <form method="POST" action="{{ request.scheme }}://{{ request.get_host }}/api/create/dependency/{{product.name}}">
           {% csrf_token %}
           <div class="mt-4 mb-6">
             <div class="flex items-center mx-auto mb-4">
@@ -454,7 +453,8 @@
                   required
                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
                 />
-
+              </div>
+              <div class="w-1/2 px-2">
                 <!-- Input for the Quanity -->
                 <label
                   class="px-2 block text-gray-700 text-sm font-medium mb-2"
@@ -538,35 +538,11 @@
         </div>
 
         <!-- Modal Content -->
-        <form method="POST" action="/api/edit/dependency/{{product.name}}">
+        <form method="POST" action="{{ request.scheme }}://{{ request.get_host }}/api/edit/dependency/{{product.name}}">
           {% csrf_token %}
           <div class="mt-4 mb-6">
             <div class="flex items-center mx-auto mb-4">
               <div class="w-1/2 px-2">
-                <!--Input for Dependency ID: To be Removed eventually -->
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
-                  ID of Dependency
-                </label>
-                <input
-                  name="id"
-                  required
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                />
-
-                <!--Input for Product to be Dependent on -->
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
-                  Name of Dependency
-                </label>
-                <input
-                  name="dependency"
-                  required
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                />
-
                 <!--Input for Product to be Dependent on -->
                 <label
                   class="px-2 block text-gray-700 text-sm font-medium mb-2"
@@ -579,6 +555,33 @@
                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
                 />
               </div>
+
+                <div class="w-1/2 px-2">
+                <!--Input for Product to be Dependent on -->
+                <label
+                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
+                >
+                  Name of Dependency
+                </label>
+                <input
+                  name="dependency"
+                  required
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                />
+                </div>
+            </div>
+            <div class="px-2">
+              <!--Input for Dependency ID: To be Removed eventually -->
+              <label
+                class="px-2 block text-gray-700 text-sm font-medium mb-2"
+              >
+                ID of Dependency
+              </label>
+              <input
+                name="id"
+                required
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+              />
             </div>
           </div>
           <!-- Modal Actions -->

@@ -30,7 +30,7 @@ urlpatterns = [
     # product pages
     path('products/', views.products_page),
     path('products/?page=<int:num>', views.products_page),
-    path('product/<str:name>', views.product_view),
+    path('product/<str:name>/', views.product_view),
     path('product/<str:name>/analytics/', views.product_analytics),
 
     ### api ###

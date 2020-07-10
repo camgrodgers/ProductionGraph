@@ -29,7 +29,19 @@ def create_product(request):
         else:
             print(form._errors)
 
-        return HttpResponseRedirect("/")
+        page = form.cleaned_data['page']
+
+        if page is None or page == 1:
+            return HttpResponseRedirect("/products")
+        else:
+            # do we want to route to the same page after creation?
+            # should we route to the first / last page instead? If we 
+            # sort our list of products, this would be more difficult. 
+            # if the products are in order of creation, we could redirect to the
+            # last page maybe?
+            return HttpResponseRedirect("/products/?page={}".format(page))
+
+        
     # redirect to 404 if method isn't post
     else:
         return HttpResponseRedirect("/fourohfour")
@@ -78,7 +90,7 @@ def delete_product(request, name):
             # rather than routing to 404 anytime a DB operation fails
             return HttpResponseRedirect("/fourohfour")
     
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect("/products")
     else:
         return HttpResponseRedirect("/fourohfour")
 

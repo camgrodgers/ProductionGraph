@@ -45,6 +45,7 @@
                 class="cursor-pointer"
                 onclick="location.href = '/product/{{product.name}}';"
               >
+              
                 <td
                   class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
                 >
@@ -196,8 +197,9 @@
         <!-- End Modal Title -->
 
         <!--Modal Content -->
-        <form method="POST" action="api/create/product">
+        <form method="POST" action="{{ request.scheme }}://{{ request.get_host }}/api/create/product">
           {% csrf_token %}
+          <input type="hidden" name="page" value={{products.number}} />
           <div class="mt-4 mb-6">
             <div class="flex items-center mx-auto mb-4">
               <div class="w-1/2 px-2">
