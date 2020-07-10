@@ -34,10 +34,17 @@ def fourohfour(request):
     return render(request, 'fourohfour/fourohfour.html')
 
 # root url is now empty, so redirect to products list view
-def temporary_fix(request):
-    return HttpResponseRedirect("/products")
-
 def home(request):
+    return render(request, 'home/index.html')
+
+def login(request):
+    return render(request, 'home/login.html')
+
+def register(request):
+    return render(request, 'home/register.html')
+
+
+def products_page(request):
     if request.method != 'GET':
         return HttpResponseRedirect("/fourohfour")
     
@@ -66,7 +73,7 @@ def home(request):
         'page_range': range(paginator.num_pages)
     }
 
-    return render(request, 'home/index.html', context)
+    return render(request, 'product_pages/index.html', context)
 
 
 
@@ -87,7 +94,7 @@ def product_view(request, name):
             'dependencies': product_dependencies,
             'selected_dep': selected_dep
         }
-        return render(request, 'home/product_info.html', context)
+        return render(request, 'product_pages/product_info.html', context)
 
 
 def product_analytics(request, name):
@@ -100,8 +107,4 @@ def product_analytics(request, name):
             'product': target_product,
             'dependencies': []
         }
-        return render(request, 'home/product_analytics.html', context)
-
-
-def create_product(request):
-    return render(request, 'home/test.html', {'req': request})
+        return render(request, 'product_pages/product_analytics.html', context)
