@@ -8,6 +8,7 @@ import product_graph_bindings
 from .models import Dependency
 from .forms import DependencyForm
 from .forms import EditDependencyForm
+from .forms import DeleteDependencyForm
 
 ### CRUD FOR PRODUCT ###
 
@@ -164,16 +165,18 @@ def edit_dependency(request, prod_name):
     else:
         return HttpResponseRedirect("/fourohfour")
 
-def delete_dependency(request, dep_name):
+def delete_dependency(request):
     # TODO: change to DELETE request??
     if request.method == 'POST':
-        form = DependencyForm(request.POST)
+        form = DeleteDependencyForm(request.POST)
         if form.is_valid():
             try:
-                # find by name (primary key)
+                # find by id (primary key)
                 # if not found, goes to except block
                 # delete on find
-                Dependency.objects.get(name=dep_name).delete()
+                dep_id = form.cleaned_data['id']
+                print(dep_id)
+                Dependency.objects.get(id=dep_id).delete()
             except:
                 # TODO: is this the best action to take?
                 return HttpResponseRedirect("/fourohfour")
@@ -183,7 +186,7 @@ def delete_dependency(request, dep_name):
             # TODO: maybe add routing to uh oh error page??
 
         update_product_indirect_values()
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect("/products")
     else:
         return HttpResponseRedirect("/fourohfour")
 

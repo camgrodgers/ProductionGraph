@@ -17,3 +17,6 @@ class EditDependencyForm(forms.Form):
     id = forms.FloatField()
     dependency = forms.CharField()
     quantity = forms.FloatField()
+
+class DeleteDependencyForm(forms.Form):
+    id = forms.FloatField()

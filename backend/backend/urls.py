@@ -39,5 +39,5 @@ urlpatterns = [
     path('api/delete/product/<str:name>', api.delete_product),
     path('api/create/dependency/<str:prod_name>', api.create_dependency),
     path('api/edit/dependency/<str:prod_name>', api.edit_dependency),
-    path('api/delete/dependency/<str:dep_id>', api.delete_dependency)
+    path('api/delete/dependency/', api.delete_dependency)
 ]
