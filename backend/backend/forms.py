@@ -20,3 +20,4 @@ class EditDependencyForm(forms.Form):
 
 class DeleteDependencyForm(forms.Form):
     id = forms.FloatField()
+    redirect_to = forms.CharField(max_length = 100)

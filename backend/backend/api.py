@@ -168,6 +168,7 @@ def edit_dependency(request, prod_name):
 def delete_dependency(request):
     # TODO: change to DELETE request??
     if request.method == 'POST':
+        redirect_to = ""
         form = DeleteDependencyForm(request.POST)
         if form.is_valid():
             try:
@@ -175,7 +176,7 @@ def delete_dependency(request):
                 # if not found, goes to except block
                 # delete on find
                 dep_id = form.cleaned_data['id']
-                print(dep_id)
+                redirect_to = form.cleaned_data['redirect_to']
                 Dependency.objects.get(id=dep_id).delete()
             except:
                 # TODO: is this the best action to take?
@@ -186,7 +187,7 @@ def delete_dependency(request):
             # TODO: maybe add routing to uh oh error page??
 
         update_product_indirect_values()
-        return HttpResponseRedirect("/products")
+        return HttpResponseRedirect("/product/{}".format(redirect_to))
     else:
         return HttpResponseRedirect("/fourohfour")
 
