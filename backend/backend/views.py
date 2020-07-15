@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from .models import Product
 from .models import Dependency
 from .forms import ProductForm
+from .filters import ProductFilter
 
 # HELPERS
 # I think eventually we should change this
@@ -37,8 +38,14 @@ def home(request):
     if request.method != 'GET':
         return HttpResponseRedirect("/fourohfour")
 
+
+    products = Product.objects.all()
+    myFilter = ProductFilter(request.GET, queryset=products)
+    products = myFilter.qs
+
     context = {
-        'products': Product.objects.all()
+        'products': products,
+        'myFilter': myFilter
     }
 
     return render(request, 'home/index.html', context)
