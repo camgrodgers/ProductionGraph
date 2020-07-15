@@ -41,10 +41,10 @@ class TestPostURLS(TestCase):
 
     def test_get_product(self):
         #Get request for created product HotDog
-        res = self.client.get('/product/borgor')
+        res = self.client.get('/product/borgor/')
         self.assertEqual(res.status_code, 200)
 
     def test_get_analytics(self):
         #get request for HotDog analytics
-        res = self.client.get('/product/borgor/analytics')
+        res = self.client.get('/product/borgor/analytics/')
         self.assertEqual(res.status_code, 200)
