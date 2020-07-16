@@ -75,7 +75,7 @@ def products_page(request):
 
     context = {
         'products': products,
-        'myFilter': myFilter
+        'myFilter': myFilter,
         'current_page': page,
         'page_range': range(paginator.num_pages)
     }
