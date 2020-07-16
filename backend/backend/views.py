@@ -40,8 +40,8 @@ def home(request):
 
 
     products = Product.objects.all()
-    myFilter = ProductFilter(request.GET, queryset=products)
-    products = myFilter.qs
+    myFilter = ProductFilter(request.GET, queryset=products) #Instantiates filter using definiton from filters.py
+    products = myFilter.qs                                   #Creates a query set by filtering the data
 
     context = {
         'products': products,

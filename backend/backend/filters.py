@@ -7,5 +7,5 @@ class ProductFilter(django_filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ('__all__')
         exclude = ['real_price', 'direct_labor', 'direct_wages', 'indirect_wages', 'indirect_labor']
