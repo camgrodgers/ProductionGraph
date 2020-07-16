@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Product
 from .models import Dependency
 from .forms import ProductForm
@@ -33,10 +34,39 @@ def retrieveDependencies (product):
 def fourohfour(request):
     return render(request, 'fourohfour/fourohfour.html')
 
-
+# root url is now empty, so redirect to products list view
 def home(request):
+    return render(request, 'home/index.html')
+
+def login(request):
+    return render(request, 'home/login.html')
+
+def register(request):
+    return render(request, 'home/register.html')
+
+
+def products_page(request):
     if request.method != 'GET':
         return HttpResponseRedirect("/fourohfour")
+    
+    page = request.GET.get('page', 1)
+
+    # this is not necessary, this is just to keep consistency
+    # that /products alone defaults to page 1
+    if page is not None and page == '1':
+        return HttpResponseRedirect("/products")
+
+    product_list = Product.objects.all()
+    paginator = Paginator(product_list, 10)
+
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+        page = 1
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
+        page = paginator.num_pages
 
 
     products = Product.objects.all()
@@ -45,10 +75,13 @@ def home(request):
 
     context = {
         'products': products,
-        'myFilter': myFilter
+        'myFilter': myFilter,
+        'current_page': page,
+        'page_range': range(paginator.num_pages)
     }
 
-    return render(request, 'home/index.html', context)
+    return render(request, 'product_pages/index.html', context)
+
 
 
 #TODO: 
@@ -68,7 +101,7 @@ def product_view(request, name):
             'dependencies': product_dependencies,
             'selected_dep': selected_dep
         }
-        return render(request, 'home/product_info.html', context)
+        return render(request, 'product_pages/product_info.html', context)
 
 
 def product_analytics(request, name):
@@ -81,8 +114,4 @@ def product_analytics(request, name):
             'product': target_product,
             'dependencies': []
         }
-        return render(request, 'home/product_analytics.html', context)
-
-
-def create_product(request):
-    return render(request, 'home/test.html', {'req': request})
+        return render(request, 'product_pages/product_analytics.html', context)
