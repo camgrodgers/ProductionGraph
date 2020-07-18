@@ -6,8 +6,37 @@
  -->
 
 {% block content %}
-<div>
-  login page
+<div class="flex justify-center mt-24">
+  <div class="text-center self-center">
+    <h2
+      class="text-4xl tracking-loose font-extrabold text-gray-900 md:text-6xl"
+    >
+      Welcome back!
+    </h2>
+    <p class="max-w-md mx-auto text-gray-600 text-md md:text-lg">
+      Enter your credentials to pickup where you left off
+    </p>
+    {% comment %} TODO: add a django form for this {% endcomment %}
+    <form class="flex-1 pt-6 justify-center items-center">
+      <div class="rounded-md shadow-sm mb-4">
+        <div>
+          <input placeholder="sallysmith@gmail.com" name="email" type="email" required class="rounded-none relative block w-full px-3 py-2 border border-gray-300 rounded-t-md focus:outline-none focus:border-blue-300 sm:text-sm sm:leading-5">
+        </div>
+        <div class="-mt-px">
+          <input placeholder="mysupersecurepassword" name="password" type="password" required class="rounded-none relative block w-full px-3 py-2 border border-gray-300 rounded-b-md focus:outline-none focus:border-blue-300 sm:text-sm sm:leading-5">
+        </div>
+      </div>
+
+      <button
+        class="w-full font-semibold text-md shadow bg-blue-500 hover:bg-blue-700 text-white py-3 px-8 rounded mr-2 focus:outline-none transition duration-150 ease-in-out"
+      >
+        Login
+      </button>
+      <p class='my-2 text-gray-600 text-sm'>
+        Don't have an account? Click <a class="text-blue-600" href="/register">here</a> to get started!
+      </p>
+    </form>
+  </div>
 </div>
 
 {% endblock %}
