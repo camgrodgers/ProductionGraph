@@ -2,7 +2,7 @@ use product_graph_rs::*;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use std::collections::HashMap;
-use std::time::Instant;
+//use std::time::Instant;
 
 /*
  * TODO: probably implement these
@@ -45,11 +45,12 @@ impl SimpleProduct {
     }
 }
 
+// TODO: consider returning option type?
 #[pyfunction]
 fn calc_indirect_vals_for_n_iterations(
     graph: HashMap<u64, SimpleProduct>,
     count: u16,
-) -> (Vec<(u64, f32)>, f64) {
+) -> (Vec<(u64, f32)>, Vec<u64>) {
     // First, converting from a hashmap to the array-backed graph
     // NOTE: ugly, bad for memory... have to hold the IDs in a hashmap for converting back and
     // forth
@@ -67,22 +68,22 @@ fn calc_indirect_vals_for_n_iterations(
         }
     }
 
-    // TODO: make separate matching function OR add an error return enum
-    //match new_graph.check_graph() {
-    //    Ok(()) => (),
-    //    Err(_) => {
-    //        return (Vec::new(), 0.0);
-    //    }
-    //}
+    match new_graph.check_graph() {
+        Ok(()) => (),
+        Err(e) => {
+            let errors = e.prods_in_inf_cycles.iter().map(|index| *index as u64).collect();
+            return (Vec::new(), errors);
+        }
+    }
 
-    let start = Instant::now();
+    //let start = Instant::now();
     let indirect_costs = new_graph.calc_for_n_iterations(count);
     let indirect_costs: Vec<(u64, f32)> = indirect_costs
         .iter()
         .enumerate()
         .map(|(i, quant)| (indexes_to_ids[&i].clone(), *quant))
         .collect();
-    (indirect_costs, start.elapsed().as_secs_f64())
+    (indirect_costs, Vec::new())
 }
 
 #[pymodule]
