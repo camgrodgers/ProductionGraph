@@ -57,6 +57,11 @@ def products_page(request):
         return HttpResponseRedirect("/products")
 
     product_list = Product.objects.all()
+
+    
+    myFilter = ProductFilter(request.GET, queryset=product_list) #Instantiates filter using definiton from filters.py
+    product_list = myFilter.qs                                   #Creates a query set by filtering the data
+
     paginator = Paginator(product_list, 10)
 
     try:
@@ -69,9 +74,7 @@ def products_page(request):
         page = paginator.num_pages
 
 
-    products = Product.objects.all()
-    myFilter = ProductFilter(request.GET, queryset=products) #Instantiates filter using definiton from filters.py
-    products = myFilter.qs                                   #Creates a query set by filtering the data
+    
 
     context = {
         'products': products,
