@@ -5,13 +5,14 @@
 
 {% block content %}
 <!-- SEE TAILWIND UI NAV -->
+
 <div>
   <header class="pt-6">
     <div
       class="flex items-center justify-between max-w-5xl mx-auto pt-4 px-4 sm:px-6 lg:px-8"
     >
       <h3 class="text-xl">
-        <span class="cursor-pointer" onclick="window.location.href = '/'"
+        <span class="cursor-pointer" onclick="window.location.href = '/products'"
           >My Products</span
         >
         > {{product.name}}
@@ -32,7 +33,6 @@
         </button>
 
         <!-- DELETE BUTTON -->
-        <!-- TODO: add modal for this -->
         <button
           id="delete-prod-trigger"
           class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
@@ -72,7 +72,16 @@
         <h3 class="font-bold text-md">Details</h3>
       </div>
 
-      <div class="px-6 py-4 flex flex-row justify-between mx-4 lg:mx-8">
+      <div>
+        <div class="px-6 pt-4 mx-4 flex flex-reverse justify-center items-center">
+          <p class="text-center text-4xl font-extrabold mr-4">
+            $ {{product.cost_price|floatformat:2}}
+          </p>
+          <p class="text-center text-md leading-5 text-gray-500">
+              Estimated Cost
+          </p>
+        </div>
+        <div class="flex flex-row justify-between px-6 py-4 mx-4 lg:mx-8">
         <div>
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
@@ -118,14 +127,7 @@
               Indirect Labor Time
             </p>
           </div>
-          <div class="py-4">
-            <p class="text-center text-xl font-extrabold">
-              $ {{product.cost_price|floatformat:2}}
-            </p>
-            <p class="text-center text-md leading-5 text-gray-500">
-				Estimated Cost
-            </p>
-          </div>
+
           <div class="py-4">
             <p class="text-center text-xl font-extrabold">
               {{product.value|floatformat:3}} h
@@ -134,6 +136,7 @@
 				Estimated Labor Time
             </p>
           </div>
+        </div>
         </div>
       </div>
       <!-- End Product Details Overview -->
@@ -147,44 +150,67 @@
               id="dependency-create-modal-trigger"
               class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded"
             >
-              Create
+              Add
             </button>
-            <button
+            {% comment %} <button
               id="dependency-edit-modal-trigger"
               class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded"
             >
               Edit
-            </button>
+            </button> {% endcomment %}
           </div>
         </div>
         <div
-          class="mt-4 align-middle inline-block min-w-full shadow overflow-y-scroll sm:rounded-lg border-b border-gray-200"
-          style="max-height: 20rem;"
+          class="mt-4 align-middle inline-block min-w-full shadow  sm:rounded-lg border-b border-gray-200"
         >
+          {% if dependencies|length > 0 %}
           <table class="min-w-full">
-            <tbody class="bg-white">
+            <thead class="text-left bg-gray-100">
+              <tr >
+                <th class="px-6 py-4">
+                  Name
+                </th>
+                <th class="px-6 py-4">
+                  Quanity
+                </th>
+                <th class="px-6 py-4">
+                  ID
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white overflow-y-scroll" style="max-height: 20rem;">
               <!-- Rows for Dependencies -->
               {% for dep in dependencies %}
               <tr
-                class="{% if forloop.counter|divisibleby:2 %}bg-gray-50{% endif %}"
+                class="{% if forloop.counter|divisibleby:2 %}bg-gray-50{% endif %} cursor-pointer hover:bg-gray-100"
+                onclick="editDependency({{dep.id}}, '{{dep.dependency.name}}', {{dep.quantity}})"
               >
                 <td
                   class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
                 >
-                  <div>
-                    <div class="ml-4">
-                      Name: {{dep.dependency.name}} &emsp; Quantity:
-                      {{dep.quantity}} &emsp; ID: {{dep.id}}
-                    </div>
-                  </div>
+                  {{dep.dependency.name}}
                 </td>
+
                 <td
                   class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
-                ></td>
+                >
+                  {{dep.quantity}}
+                </td>
+
+                <td
+                  class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
+                >
+                  {{dep.id}}
+                </td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
+          {% else %}
+            <div class="flex items-center justify-center py-6">
+              Click the "Add" button to add a dependency!
+            </div>
+          {% endif %}
         </div>
       </div>
       <!-- End Product Dependencies -->
@@ -227,7 +253,7 @@
         <!-- End Modal Title -->
 
         <!--Modal Content -->
-        <form method="POST" action="/api/delete/product/{{product.name}}">
+        <form method="POST" action="{{ request.scheme }}://{{ request.get_host }}/api/delete/product/{{product.name}}">
           {% csrf_token %}
           <div class="mt-4 mb-6">
             <div class="flex items-center mx-auto mb-4"></div>
@@ -303,7 +329,7 @@
         <!-- End Modal Title -->
 
         <!--Modal Content -->
-        <form method="POST" action="/api/edit/product/{{product.name}}">
+        <form method="POST" action="{{ request.scheme }}://{{ request.get_host }}/api/edit/product/{{product.name}}">
           {% csrf_token %}
           <div class="mt-4 mb-6">
             <div class="flex items-center mx-auto mb-4">
@@ -375,7 +401,7 @@
             <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
               <button
                 type="submit"
-                class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none  transition ease-in-out duration-150 sm:text-sm sm:leading-5"
               >
                 Confirm
               </button>
@@ -438,7 +464,7 @@
         </div>
 
         <!-- Modal Content -->
-        <form method="POST" action="/api/create/dependency/{{product.name}}">
+        <form method="POST" action="{{ request.scheme }}://{{ request.get_host }}/api/create/dependency/{{product.name}}">
           {% csrf_token %}
           <div class="mt-4 mb-6">
             <div class="flex items-center mx-auto mb-4">
@@ -454,7 +480,8 @@
                   required
                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
                 />
-
+              </div>
+              <div class="w-1/2 px-2">
                 <!-- Input for the Quanity -->
                 <label
                   class="px-2 block text-gray-700 text-sm font-medium mb-2"
@@ -476,7 +503,7 @@
             <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
               <button
                 type="submit"
-                class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none transition ease-in-out duration-150 sm:text-sm sm:leading-5"
               >
                 Confirm
               </button>
@@ -532,62 +559,86 @@
         <div class="mt-2">
           <p class="text-sm leading-5 text-gray-500">
             Fill out the form beneath this prompt and hit confirm to edit this
-            dependency. *Note: For now, the correct Dependency ID is required
-            for editing, this will be fixed post-prototype.
+            dependency.
           </p>
         </div>
 
         <!-- Modal Content -->
-        <form method="POST" action="/api/edit/dependency/{{product.name}}">
-          {% csrf_token %}
-          <div class="mt-4 mb-6">
-            <div class="flex items-center mx-auto mb-4">
-              <div class="w-1/2 px-2">
-                <!--Input for Dependency ID: To be Removed eventually -->
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
-                  ID of Dependency
-                </label>
+        <div>
+          <div class="divide-y divide-gray-300">
+            <form id="edit-dep-form" method="POST" action="{{ request.scheme }}://{{ request.get_host }}/api/edit/dependency/{{product.name}}">
+              {% csrf_token %}
+              <div class="mt-4 mb-8">
+                <div class="flex items-center mx-auto mb-4">
+                  <div class="w-1/2 px-2">
+                  <!--Input for Product to be Dependent on -->
+                  <label
+                    class="px-2 block text-gray-700 text-sm font-medium mb-2"
+                  >
+                    Name of Dependency
+                  </label>
+                  <input
+                    id="edit-dep-name"
+                    name="dependency"
+                    required
+                    class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                  />
+                  </div>
+
+                  <div class="w-1/2 px-2">
+                    <!--Input for Product to be Dependent on -->
+                    <label
+                      class="px-2 block text-gray-700 text-sm font-medium mb-2"
+                    >
+                      Quantity
+                    </label>
+                    <input
+                      id="edit-dep-quantity"
+                      name="quantity"
+                      required
+                      class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                    />
+                  </div>
+                </div>
+                
                 <input
+                  id="edit-dep-id"
                   name="id"
-                  required
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                />
-
-                <!--Input for Product to be Dependent on -->
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
-                  Name of Dependency
-                </label>
-                <input
-                  name="dependency"
-                  required
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                />
-
-                <!--Input for Product to be Dependent on -->
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
-                  Quantity
-                </label>
-                <input
-                  name="quantity"
-                  required
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                  type="hidden"
                 />
               </div>
-            </div>
+            </form>
+
+            {% comment %} DELETE FORM {% endcomment %}
+            <form id="remove-dep-form" method="POST" action="{{ request.scheme }}://{{ request.get_host }}/api/delete/dependency/">
+              {% csrf_token %}
+              <div class="block text-center mx-auto mb-4 pt-6">
+                <input
+                  id="remove-dep-id"
+                  name="id"
+                  type="hidden"
+                />
+                <input
+                  id="remove-dep-redirect"
+                  name="redirect_to"
+                  type="hidden"
+                  value="{{product.name}}"
+                />
+                <button form="remove-dep-form" class="rounded-md border border-transparent px-4 py-2 bg-red-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-red-500 focus:outline-none transition ease-in-out duration-150 sm:text-sm sm:leading-5">Remove</button>
+                <p class="mt-4 text-sm leading-5">
+                  Or remove this dependency from this product
+                </p>
+              </div>
+            </form>
           </div>
+
           <!-- Modal Actions -->
           <div class="bg-gray-50 sm:px-2 sm:flex sm:flex-row-reverse">
             <!-- Confirm Button-->
             <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
               <button
-                type="submit"
-                class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                form="edit-dep-form"
+                class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none  transition ease-in-out duration-150 sm:text-sm sm:leading-5"
               >
                 Confirm
               </button>
@@ -605,7 +656,7 @@
               </button>
             </span>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
@@ -654,20 +705,6 @@
   if (createDepModalTrigger) {
     createDepModalTrigger.addEventListener("click", () => {
       const modalContent = document.querySelector("#depCreateModal");
-      if (modalContent) {
-        modalContent.classList.toggle("opacity-0");
-        modalContent.classList.toggle("pointer-events-none");
-      }
-    });
-  }
-
-  //Enable the Dependency Editor Button
-  let editDepModalTrigger = document.querySelector(
-    "#dependency-edit-modal-trigger"
-  );
-  if (editDepModalTrigger) {
-    editDepModalTrigger.addEventListener("click", () => {
-      const modalContent = document.querySelector("#depEditModal");
       if (modalContent) {
         modalContent.classList.toggle("opacity-0");
         modalContent.classList.toggle("pointer-events-none");
@@ -743,6 +780,26 @@
         }
       });
     });
+  }
+
+  function editDependency(id, name, quantity) {
+    const modalContent = document.querySelector("#depEditModal");
+    if (modalContent) {
+      modalContent.classList.toggle("opacity-0");
+      modalContent.classList.toggle("pointer-events-none");
+    }
+
+    const nameField = document.getElementById("edit-dep-name")
+    nameField.value = name;
+
+    const quantityField = document.getElementById("edit-dep-quantity")
+    quantityField.value = quantity;
+
+    const idField = document.getElementById("edit-dep-id")
+    idField.value = id;
+
+    const delField = document.getElementById("remove-dep-id");
+    delField.value = id;
   }
 </script>
 
