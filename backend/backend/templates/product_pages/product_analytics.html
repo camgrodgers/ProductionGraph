@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+<!-- START OF NEW CONTENT  -->
+
+{% block content %}
+
+<header class="pt-6">
+  <div
+    class="flex items-center justify-between max-w-5xl mx-auto pt-4 px-4 sm:px-6 lg:px-8"
+  >
+    <h3 class="text-xl">
+      <span class="cursor-pointer" onclick="window.location.href = '/products';"
+        >My Products</span
+      >
+      >
+      <span class="cursor-pointer" onclick="window.history.back();"
+        >{{product.name}}</span
+      >
+      > Analytics
+    </h3>
+  </div>
+</header>
+
+<div class="max-w-5xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+  Content here
+</div>
+
+{% endblock %}
