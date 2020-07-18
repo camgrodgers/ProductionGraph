@@ -209,7 +209,18 @@ def update_product_indirect_values():
             deps.append((d.dependency_id, d.quantity))
         labor_graph[p.id] = product_graph_bindings.SimpleProduct(p.direct_labor, deps)
 
-    (indirect_labor_values, time) = product_graph_bindings.calc_indirect_vals_for_n_iterations(labor_graph, 25)
+    (indirect_labor_values, errors) = product_graph_bindings.calc_indirect_vals_for_n_iterations(labor_graph, 25)
+
+    if len(errors) != 0:
+        for id in errors:
+            newError = Error(product = id)
+            newError.save()
+            # TODO: early return? maybe want to show the messed up values?
+    else:
+        # Clear any preexisting error data since the graph is now valid
+        Error.objects.all().delete()
+
+
     for (id_val, indirect_labor_val) in indirect_labor_values:
         prod = Product.objects.filter(id=id_val).update(indirect_labor=indirect_labor_val)
     # Calculating cost-price
@@ -220,6 +231,6 @@ def update_product_indirect_values():
             deps.append((d.dependency_id, d.quantity))
         cost_graph[p.id] = product_graph_bindings.SimpleProduct(p.direct_wages, deps)
 
-    (indirect_cost_values, time) = product_graph_bindings.calc_indirect_vals_for_n_iterations(cost_graph, 25)
+    (indirect_cost_values, errors) = product_graph_bindings.calc_indirect_vals_for_n_iterations(cost_graph, 25)
     for (id_val, indirect_cost_val) in indirect_cost_values:
         prod = Product.objects.filter(id=id_val).update(indirect_wages=indirect_cost_val)

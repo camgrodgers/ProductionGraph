@@ -63,6 +63,7 @@ fn calc_indirect_vals_for_n_iterations(
         new_graph.push(Product::new(prod.direct_cost));
     }
     for (i, prod) in graph.values().enumerate() {
+        new_graph.set_dependencies_capacity(i, prod.dependencies.len());
         for (id, quant) in prod.dependencies.iter() {
             new_graph.set_dependency(i, ids_to_indexes[id], *quant);
         }
@@ -71,7 +72,7 @@ fn calc_indirect_vals_for_n_iterations(
     match new_graph.check_graph() {
         Ok(()) => (),
         Err(e) => {
-            let errors = e.prods_in_inf_cycles.iter().map(|index| *index as u64).collect();
+            let errors = e.prods_in_inf_cycles.iter().map(|i| *indexes_to_ids[i]).collect();
             return (Vec::new(), errors);
         }
     }
@@ -81,7 +82,7 @@ fn calc_indirect_vals_for_n_iterations(
     let indirect_costs: Vec<(u64, f32)> = indirect_costs
         .iter()
         .enumerate()
-        .map(|(i, quant)| (indexes_to_ids[&i].clone(), *quant))
+        .map(|(i, quant)| (*indexes_to_ids[&i], *quant))
         .collect();
     (indirect_costs, Vec::new())
 }
