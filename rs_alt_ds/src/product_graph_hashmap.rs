@@ -49,7 +49,7 @@ impl HashedProductGraph {
         };
 
         for prod in vec {
-            hashed_map.insert(prod)
+            hashed_map.insert(prod);
         }
 
         hashed_map
@@ -138,8 +138,91 @@ impl HashedProductGraph {
         indir_costs.clone()
     }
 
+    /// Check the graph for errors in the dataset. If a Product depends directly or indirectly on
+    /// 1.0 or more of itself, this represents either bad data or a broken economy, as it will cause
+    /// the price of that Product and those that depend on it to go to infinity.
+    /// Also checks for dependencies that reference vector elements out of bounds, and for values
+    /// that are infinity or negative.
+    pub fn check_graph(&self) -> Result<(), GraphError> {
+        let mut out_of_bounds: Vec<usize> = Vec::new();
+        let mut negative_value: Vec<usize> = Vec::new();
+        let mut infinite: Vec<usize> = Vec::new();
+
+        for (i, entry) in self.graph.iter().enumerate() {
+            let p = entry.1;
+
+            if p.direct_cost < 0.0 {
+                negative_value.push(i);
+            }
+            if p.direct_cost == f32::INFINITY {
+                infinite.push(i);
+            }
+
+            for d in p.dependencies.iter() {
+                if d.id >= self.graph.len() as u64 {
+                    out_of_bounds.push(i);
+                }
+                if d.quantity < 0.0 {
+                    negative_value.push(i);
+                }
+                if d.quantity == f32::INFINITY || (d.id == i as u64 && d.quantity >= 1.0) {
+                    infinite.push(i);
+                }
+            }
+        }
+
+        if out_of_bounds.len() != 0 || negative_value.len() != 0 || infinite.len() != 0 {
+            return Err(GraphError {
+                out_of_bounds_dependency: out_of_bounds,
+                negative: negative_value,
+                prods_in_inf_cycles: infinite,
+            });
+        }
+
+        // Checking for infinite cycles
+        let indir_costs = &mut vec![0.0; self.graph.len()];
+        let indir_costs_copy = &mut vec![0.0; self.graph.len()];
+        let mut increments_gather = || {
+            self.calc_iteration(indir_costs, indir_costs_copy);
+            let increments = indir_costs
+                .par_iter()
+                .zip_eq(indir_costs_copy.par_iter())
+                .map(|(r1, r2)| r2 - r1)
+                .collect::<Vec<f32>>();
+            mem::swap(indir_costs, indir_costs_copy);
+            increments
+        };
+        increments_gather(); // Throw away first result as it involves the 0.0 initialized vec
+        let increments1 = increments_gather();
+        let increments2 = increments_gather();
+
+        let prods_in_infinite_cycles: Vec<usize> = increments1
+            .par_iter()
+            .zip_eq(increments2.par_iter())
+            .enumerate()
+            .filter_map(|(i, (increment1, increment2))| {
+                if increment1 <= increment2 && *increment2 != 0.0 {
+                    Some(i)
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        if prods_in_infinite_cycles.len() == 0 {
+            Ok(())
+        } else {
+            Err(GraphError {
+                prods_in_inf_cycles: prods_in_infinite_cycles,
+                out_of_bounds_dependency: Vec::new(),
+                negative: Vec::new(),
+            })
+        }
+    }
+
 
     /// Generate a random product graph for testing and benchmarking purposes.
+    // FIXME:
     pub fn generate_product_graph(count: usize) -> HashedProductGraph {
         let mut raw_prods: Vec<Product> = Vec::new();
         for i in 0..count {
@@ -169,3 +252,38 @@ impl HashedProductGraph {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn detects_direct_infinite_cycle() {
+        let mut prods = HashedProductGraph::from_vec(vec![Product::new(12345, 10.0)]);
+        prods.set_dependency(0, 0, 1.0);
+        let result = prods.check_graph();
+        match result {
+            Ok(()) => panic!(),
+            Err(e) => assert_eq!(0, e.prods_in_inf_cycles[0]),
+        }
+    }
+
+    #[test]
+    fn detects_indirect_infinite_cycle() {
+        let mut prods = HashedProductGraph::with_capacity(3);
+        for i in 0..3 {
+            prods.insert(Product::new(i, 10.0));
+        }
+        prods.set_dependency(0, 1, 0.5);
+        prods.set_dependency(0, 2, 0.5);
+        prods.set_dependency(2, 0, 1.0);
+        prods.set_dependency(1, 0, 1.0);
+
+        let result = prods.check_graph();
+        match result {
+            Ok(()) => panic!(),
+            Err(e) => {
+                assert_eq!(vec![0, 1, 2], e.prods_in_inf_cycles);
+            }
+        }
+    }
+}
