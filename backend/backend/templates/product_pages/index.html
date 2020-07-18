@@ -13,7 +13,7 @@
     <div
       class="flex items-center justify-between max-w-5xl mx-auto pt-4 px-4 sm:px-6 lg:px-8"
     >
-      <h3 class="text-xl">My Products</h3>
+      <h3 class="text-xl">Products</h3>
       <div class="flex">
           <form method="get">
             <!--{{myFilter.form}}-->
@@ -72,6 +72,10 @@
                 ></td>
               </tr>
               {% endfor %}
+              {% elif has_filter %}
+                <div class="flex items-center justify-center py-6">
+                  Uh oh, no products matched that search.
+                </div>
               <!-- if prod list is empty, render this message -->
               {% else %}
               <div class="flex items-center justify-center py-6">
@@ -87,7 +91,7 @@
   <!-- End Product List -->
 
   <!-- Product List Paginator -->
-  {% if products|length >= 5 or current_page != 1 %}
+  {% if products.paginator.page_range|length > 1 or current_page != 1 %}
   <div
     class="flex justify-end items-center max-w-5xl mx-auto pt-2 px-4 sm:px-6 lg:px-8"
   >
@@ -121,8 +125,34 @@
         </a>
       {% endif %}
 
-      {% if products.paginator.page_range|length >= 10 %}
-        {% comment %} first ... three_before current next ... last_three {% endcomment %}
+      {% if products.paginator.page_range|length >= 5 %}
+      {% comment %} use context page range {% endcomment %}
+        {% for i in page_range %}
+          {% if i.0 and i.0 == '...'%}
+            <a
+              href="?page={{i.1}}"
+              class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150"
+            >
+              {{i.0}}
+            </a>
+
+          {% elif products.number == i %}
+            <a
+              href="?page={{i}}"
+              class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue bg-gray-100 text-gray-700 transition ease-in-out duration-150"
+            >
+              {{i}}
+            </a>
+          {% else %}
+            <a
+              href="?page={{i}}"
+              class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150"
+            >
+              {{i}}
+            </a>
+          {% endif %}
+        {% endfor %}
+
       {% else %}
         {% for i in products.paginator.page_range %}
           {% if products.number == i %}
