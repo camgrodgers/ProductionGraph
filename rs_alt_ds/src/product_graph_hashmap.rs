@@ -1,4 +1,4 @@
-use rand::Rng;
+// use rand::Rng;
 // use std::error;
 use std::f32;
 // use std::fmt;
@@ -7,7 +7,7 @@ use std::mem;
 use hashbrown::HashMap;
 use rayon::iter::IntoParallelRefIterator;
 use rayon::iter::ParallelIterator;
-use rayon::iter::FromParallelIterator;
+// use rayon::iter::FromParallelIterator;
 use rayon::iter::IndexedParallelIterator;
 
 
@@ -68,24 +68,25 @@ impl HashedProductGraph {
         dependant: u64,
         dependency: usize,
         quantity: f32,
-    ) -> Result<(), ()> {
-        if self.graph.len() == 0 
-            // check if dep_id is same as prod_id and if quantity is at or above 1,
-            // basically ensuring they don't depend on 1.0 or more of themselves.
-            || (dependency == dependant as usize && quantity >= 1.0) 
-            || !self.graph.contains_key(&dependant)
-            || quantity < 0.0
-            || quantity == f32::INFINITY
-        {
-            return Err(());
-        }
+    ) /*-> Result<(), ()> */{
+        // if self.graph.len() == 0 
+        //     // check if dep_id is same as prod_id and if quantity is at or above 1,
+        //     // basically ensuring they don't depend on 1.0 or more of themselves.
+        //     || (dependency == dependant as usize && quantity >= 1.0) 
+        //     || !self.graph.contains_key(&dependant)
+        //     || quantity < 0.0
+        //     || quantity == f32::INFINITY
+        // {
+        //     return Err(());
+        // }
 
         match self.graph.get_mut(&dependant) {
             Some(prod) => prod.set_dependency(dependency as u64, quantity),
-            None => return Err(())
+            // None => return Err(())
+            None => return
         }
 
-        Ok(())
+        // Ok(())
     }
 
     // FIXME: collect into vec is not compatible with hashbrown hashmap, my other solution is to 
@@ -180,6 +181,7 @@ impl HashedProductGraph {
         }
 
         // Checking for infinite cycles
+        // FIXME: test failing for this implementation
         let indir_costs = &mut vec![0.0; self.graph.len()];
         let indir_costs_copy = &mut vec![0.0; self.graph.len()];
         let mut increments_gather = || {
@@ -221,35 +223,35 @@ impl HashedProductGraph {
     }
 
 
-    /// Generate a random product graph for testing and benchmarking purposes.
-    // FIXME:
-    pub fn generate_product_graph(count: usize) -> HashedProductGraph {
-        let mut raw_prods: Vec<Product> = Vec::new();
-        for i in 0..count {
-            raw_prods.push(Product::new(i as u64, 10.0));
-        }
+    ///// Generate a random product graph for testing and benchmarking purposes.
+    // FIXME: this function was written when set_dependency returned a Result
+    // pub fn generate_product_graph(count: usize) -> HashedProductGraph {
+    //     let mut raw_prods: Vec<Product> = Vec::new();
+    //     for i in 0..count {
+    //         raw_prods.push(Product::new(i as u64, 10.0));
+    //     }
 
-        let mut rng = rand::thread_rng();
-        let mut prods = HashedProductGraph::from_vec(raw_prods);
-        for i in 0..(count / 2) {
-            for _ in 0..8 {
-                match prods.set_dependency(i as u64, rng.gen_range(count / 2, count), 0.00000000001) {
-                    Err(e) => print!("Error: {:?}", e),
-                    _ => ()
-                }
-            }
-        }
-        for i in (count / 2)..count {
-            for _ in 0..8 {
-                match prods.set_dependency(i as u64, rng.gen_range(0, count / 2), rng.gen_range(0.01, 5.0)) {
-                    Err(e) => print!("Error: {:?}", e),
-                    _ => ()
-                }
-            }
-        }
+    //     let mut rng = rand::thread_rng();
+    //     let mut prods = HashedProductGraph::from_vec(raw_prods);
+    //     for i in 0..(count / 2) {
+    //         for _ in 0..8 {
+    //             match prods.set_dependency(i as u64, rng.gen_range(count / 2, count), 0.00000000001) {
+    //                 Err(e) => print!("Error: {:?}", e),
+    //                 _ => ()
+    //             }
+    //         }
+    //     }
+    //     for i in (count / 2)..count {
+    //         for _ in 0..8 {
+    //             match prods.set_dependency(i as u64, rng.gen_range(0, count / 2), rng.gen_range(0.01, 5.0)) {
+    //                 Err(e) => print!("Error: {:?}", e),
+    //                 _ => ()
+    //             }
+    //         }
+    //     }
 
-        prods
-    }
+    //     prods
+    // }
 }
 
 #[cfg(test)]
@@ -271,7 +273,7 @@ mod tests {
     fn detects_indirect_infinite_cycle() {
         let mut prods = HashedProductGraph::with_capacity(3);
         for i in 0..3 {
-            prods.insert(Product::new(i, 10.0));
+            prods.insert(Product::new(i as u64, 10.0));
         }
         prods.set_dependency(0, 1, 0.5);
         prods.set_dependency(0, 2, 0.5);
