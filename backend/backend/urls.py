@@ -21,8 +21,16 @@ from . import api
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('fourohfour/', views.fourohfour),
+
+    # user pages
     path('', views.home),
-    path('product/<str:name>', views.product_view),
+    path('login/', views.login),
+    path('register/', views.register),
+
+    # product pages
+    path('products/', views.products_page),
+    path('products/?page=<int:num>', views.products_page),
+    path('product/<str:name>/', views.product_view),
     path('product/<str:name>/analytics/', views.product_analytics),
 
     ### api ###
@@ -31,5 +39,5 @@ urlpatterns = [
     path('api/delete/product/<str:name>', api.delete_product),
     path('api/create/dependency/<str:prod_name>', api.create_dependency),
     path('api/edit/dependency/<str:prod_name>', api.edit_dependency),
-    path('api/delete/dependency/<str:dep_id>', api.delete_dependency)
+    path('api/delete/dependency/', api.delete_dependency)
 ]

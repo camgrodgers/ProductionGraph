@@ -8,6 +8,7 @@ import product_graph_bindings
 from .models import Dependency
 from .forms import DependencyForm
 from .forms import EditDependencyForm
+from .forms import DeleteDependencyForm
 
 ### CRUD FOR PRODUCT ###
 
@@ -29,7 +30,19 @@ def create_product(request):
         else:
             print(form._errors)
 
-        return HttpResponseRedirect("/")
+        page = form.cleaned_data['page']
+
+        if page is None or page == 1:
+            return HttpResponseRedirect("/products")
+        else:
+            # do we want to route to the same page after creation?
+            # should we route to the first / last page instead? If we 
+            # sort our list of products, this would be more difficult. 
+            # if the products are in order of creation, we could redirect to the
+            # last page maybe?
+            return HttpResponseRedirect("/products/?page={}".format(page))
+
+        
     # redirect to 404 if method isn't post
     else:
         return HttpResponseRedirect("/fourohfour")
@@ -78,7 +91,7 @@ def delete_product(request, name):
             # rather than routing to 404 anytime a DB operation fails
             return HttpResponseRedirect("/fourohfour")
     
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect("/products")
     else:
         return HttpResponseRedirect("/fourohfour")
 
@@ -152,16 +165,19 @@ def edit_dependency(request, prod_name):
     else:
         return HttpResponseRedirect("/fourohfour")
 
-def delete_dependency(request, dep_name):
+def delete_dependency(request):
     # TODO: change to DELETE request??
     if request.method == 'POST':
-        form = DependencyForm(request.POST)
+        redirect_to = ""
+        form = DeleteDependencyForm(request.POST)
         if form.is_valid():
             try:
-                # find by name (primary key)
+                # find by id (primary key)
                 # if not found, goes to except block
                 # delete on find
-                Dependency.objects.get(name=dep_name).delete()
+                dep_id = form.cleaned_data['id']
+                redirect_to = form.cleaned_data['redirect_to']
+                Dependency.objects.get(id=dep_id).delete()
             except:
                 # TODO: is this the best action to take?
                 return HttpResponseRedirect("/fourohfour")
@@ -171,7 +187,7 @@ def delete_dependency(request, dep_name):
             # TODO: maybe add routing to uh oh error page??
 
         update_product_indirect_values()
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect("/product/{}".format(redirect_to))
     else:
         return HttpResponseRedirect("/fourohfour")
 

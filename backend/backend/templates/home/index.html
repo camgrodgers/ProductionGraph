@@ -6,236 +6,38 @@
  -->
 
 {% block content %}
-
-<div>
-  <!-- Project List Heading -->
-  <header class="pt-6">
-    <div
-      class="flex items-center justify-between max-w-5xl mx-auto pt-4 px-4 sm:px-6 lg:px-8"
+<div class="flex justify-center mt-24">
+  <div class="text-center self-center">
+    <h2
+      class="text-4xl tracking-loose font-extrabold text-gray-900 md:text-6xl"
     >
-      <h3 class="text-xl">My Products</h3>
+      Production<span class="text-blue-600">Graph</span>
+    </h2>
+    <p class="max-w-md mx-auto text-gray-600 text-md md:text-xl">
+      A set of programs designed to help in estimating costs and labor hours of
+      commodities.
+    </p>
+    <div class="flex-1 pt-6 justify-center items-center">
       <button
-        id="modal-trigger"
-        class="modal-open bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded"
+        class="font-semibold text-md shadow bg-blue-500 hover:bg-blue-700 text-white py-3 px-8 rounded mr-2 focus:outline-none transition duration-150 ease-in-out"
+        onclick="window.location.href='/login'"
       >
-        Create
+        Login
+      </button>
+      <button
+        class="font-semibold text-md shadow text-blue-600 hover:bg-gray-200 rounded py-3 px-8 rounded mr-2 focus:outline-none transition duration-150 ease-in-out"
+        onclick="window.location.href='/register'"
+      >
+        Register
       </button>
     </div>
-  </header>
-  <!-- End Project List Heading -->
-
-  <!-- Product List -->
-  <div class="max-w-5xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col">
-      <div class="-my-2 py-2 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div
-          class="bg-white align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200"
-        >
-          <table class="min-w-full">
-            <tbody class="bg-white">
-              <!-- if product list has items: render the list -->
-              {% if products|length > 0 %} {% for product in products %}
-              <tr
-                class="cursor-pointer"
-                onclick="location.href = '/product/{{product.name}}';"
-              >
-                <td
-                  class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
-                >
-                  <div>
-                    <div class="ml-4">
-                      {{ product.name }}
-                    </div>
-					<div class="flex"> 
-                      <div class="ml-4 text-sm leading-5 text-gray-500">
-                        Estimated cost: ${{product.cost_price|floatformat:2}}
-                      </div>
-                      <div class="ml-4 text-sm leading-5 text-gray-500">
-                        Estimated labor time: {{product.value|floatformat:3}} h
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td
-                  class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
-                ></td>
-              </tr>
-              {% endfor %}
-              <!-- if prod list is empty, render this message -->
-              {% else %}
-              <div class="flex items-center justify-center py-6">
-                Click the "Create" button to get started!
-              </div>
-              {%endif%}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- End Product List -->
-
-  <!-- MODAL -->
-  <div
-    class="modal opacity-0 pointer-events-none fixed inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center"
-  >
-    <!-- This is the blurred, gray bg  -->
-    <!-- TODO: Broken on mobile -->
-    <div
-      class="modal-closer absolute bg-gray-900 opacity-50"
-      style="width: 110vw; height: 110vh;"
-    ></div>
-
-    <div
-      class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full"
+    <button
+      class="bg-gray-500 hover:bg-gray-700 py-2 px-4 rounded mt-16"
+      onclick="window.location.href='/products'"
     >
-      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-        <!-- Modal Title  -->
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Create Product
-        </h3>
-        <!-- Modal Subtitle -->
-        <div class="mt-2">
-          <p class="text-sm leading-5 text-gray-500">
-            Fill out the form beneath this prompt and hit confirm to create your
-            new product
-          </p>
-        </div>
-        <!-- End Modal Subtitle -->
-        <!-- End Modal Title -->
-
-        <!--Modal Content -->
-        <form method="POST" action="api/create/product">
-          {% csrf_token %}
-          <div class="mt-4 mb-6">
-            <div class="flex items-center mx-auto mb-4">
-              <div class="w-1/2 px-2">
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
-                  Name
-                </label>
-                <input
-                  name="name"
-                  required
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                  placeholder="Name of your product"
-                />
-              </div>
-              <div class="w-1/2 px-2">
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
-                  Current Real Price
-                </label>
-                <input
-                  name="real_price"
-                  required
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                  placeholder="$"
-                />
-              </div>
-            </div>
-            <div class="flex items-center mx-auto mb-4">
-              <div class="w-1/2 px-2">
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
-                  Direct Labor Time
-                </label>
-                <input
-                  name="direct_labor"
-                  required
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                  placeholder=""
-                />
-              </div>
-              <div class="w-1/2 px-2">
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
-                  Direct Wages
-                </label>
-                <input
-                  name="direct_wages"
-                  required
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                  placeholder="$"
-                />
-              </div>
-            </div>
-
-            <!----------------------------------------------------------------->
-            <!--INDIRECT WAGES AND INCOME INPUTES WERE HERE, BUT WERE REMOVED-->
-            <!----------------------------------------------------------------->
-          </div>
-          <!--Modal Actions-->
-          <div class="bg-gray-50 sm:px-2 sm:flex sm:flex-row-reverse">
-            <!-- BUTTON TO FINALIZE CREATION -->
-            <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
-              <button
-                type="submit"
-                class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5"
-              >
-                Confirm
-              </button>
-            </span>
-            <!-- BUTTON TO CANCEL CREATION-->
-            <span
-              class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto"
-            >
-              <button
-                type="button"
-                class="modal-closer inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
-              >
-                Cancel
-              </button>
-            </span>
-          </div>
-          <!-- End Actions -->
-        </form>
-        <!-- End Content -->
-      </div>
-    </div>
+      Go to products page! (dev only)
+    </button>
   </div>
-  <!-- End Modal -->
-  <!-- END  -->
 </div>
-
-<script>
-  // I use id for open trigger bc one occurrence on this template
-  // I use classes for close triggers bc multiple occurrences (the cancel button and outside click)
-
-  let modalTrigger = document.getElementById("modal-trigger");
-
-  // should always exist, but check for safety
-  if (modalTrigger) {
-    modalTrigger.addEventListener("click", () => {
-      const modalContent = document.querySelector(".modal");
-
-      // should always exist but check for safety
-      if (modalContent) {
-        modalContent.classList.toggle("opacity-0");
-        modalContent.classList.toggle("pointer-events-none");
-      }
-    });
-  }
-
-  let modalClosers = document.querySelectorAll(".modal-closer");
-  if (modalClosers) {
-    modalClosers.forEach((modalCloser) => {
-      console.log(modalCloser);
-      modalCloser.addEventListener("click", () => {
-        const modalContent = document.querySelector(".modal");
-
-        // should always exist but check for safety
-        if (modalContent) {
-          modalContent.classList.toggle("opacity-0");
-          modalContent.classList.toggle("pointer-events-none");
-        }
-      });
-    });
-  }
-</script>
 
 {% endblock %}
