@@ -31,6 +31,11 @@ class Dependency(models.Model):
             )
     quantity = models.FloatField()
 
+class DependencyCycleError(models.Model):
+    product = models.ForeignKey(
+            Product,
+            on_delete=models.CASCADE,
+            )
 
 class Economy(models.Model):
     real_average_profit_rate = models.FloatField()

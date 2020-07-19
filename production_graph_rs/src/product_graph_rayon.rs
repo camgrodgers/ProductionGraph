@@ -122,9 +122,9 @@ impl ProductGraph {
                 if d.quantity < 0.0 {
                     negative_value.push(i);
                 }
-                if d.quantity == f32::INFINITY || (d.id == i && d.quantity >= 1.0) {
-                    infinite.push(i);
-                }
+                //if d.quantity == f32::INFINITY || (d.id == i && d.quantity >= 1.0) { // TODO: early partial error checking is bad?
+                //    infinite.push(i);
+                //}
             }
         }
         if out_of_bounds.len() != 0 || negative_value.len() != 0 || infinite.len() != 0 {
@@ -195,6 +195,11 @@ impl ProductGraph {
         self.graph.push(prod);
     }
 
+    /// Set the allocated capacity of the dependency vec for a Product in the graph
+    pub fn set_dependencies_capacity(&mut self, dependant: usize, capacity: usize) {
+        self.graph[dependant].dependencies.reserve_exact(capacity);
+    }
+
     /// Create a dependency for a Product in the graph.
     pub fn set_dependency(&mut self, dependant: usize, dependency: usize, quantity: f32) {
         let deps = &mut self.graph[dependant].dependencies;
@@ -219,11 +224,13 @@ impl ProductGraph {
         let mut rng = rand::thread_rng();
         let mut prods = ProductGraph::from_raw_graph(vec![Product::new(10.0); count]);
         for i in 0..(count / 2) {
+            //prods.set_dependencies_capacity(i, 8);
             for _ in 0..8 {
                 prods.set_dependency(i, rng.gen_range(count / 2, count), 0.00000000001);
             }
         }
         for i in (count / 2)..count {
+            //prods.set_dependencies_capacity(i, 8);
             for _ in 0..8 {
                 prods.set_dependency(i, rng.gen_range(0, count / 2), rng.gen_range(0.01, 5.0));
             }

@@ -122,4 +122,7 @@ GitHub.sublime-settings
 .DS_STORE/
 
 # RUST
+
+target/
+/target/
 target

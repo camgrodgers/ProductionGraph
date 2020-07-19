@@ -282,7 +282,7 @@ dependencies = [
 
 [[package]]
 name = "product_graph_bindings"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "product_graph_rs",
  "pyo3",

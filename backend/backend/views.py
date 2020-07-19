@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Product
 from .models import Dependency
+from .models import DependencyCycleError
 from .forms import ProductForm
 from .filters import ProductFilter
 
@@ -33,6 +34,13 @@ def retrieveDependencies (product):
         return Dependency.objects.filter(dependent=product)
     except:
         return []
+
+# TODO: could replace this with .exists()?
+def retrieveProductError(_product):
+    try:
+        return DependencyCycleError.objects.get(product_id=_product.id)
+    except:
+        return None
 
 # def handle_edit_product(form, name):
 
@@ -96,6 +104,20 @@ def login(request):
 def register(request):
     return render(request, 'home/register.html')
 
+def errors_page(request):
+    if request.method != 'GET':
+        return HttpResponseRedirect("/fourohfour")
+    
+    error_list = []
+    for p in DependencyCycleError.objects.all():
+        error_list.append(p.product.id)
+    product_list = Product.objects.filter(id__in=error_list)
+
+    context = {
+            'products': product_list,
+            }
+
+    return render(request, 'product_pages/errorlisting.html', context)
 
 def products_page(request):
     """
@@ -130,6 +152,8 @@ def products_page(request):
     product_list = myFilter.qs                                   # Creates a query set by filtering the data
 
     paginator = Paginator(product_list, 10)
+    errors_exist = DependencyCycleError.objects.exists()
+    print(errors_exist)
 
     try:
         products = paginator.page(page)
@@ -147,6 +171,7 @@ def products_page(request):
         'myFilter': myFilter,
         'has_filter': has_filter,
         'current_page': page,
+        'errors': errors_exist,
         'page_range': page_range
     }
 
@@ -175,6 +200,7 @@ def product_view(request, name):
     target_product = retrieve_product(name)
     product_dependencies = retrieveDependencies(target_product)
     selected_dep = None
+    graph_error = retrieveProductError(target_product)
     
     if target_product is None or request.method != 'GET':
         return redirect('/fourohfour')
@@ -182,7 +208,8 @@ def product_view(request, name):
         context = {
             'product': target_product,
             'dependencies': product_dependencies,
-            'selected_dep': selected_dep
+            'selected_dep': selected_dep,
+            'graph_error': graph_error
         }
         return render(request, 'product_pages/product_info.html', context)
 
