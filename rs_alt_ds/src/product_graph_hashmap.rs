@@ -13,9 +13,9 @@ use crate::product::Product;
 // TODO: impl Error
 #[derive(Debug, Clone)]
 pub struct GraphError {
-    pub out_of_bounds_dependency: Vec<usize>,
-    pub negative: Vec<usize>,
-    pub prods_in_inf_cycles: Vec<usize>,
+    pub out_of_bounds_dependency: Vec<u64>,
+    pub negative: Vec<u64>,
+    pub prods_in_inf_cycles: Vec<u64>,
 }
 
 #[derive(Clone)]
@@ -62,7 +62,7 @@ impl HashedProductGraph {
     pub fn set_dependency(
         &mut self,
         dependant: u64,
-        dependency: usize,
+        dependency: u64,
         quantity: f32,
     ) /*-> Result<(), ()> */{
         // if self.graph.len() == 0 
@@ -77,7 +77,7 @@ impl HashedProductGraph {
         // }
 
         match self.graph.get_mut(&dependant) {
-            Some(prod) => prod.set_dependency(dependency as u64, quantity),
+            Some(prod) => prod.set_dependency(dependency, quantity),
             // None => return Err(())
             None => return
         }
@@ -93,18 +93,19 @@ impl HashedProductGraph {
     // dereference the target passed in vec and assign it to collect. Documentation states that 
     // collect may be slower. 
     // TODO: ask cameron for clarification on this function
-    fn calc_iteration(&self, indir_costs_old: &Vec<f32>, indir_costs_new: &mut Vec<f32>) {
+    fn calc_iteration(&self, indir_costs_old: & HashMap<u64, f32>) -> HashMap<u64, f32> {
         // is dereferencing like this in rust bad practice??
-        *indir_costs_new = self.graph
+        self.graph
             .par_iter()
-            .map(|(_, prod)| {
-                prod.dependencies.iter().fold(0.0, |acc, dep| {
+            .map(|(id, prod)| {
+                let indir_val = prod.dependencies.iter().fold(0.0, |acc, dep| {
                     // FIXME: this method of accessing the old costs will not work I think, as the dep.id is 
                     // no longer index in the array
-                    let dep_cost = prod.direct_cost + indir_costs_old[dep.id as usize];
+                    let dep_cost = self.graph[&dep.id].direct_cost + indir_costs_old[&dep.id];
                     acc + (dep.quantity * dep_cost)
-                })
-            }).collect();
+                });
+                (*id, indir_val)
+            }).collect()
             //.collect_into_vec(indir_costs_new) //=> BROKEN
             // method not found in `rayon::iter::map::Map<hashbrown::external_trait_impls::rayon::map::ParIter<'_, u64, product::Product, ahash::random_state::RandomState>, 
             // [closure@src/product_graph_hashmap.rs:96:18: 103:14 indir_costs_old:_]>`
@@ -119,11 +120,11 @@ impl HashedProductGraph {
     /// should give a good result. However, if it depends on 0.9 of itself, it could take 50 iterations
     /// to be sure.
     // TODO: ask cameron for clarification on this function
-    pub fn calc_for_n_iterations(&self, n: u16) -> Vec<f32> {
-        let indir_costs = &mut vec![0.0; self.graph.len()];
-        let indir_costs_copy = &mut vec![0.0; self.graph.len()];
+    pub fn calc_for_n_iterations(&self, n: u16) -> HashMap<u64, f32> {
+        let indir_costs = &mut (0..self.graph.len()).map(|i| (i as u64, 0.0)).collect();
+        let indir_costs_copy = &mut (0..self.graph.len()).map(|i| (i as u64, 0.0)).collect();
         for _ in 0..n {
-            self.calc_iteration(indir_costs, indir_costs_copy);
+            *indir_costs_copy = self.calc_iteration(indir_costs);
             // At the end of each iteration, the copy var has the most-updated data in it.
             // Therefore, in the next iteration, it should be the old data, and the new data should
             // overwrite the old old data.
@@ -138,29 +139,29 @@ impl HashedProductGraph {
     /// Also checks for dependencies that reference vector elements out of bounds, and for values
     /// that are infinity or negative.
     pub fn check_graph(&self) -> Result<(), GraphError> {
-        let mut out_of_bounds: Vec<usize> = Vec::new();
-        let mut negative_value: Vec<usize> = Vec::new();
-        let mut infinite: Vec<usize> = Vec::new();
+        let mut out_of_bounds: Vec<u64> = Vec::new();
+        let mut negative_value: Vec<u64> = Vec::new();
+        let mut infinite: Vec<u64> = Vec::new();
 
-        for (i, entry) in self.graph.iter().enumerate() {
-            let p = entry.1;
+        for (i, entry) in self.graph.iter() {
+            let p = entry;
 
             if p.direct_cost < 0.0 {
-                negative_value.push(i);
+                negative_value.push(*i);
             }
             if p.direct_cost == f32::INFINITY {
-                infinite.push(i);
+                infinite.push(*i);
             }
 
             for d in p.dependencies.iter() {
                 if d.id >= self.graph.len() as u64 {
-                    out_of_bounds.push(i);
+                    out_of_bounds.push(*i);
                 }
                 if d.quantity < 0.0 {
-                    negative_value.push(i);
+                    negative_value.push(*i);
                 }
-                if d.quantity == f32::INFINITY || (d.id == i as u64 && d.quantity >= 1.0) {
-                    infinite.push(i);
+                if d.quantity == f32::INFINITY || (d.id == *i && d.quantity >= 1.0) {
+                    infinite.push(*i);
                 }
             }
         }
@@ -175,15 +176,15 @@ impl HashedProductGraph {
 
         // Checking for infinite cycles
         // FIXME: test failing for this implementation
-        let indir_costs = &mut vec![0.0; self.graph.len()];
-        let indir_costs_copy = &mut vec![0.0; self.graph.len()];
+        let indir_costs = &mut (0..self.graph.len()).map(|i| (i as u64, 0.0)).collect();
+        let indir_costs_copy = &mut (0..self.graph.len()).map(|i| (i as u64, 0.0)).collect();
         let mut increments_gather = || {
-            self.calc_iteration(indir_costs, indir_costs_copy);
+            *indir_costs_copy = self.calc_iteration(indir_costs);
             let increments = indir_costs
-                .par_iter()
-                .zip_eq(indir_costs_copy.par_iter())
-                .map(|(r1, r2)| r2 - r1)
-                .collect::<Vec<f32>>();
+                .iter()
+                .zip(indir_costs_copy.iter())
+                .map(|((r1id, r1val), (r2id, r2val))| (*r1id, r2val - r1val))
+                .collect::<HashMap<u64, f32>>();
             mem::swap(indir_costs, indir_costs_copy);
             increments
         };
@@ -191,13 +192,12 @@ impl HashedProductGraph {
         let increments1 = increments_gather();
         let increments2 = increments_gather();
 
-        let prods_in_infinite_cycles: Vec<usize> = increments1
-            .par_iter()
-            .zip_eq(increments2.par_iter())
-            .enumerate()
-            .filter_map(|(i, (increment1, increment2))| {
-                if increment1 <= increment2 && *increment2 != 0.0 {
-                    Some(i)
+        let prods_in_infinite_cycles: Vec<u64> = increments1
+            .iter()
+            .zip(increments2.iter())
+            .filter_map(|((increment1id, inc1val), (increment2id, inc2val))| {
+                if inc1val <= inc2val && *inc2val != 0.0 {
+                    Some(*increment1id)
                 } else {
                     None
                 }
@@ -226,13 +226,13 @@ impl HashedProductGraph {
         for i in 0..(count / 2) {
             //prods.set_dependencies_capacity(i, 8);
             for _ in 0..8 {
-                prods.set_dependency(i as u64, rng.gen_range(count / 2, count), 0.00000000001);
+                prods.set_dependency(i as u64 ,rng.gen_range(count / 2, count) as u64, 0.00000000001);
             }
         }
         for i in (count / 2)..count {
             //prods.set_dependencies_capacity(i, 8);
             for _ in 0..8 {
-                prods.set_dependency(i as u64, rng.gen_range(0, count / 2), rng.gen_range(0.01, 5.0));
+                prods.set_dependency(i as u64, rng.gen_range(0, count / 2) as u64, rng.gen_range(0.01, 5.0));
             }
         }
 
@@ -246,7 +246,7 @@ mod tests {
 
     #[test]
     fn detects_direct_infinite_cycle() {
-        let mut prods = HashedProductGraph::from_vec(vec![Product::new(12345, 10.0)]);
+        let mut prods = HashedProductGraph::from_vec(vec![Product::new(0, 10.0)]);
         prods.set_dependency(0, 0, 1.0);
         let result = prods.check_graph();
         match result {
@@ -259,7 +259,7 @@ mod tests {
     fn detects_indirect_infinite_cycle() {
         let mut prods = HashedProductGraph::with_capacity(3);
         for i in 0..3 {
-            prods.insert(Product::new(i as u64, 10.0));
+            prods.insert(Product::new(i, 10.0));
         }
 
         prods.set_dependency(0, 1, 0.5);
@@ -271,7 +271,9 @@ mod tests {
         match result {
             Ok(()) => panic!(),
             Err(e) => {
-                assert_eq!(vec![0, 1, 2], e.prods_in_inf_cycles);
+                for id in vec![0, 1, 2] {
+                    assert!(e.prods_in_inf_cycles.contains(&id))
+                }
             }
         }
     }
