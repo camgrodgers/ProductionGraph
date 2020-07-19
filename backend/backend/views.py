@@ -50,6 +50,20 @@ def login(request):
 def register(request):
     return render(request, 'home/register.html')
 
+def errors_page(request):
+    if request.method != 'GET':
+        return HttpResponseRedirect("/fourohfour")
+    
+    error_list = []
+    for p in DependencyCycleError.objects.all():
+        error_list.append(p.product.id)
+    product_list = Product.objects.filter(id__in=error_list)
+
+    context = {
+            'products': product_list,
+            }
+
+    return render(request, 'product_pages/errorlisting.html', context)
 
 def products_page(request):
     if request.method != 'GET':
