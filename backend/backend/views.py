@@ -25,6 +25,7 @@ def retrieveDependencies (product):
     except:
         return []
 
+# TODO: could replace this with .exists()?
 def retrieveProductError(_product):
     try:
         return DependencyCycleError.objects.get(product_id=_product.id)
@@ -78,6 +79,7 @@ def products_page(request):
 
     product_list = Product.objects.all()
     paginator = Paginator(product_list, 10)
+    errors_exist = DependencyCycleError.objects.exists()
 
     try:
         products = paginator.page(page)
@@ -91,7 +93,8 @@ def products_page(request):
     context = {
         'products': products,
         'current_page': page,
-        'page_range': range(paginator.num_pages)
+        'page_range': range(paginator.num_pages),
+        'errors': errors_exist
     }
 
     return render(request, 'product_pages/index.html', context)
