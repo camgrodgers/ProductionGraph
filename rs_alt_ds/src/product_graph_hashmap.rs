@@ -112,6 +112,30 @@ impl HashedProductGraph {
 
     }
 
+    fn calc_iteration_new(&mut self, indir_costs: &mut HashMap<u64, f32>) {
+        // let mut indir_costs_new = indir_costs.clone();
+
+        self.graph
+        .par_iter()
+        .for_each(|(_, prod)| {
+            // indir_costs_new.insert(prod.id, 1.0);
+            let new_cost = prod.dependencies.iter().fold(0.0, |acc, dep| {
+                let dep_cost = match self.graph.get(&dep.id) {
+                    Some(_prod) => _prod.direct_cost,
+                    _ => 0.0
+                };
+
+                acc + (dep.quantity * dep_cost)
+            });
+        });
+    }
+
+    pub fn calc_for_n_iterations_new(&self, n: u16) -> HashMap<u64, f32> {
+        let indir_costs = &mut HashMap::<u64, f32>::new();
+        
+        indir_costs.clone()
+    }
+
     /// Multiple iterations of the iterative estimation for indirect costs. Performs count number of
     /// iterations and then returns the final estimates. With each iteration, the estimates become
     /// more precise. ~15 iterations gives a good estimate, ~25 is better, and ~50 is extremely precise.
