@@ -1,18 +1,14 @@
-// use rand::Rng;
-// use std::error;
 use std::f32;
-// use std::fmt;
-// use rayon::prelude::*;
+use rayon::prelude::*;
 use std::mem;
 use hashbrown::HashMap;
 use rayon::iter::IntoParallelRefIterator;
 use rayon::iter::ParallelIterator;
 // use rayon::iter::FromParallelIterator;
 use rayon::iter::IndexedParallelIterator;
-
+use rand::Rng;
 
 use crate::product::Product;
-// use crate::dependency::Dependency;
 
 // TODO: impl Error
 #[derive(Debug, Clone)]
@@ -89,6 +85,10 @@ impl HashedProductGraph {
         // Ok(())
     }
 
+    pub fn len(&self) -> usize {
+        self.graph.len()
+    }
+
     // FIXME: collect into vec is not compatible with hashbrown hashmap, my other solution is to 
     // dereference the target passed in vec and assign it to collect. Documentation states that 
     // collect may be slower. 
@@ -108,14 +108,7 @@ impl HashedProductGraph {
             //.collect_into_vec(indir_costs_new) //=> BROKEN
             // method not found in `rayon::iter::map::Map<hashbrown::external_trait_impls::rayon::map::ParIter<'_, u64, product::Product, ahash::random_state::RandomState>, 
             // [closure@src/product_graph_hashmap.rs:96:18: 103:14 indir_costs_old:_]>`
-        
-        
-        // let test: Vec<Product> = Vec::new();
 
-        // test.par_iter().map(|prod| {
-        //     32.0
-        // }).collect_into_vec(indir_costs_new)
-    
     }
 
     /// Multiple iterations of the iterative estimation for indirect costs. Performs count number of
@@ -223,35 +216,28 @@ impl HashedProductGraph {
     }
 
 
-    ///// Generate a random product graph for testing and benchmarking purposes.
-    // FIXME: this function was written when set_dependency returned a Result
-    // pub fn generate_product_graph(count: usize) -> HashedProductGraph {
-    //     let mut raw_prods: Vec<Product> = Vec::new();
-    //     for i in 0..count {
-    //         raw_prods.push(Product::new(i as u64, 10.0));
-    //     }
+    /// Generate a random product graph for testing and benchmarking purposes.
+    pub fn generate_product_graph(count: usize) -> HashedProductGraph {
+        let mut rng = rand::thread_rng();
+        let mut prods = HashedProductGraph::from_vec((0..count).map(|i| {
+            Product::new(i as u64, 10.0)
+        }).collect());
 
-    //     let mut rng = rand::thread_rng();
-    //     let mut prods = HashedProductGraph::from_vec(raw_prods);
-    //     for i in 0..(count / 2) {
-    //         for _ in 0..8 {
-    //             match prods.set_dependency(i as u64, rng.gen_range(count / 2, count), 0.00000000001) {
-    //                 Err(e) => print!("Error: {:?}", e),
-    //                 _ => ()
-    //             }
-    //         }
-    //     }
-    //     for i in (count / 2)..count {
-    //         for _ in 0..8 {
-    //             match prods.set_dependency(i as u64, rng.gen_range(0, count / 2), rng.gen_range(0.01, 5.0)) {
-    //                 Err(e) => print!("Error: {:?}", e),
-    //                 _ => ()
-    //             }
-    //         }
-    //     }
+        for i in 0..(count / 2) {
+            //prods.set_dependencies_capacity(i, 8);
+            for _ in 0..8 {
+                prods.set_dependency(i as u64, rng.gen_range(count / 2, count), 0.00000000001);
+            }
+        }
+        for i in (count / 2)..count {
+            //prods.set_dependencies_capacity(i, 8);
+            for _ in 0..8 {
+                prods.set_dependency(i as u64, rng.gen_range(0, count / 2), rng.gen_range(0.01, 5.0));
+            }
+        }
 
-    //     prods
-    // }
+        prods
+    }
 }
 
 #[cfg(test)]
@@ -275,6 +261,7 @@ mod tests {
         for i in 0..3 {
             prods.insert(Product::new(i as u64, 10.0));
         }
+
         prods.set_dependency(0, 1, 0.5);
         prods.set_dependency(0, 2, 0.5);
         prods.set_dependency(2, 0, 1.0);
