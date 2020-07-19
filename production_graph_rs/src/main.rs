@@ -6,8 +6,8 @@ use product_graph_rayon::*;
 use std::time::Instant;
 
 fn main() {
-    benchmark_rayon(1_000_000, 1, 1);
-    benchmark_plain(1_000_000, 1, 1);
+    benchmark_rayon(100_000, 1, 10);
+    benchmark_plain(100_000, 1, 10);
 }
 
 fn benchmark_rayon(step: usize, begin: usize, end: usize) {
@@ -30,7 +30,7 @@ fn benchmark_rayon(step: usize, begin: usize, end: usize) {
 
     for (multiple, duration) in times {
         println!(
-            "Time elapsed in threaded for {} iterations on {} products is: {:?}",
+            "Time elapsed in multi-threaded for {} iterations on {} products is: {:?}",
             num_iters,
             step * multiple,
             duration
@@ -51,7 +51,7 @@ fn benchmark_plain(step: usize, begin: usize, end: usize) {
 
     for (multiple, duration) in times {
         println!(
-            "Time elapsed for {} iterations on {} products is: {:?}",
+            "Time elapsed in single-threaded for {} iterations on {} products is: {:?}",
             num_iters,
             step * multiple,
             duration
