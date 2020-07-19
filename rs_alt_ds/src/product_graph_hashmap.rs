@@ -92,7 +92,8 @@ impl HashedProductGraph {
     // FIXME: collect into vec is not compatible with hashbrown hashmap, my other solution is to 
     // dereference the target passed in vec and assign it to collect. Documentation states that 
     // collect may be slower. 
-    // TODO: ask cameron for clarification on this function
+    // FIXEME: alter cost vectors to be hashmaps
+    // Also since you can't collect into vec, I think it probably just needs one buffer and can be functional style
     fn calc_iteration(&self, indir_costs_old: &Vec<f32>, indir_costs_new: &mut Vec<f32>) {
         // is dereferencing like this in rust bad practice??
         *indir_costs_new = self.graph
@@ -109,6 +110,30 @@ impl HashedProductGraph {
             // method not found in `rayon::iter::map::Map<hashbrown::external_trait_impls::rayon::map::ParIter<'_, u64, product::Product, ahash::random_state::RandomState>, 
             // [closure@src/product_graph_hashmap.rs:96:18: 103:14 indir_costs_old:_]>`
 
+    }
+
+    fn calc_iteration_new(&mut self, indir_costs: &mut HashMap<u64, f32>) {
+        // let mut indir_costs_new = indir_costs.clone();
+
+        self.graph
+        .par_iter()
+        .for_each(|(_, prod)| {
+            // indir_costs_new.insert(prod.id, 1.0);
+            let new_cost = prod.dependencies.iter().fold(0.0, |acc, dep| {
+                let dep_cost = match self.graph.get(&dep.id) {
+                    Some(_prod) => _prod.direct_cost,
+                    _ => 0.0
+                };
+
+                acc + (dep.quantity * dep_cost)
+            });
+        });
+    }
+
+    pub fn calc_for_n_iterations_new(&self, n: u16) -> HashMap<u64, f32> {
+        let indir_costs = &mut HashMap::<u64, f32>::new();
+        
+        indir_costs.clone()
     }
 
     /// Multiple iterations of the iterative estimation for indirect costs. Performs count number of
