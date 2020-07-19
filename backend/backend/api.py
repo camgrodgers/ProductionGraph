@@ -215,6 +215,8 @@ def update_product_indirect_values():
 
     # Check for errors in graph
     if len(errors) != 0:
+        # clear old errors
+        DependencyCycleError.objects.all().delete()
         # NOTE: batch inserts could be good here but they have some weird caveats
         for id in errors:
             newError = DependencyCycleError(product_id = id)
