@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
 from .models import Product
 from .models import Dependency
+from .models import DependencyCycleError
 from .forms import ProductForm
 import product_graph_bindings
 from .models import Dependency
@@ -201,6 +202,7 @@ def update_product_indirect_values():
     #    return HttpResponseRedirect("/fourohofur")
 
     # NOTE: this code has very bad perf and does many queries when maybe it can do group_by and stuff?
+    # need to combine some loops at very least
     # Calculating labor time
     labor_graph = {}
     for p in Product.objects.all():
@@ -211,18 +213,21 @@ def update_product_indirect_values():
 
     (indirect_labor_values, errors) = product_graph_bindings.calc_indirect_vals_for_n_iterations(labor_graph, 25)
 
+    # Check for errors in graph
     if len(errors) != 0:
+        # NOTE: batch inserts could be good here but they have some weird caveats
         for id in errors:
-            newError = Error(product = id)
+            newError = DependencyCycleError(product_id = id)
             newError.save()
-            # TODO: early return? maybe want to show the messed up values?
+        return
     else:
         # Clear any preexisting error data since the graph is now valid
-        Error.objects.all().delete()
+        DependencyCycleError.objects.all().delete()
 
 
+    # update products with calculated values
     for (id_val, indirect_labor_val) in indirect_labor_values:
-        prod = Product.objects.filter(id=id_val).update(indirect_labor=indirect_labor_val)
+        Product.objects.filter(id=id_val).update(indirect_labor=indirect_labor_val)
     # Calculating cost-price
     cost_graph = {}
     for p in Product.objects.all():
@@ -232,5 +237,6 @@ def update_product_indirect_values():
         cost_graph[p.id] = product_graph_bindings.SimpleProduct(p.direct_wages, deps)
 
     (indirect_cost_values, errors) = product_graph_bindings.calc_indirect_vals_for_n_iterations(cost_graph, 25)
+    # update products with calculated values
     for (id_val, indirect_cost_val) in indirect_cost_values:
-        prod = Product.objects.filter(id=id_val).update(indirect_wages=indirect_cost_val)
+        Product.objects.filter(id=id_val).update(indirect_wages=indirect_cost_val)

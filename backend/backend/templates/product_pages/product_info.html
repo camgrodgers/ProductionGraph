@@ -20,6 +20,17 @@
 
       <!-- HEADING ACTIONS -->
       <div class="flex items-center">
+		<!-- ERRORS BUTTON -->
+		{% if graph_error != None %}
+		<button
+			id="errors-page-link"
+            class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
+		>
+		{{graph_error.product}}
+
+		WARNING: this Product {{product.id}} may depend on 1.0 or more of itself, or on another Product which does so.
+		</button>
+		{% endif %}
         <!-- EDIT BUTTON -->
         <button
           id="editing-modal-trigger"

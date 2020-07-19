@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Product
 from .models import Dependency
+from .models import DependencyCycleError
 from .forms import ProductForm
 
 # HELPERS
@@ -23,6 +24,12 @@ def retrieveDependencies (product):
         return Dependency.objects.filter(dependent=product)
     except:
         return []
+
+def retrieveProductError(_product):
+    try:
+        return DependencyCycleError.objects.get(product_id=_product.id)
+    except:
+        return None
 
 # def handle_edit_product(form, name):
 
@@ -85,6 +92,7 @@ def product_view(request, name):
     target_product = retrieve_product(name)
     product_dependencies = retrieveDependencies(target_product)
     selected_dep = None
+    graph_error = retrieveProductError(target_product)
     
     if target_product is None or request.method != 'GET':
         return redirect('/fourohfour')
@@ -92,7 +100,8 @@ def product_view(request, name):
         context = {
             'product': target_product,
             'dependencies': product_dependencies,
-            'selected_dep': selected_dep
+            'selected_dep': selected_dep,
+            'graph_error': graph_error
         }
         return render(request, 'product_pages/product_info.html', context)
 
