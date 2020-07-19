@@ -153,6 +153,7 @@ def products_page(request):
 
     paginator = Paginator(product_list, 10)
     errors_exist = DependencyCycleError.objects.exists()
+    print(errors_exist)
 
     try:
         products = paginator.page(page)

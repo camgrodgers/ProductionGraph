@@ -69,16 +69,16 @@
     <div
       class="bg-white whitespace-no-wrap shadow overflow-hidden sm:rounded-lg border-b border-gray-200"
     >
-      <div class="px-6 py-4 overflow-hidden border-b border-gray-200">
+      <div class="flex justify-between items-center px-6 py-4 overflow-hidden border-b border-gray-200">
         <h3 class="font-bold text-md">Details</h3>
-		{% if graph_error != None %}
-		<button
-			id="errors-page-link"
-            class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
-		>
-		<a href="/errors">WARNING: this Product depends on 1.0 or more of itself, or on another Product which does so.</a>
-		</button>
-		{% endif %}
+        {% if graph_error != None %}
+        <button
+          id="errors-page-link"
+                class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
+        >
+        <a href="/errors">WARNING: this Product depends on 1.0 or more of itself, or on another Product which does so.</a>
+        </button>
+        {% endif %}
       </div>
 
       <div>
@@ -170,11 +170,11 @@
           </div>
         </div>
         <div
-          class="mt-4 align-middle inline-block min-w-full shadow  sm:rounded-lg border-b border-gray-200"
+          class="mt-4 align-middle inline-block min-w-full shadow sm:rounded-lg border-b border-gray-200"
         >
           {% if dependencies|length > 0 %}
           <table class="min-w-full">
-            <thead class="text-left bg-gray-100">
+            <thead class="min-w-full text-left bg-gray-100">
               <tr >
                 <th class="px-6 py-4">
                   Name
