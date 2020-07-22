@@ -1,15 +1,10 @@
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
-from .models import Product
-from .models import Dependency
-from .models import DependencyCycleError
-from .forms import ProductForm
+from .models import *
+from .forms import *
 import product_graph_bindings
-from .models import Dependency
-from .forms import DependencyForm
-from .forms import EditDependencyForm
-from .forms import DeleteDependencyForm
+
 
 ### CRUD FOR PRODUCT ###
 

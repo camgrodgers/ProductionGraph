@@ -2,11 +2,11 @@ from django.shortcuts import render,redirect
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import Product
-from .models import Dependency
-from .models import DependencyCycleError
-from .forms import ProductForm
-from .filters import ProductFilter
+from django.contrib.auth import authenticate, login as auth_login, logout
+from django.contrib import messages
+from .models import *
+from .forms import *
+from .filters import *
 
 # HELPERS
 # I think eventually we should change this
@@ -72,6 +72,37 @@ def generate_paginator(current_page_index, last_page):
 
 ### VIEWS ###
 
+def login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            auth_login(request, user)
+            return redirect('/products/')
+        else:
+            messages.info(request, "Username or password is incorrect")
+
+    return render(request, 'home/login.html')
+
+def register(request):
+    if request.method == "POST":
+        register_form = CreateUserForm(request.POST)
+
+        if register_form.is_valid():
+            register_form.save()
+            messages.success(request, 'Account was created successfully')
+            return redirect("/login")
+        else: 
+            print(register_form.errors)
+            for message in list(register_form.errors.values()):
+                messages.info(request, message)
+        
+    return render(request, 'home/register.html')
+
+
 def fourohfour(request):
     """
     GET request handler for the URL '/fourohfour'
@@ -97,12 +128,6 @@ def home(request):
     :rtype: HttpResponse
     """
     return render(request, 'home/index.html')
-
-def login(request):
-    return render(request, 'home/login.html')
-
-def register(request):
-    return render(request, 'home/register.html')
 
 def errors_page(request):
     if request.method != 'GET':

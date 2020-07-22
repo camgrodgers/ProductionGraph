@@ -122,11 +122,8 @@ GitHub.sublime-settings
 .DS_STORE/
 
 # rust
-<<<<<<< HEAD
 debug
 rls
-=======
 target/
 /target/
->>>>>>> b7573995fd7df066c60544234ee294b79ac223af
 target
