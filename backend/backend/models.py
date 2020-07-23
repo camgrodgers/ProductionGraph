@@ -4,6 +4,7 @@ import uuid
 # TODO: Normalize? 
 class Product(models.Model):
     name = models.CharField(max_length = 100, unique = True) # NOTE: this max length is arbitrary placeholder
+    measurement = models.CharField(max_length = 40)
     real_price = models.FloatField()
     direct_labor = models.FloatField() # Consider placing a lower bound of 0.0?
     direct_wages = models.FloatField()
