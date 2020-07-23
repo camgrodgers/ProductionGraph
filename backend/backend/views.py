@@ -2,11 +2,13 @@ from django.shortcuts import render,redirect
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.contrib.auth import authenticate, login as auth_login, logout
+from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import *
 from .forms import *
 from .filters import *
+from .decorators import *
 
 # HELPERS
 # I think eventually we should change this
@@ -45,6 +47,19 @@ def retrieveProductError(_product):
 # def handle_edit_product(form, name):
 
 def generate_paginator(current_page_index, last_page):
+    """
+    Determines the paginator range values
+
+    :param current_page_index: The currently viewed page (indexed, so page - 1)
+    :type current_page_index: unsigned integer
+
+    :param last_page: last page in the paginator (indexed, so len - 1)
+    :type last_page: unsigned integer
+
+    :return: an array of integers, separated with a tuple ('...', integer) to indicate a break in the list 
+        and the page to jump to on a click of '...'
+    :rtype: Array
+    """
     page_range = []
 
     if current_page_index - 3 >= 0 and last_page - 3 > current_page_index:
@@ -71,8 +86,17 @@ def generate_paginator(current_page_index, last_page):
 
 
 ### VIEWS ###
-
+@unauthed_route
 def login(request):
+    """
+    Logs a user in
+
+    :param request: The request sent to server
+    :type request: HttpRequest
+
+    :return: a redirect to the product list page on sucess, remains on this page on failure
+    :rtype: HttpResponseRedirect
+    """
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -87,7 +111,17 @@ def login(request):
 
     return render(request, 'home/login.html')
 
+@unauthed_route
 def register(request):
+    """
+    Registers a new user
+
+    :param request: The request sent to server
+    :type request: HttpRequest
+
+    :return: a redirect to the login page on sucess, remains on this page on failure
+    :rtype: HttpResponseRedirect
+    """
     if request.method == "POST":
         register_form = CreateUserForm(request.POST)
 
@@ -129,6 +163,7 @@ def home(request):
     """
     return render(request, 'home/index.html')
 
+@login_required(login_url='/login/')
 def errors_page(request):
     if request.method != 'GET':
         return HttpResponseRedirect("/fourohfour")
@@ -144,6 +179,7 @@ def errors_page(request):
 
     return render(request, 'product_pages/errorlisting.html', context)
 
+@login_required(login_url='login')
 def products_page(request):
     """
     GET request handler for the URL '/'
@@ -178,7 +214,7 @@ def products_page(request):
 
     paginator = Paginator(product_list, 10)
     errors_exist = DependencyCycleError.objects.exists()
-    print(errors_exist)
+    # print(errors_exist)
 
     try:
         products = paginator.page(page)
@@ -208,6 +244,7 @@ def products_page(request):
 # 1). Add modals for creating / deleting dependencies
 # 2). Add Button + Confirmation modal (i.e. "Are you sure?") for delete product
 
+@login_required(login_url='login')
 def product_view(request, name):
     """
     GET request handler for the URL '/product/:id'
@@ -238,7 +275,7 @@ def product_view(request, name):
         }
         return render(request, 'product_pages/product_info.html', context)
 
-
+@login_required(login_url='login')
 def product_analytics(request, name):
     """
     GET request handler for the URL '/product/:id/analytics/'

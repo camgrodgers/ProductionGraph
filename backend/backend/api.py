@@ -1,10 +1,27 @@
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
+from django.contrib.auth import logout as auth_logout
 from .models import *
 from .forms import *
 import product_graph_bindings
 
+def logout(request):
+    """
+    Logs a user out
+
+    :param request: The request sent to server
+    :type request: HttpRequest
+
+    :return: a redirect to the home page on sucess, 404 if failure or request method is 
+        not POST
+    :rtype: HttpResponseRedirect
+    """
+    if request.method == "POST":
+        auth_logout(request)
+        return redirect("/")
+    
+    return redirect("/fourohfour")
 
 ### CRUD FOR PRODUCT ###
 
