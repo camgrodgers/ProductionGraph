@@ -17,10 +17,11 @@
       Enter your credentials to pickup where you left off
     </p>
     {% comment %} TODO: add a django form for this {% endcomment %}
-    <form class="flex-1 pt-6 justify-center items-center">
+    <form method="post" class="flex-1 pt-6 justify-center items-center">
+      {% csrf_token %}
       <div class="rounded-md shadow-sm mb-4">
         <div>
-          <input placeholder="sallysmith@gmail.com" name="email" type="email" required class="rounded-none relative block w-full px-3 py-2 border border-gray-300 rounded-t-md focus:outline-none focus:border-blue-300 sm:text-sm sm:leading-5">
+          <input placeholder="mysupercoolusername" name="username" required class="rounded-none relative block w-full px-3 py-2 border border-gray-300 rounded-t-md focus:outline-none focus:border-blue-300 sm:text-sm sm:leading-5">
         </div>
         <div class="-mt-px">
           <input placeholder="mysupersecurepassword" name="password" type="password" required class="rounded-none relative block w-full px-3 py-2 border border-gray-300 rounded-b-md focus:outline-none focus:border-blue-300 sm:text-sm sm:leading-5">
