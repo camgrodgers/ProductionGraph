@@ -1,15 +1,52 @@
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
-from .models import Product
-from .models import Dependency
-from .models import DependencyCycleError
-from .forms import ProductForm
+from django.contrib.auth import logout as auth_logout
+from .models import *
+from .forms import *
 import product_graph_bindings
-from .models import Dependency
-from .forms import DependencyForm
-from .forms import EditDependencyForm
-from .forms import DeleteDependencyForm
+
+def commit_history():
+    histpoint = HistoryPoint()
+    histpoint.save()
+    for p in Product.objects.all():
+        p_history = ProductHistory(
+                history_point = histpoint,
+                product_id = p.id,
+                name = p.name,
+                real_price = p.real_price,
+                direct_labor = p.direct_labor,
+                direct_wages = p.direct_wages,
+                indirect_wages = p.indirect_wages,
+                indirect_labor = p.indirect_labor
+                )
+        p_history.save()
+    for d in Dependency.objects.all():
+        d_history = DependencyHistory(
+                history_point = histpoint,
+                dependent_id = d.dependent_id,
+                dependency_id = d.dependency_id,
+                quantity = d.quantity
+                )
+        d_history.save()
+
+
+def logout(request):
+    """
+    Logs a user out
+
+    :param request: The request sent to server
+    :type request: HttpRequest
+
+    :return: a redirect to the home page on sucess, 404 if failure or request method is 
+        not POST
+    :rtype: HttpResponseRedirect
+    """
+    if request.method == "POST":
+        auth_logout(request)
+        return redirect("/")
+    
+    return redirect("/fourohfour")
 
 ### CRUD FOR PRODUCT ###
 

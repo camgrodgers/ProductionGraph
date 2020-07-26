@@ -42,5 +42,29 @@ class Economy(models.Model):
     real_average_profit_rate = models.FloatField()
     estimated_average_profit_rate = models.FloatField()
 
+class HistoryPoint(models.Model):
+    date_time = models.DateTimeField(auto_now_add=True)
+    # TODO: Other fields worth recording here? Profit rate? other Model for storing some calculated values?
 
+class ProductHistory(models.Model):
+    history_point = models.ForeignKey(
+            HistoryPoint,
+            on_delete = models.CASCADE
+            )
+    product_id = models.IntegerField() # NOTE: This is not a foreign key field because reasons
+    name = models.CharField(max_length = 100) # NOTE: this max length is arbitrary placeholder
+    real_price = models.FloatField()
+    direct_labor = models.FloatField() # Consider placing a lower bound of 0.0?
+    direct_wages = models.FloatField()
+    indirect_wages = models.FloatField(default=0)
+    indirect_labor = models.FloatField(default=0)
 
+# NOTE: actually displaying the history for these is not a priority
+class DependencyHistory(models.Model):
+    history_point = models.ForeignKey(
+            HistoryPoint,
+            on_delete = models.CASCADE
+            )
+    dependent_id = models.IntegerField()
+    dependency_id = models.IntegerField()
+    quantity = models.FloatField()

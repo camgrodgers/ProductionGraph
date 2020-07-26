@@ -24,8 +24,9 @@ urlpatterns = [
 
     # user pages
     path('', views.home),
-    path('login/', views.login),
+    path('login/', views.login, name="login"),
     path('register/', views.register),
+    path('logout/', api.logout),
 
     # product pages
     path('products/', views.products_page),

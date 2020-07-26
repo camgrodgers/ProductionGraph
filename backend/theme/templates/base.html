@@ -23,17 +23,14 @@
           >
             <h3>ProductionGraph</h3>
           </div>
-          <!-- <div class="absolute right-0 mr-12">
-            <button
-              class="max-w-xs flex items-center rounded-full focus:outline-none focus:shadow-solid"
-            >
-              <img
-                class="h-8 w-8 rounded-full"
-                src="https://www.gravatar.com/avatar?d=mp"
-                alt="avatar"
-              />
-            </button>
-          </div> -->
+          <div class="absolute right-0 mr-12">
+            {% if request.user.is_authenticated %}
+              <form method="post" action="/logout/">
+                {% csrf_token %}
+                <button class="text-white">Logout</button>
+              </form>
+            {% endif %}
+          </div>
         </div>
       </div>
     </nav>
