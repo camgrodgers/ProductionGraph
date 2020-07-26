@@ -86,6 +86,9 @@
           <p class="text-center text-4xl font-extrabold mr-4">
             $ {{product.cost_price|floatformat:2}}
           </p>
+          <p class="text-2xl font-bold">
+            / {{product.measurement}} &nbsp;&nbsp; 
+          </p>
           <p class="text-center text-md leading-5 text-gray-500">
               Estimated Cost
           </p>
@@ -200,7 +203,7 @@
                 <td
                   class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
                 >
-                  {{dep.quantity}}
+                  {{dep.quantity}} {{dep.dependency.measurement}}s
                 </td>
 
                 <td

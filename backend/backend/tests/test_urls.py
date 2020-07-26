@@ -28,14 +28,14 @@ class TestPostURLS(TestCase):
     def setUp(self):
         self.client = Client()
         self.client.post("/api/create/product", {
-            'name': 'borgor', 'real_price': 69, 'direct_labor': 23, 'direct_wages': 54, 'indirect_wages': 12,
+            'name': 'borgor', 'measurement': 'unit', 'real_price': 69, 'direct_labor': 23, 'direct_wages': 54, 'indirect_wages': 12,
             'indirect_labor': 23
         })
 
     def test_create_product(self):
         #Post request to create new product
         res = self.client.post("/api/create/product", {
-            'name': 'HotDog', 'real_price': 69, 'direct_labor': 36, 'direct_wages': 50, 'indirect_wages': 12, 'indirect_labor': 23
+            'name': 'HotDog', 'measurement': 'unit', 'real_price': 69, 'direct_labor': 36, 'direct_wages': 50, 'indirect_wages': 12, 'indirect_labor': 23
         })
         self.assertEqual(res.status_code, 302)
 

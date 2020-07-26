@@ -14,6 +14,7 @@ def commit_history():
                 history_point = histpoint,
                 product_id = p.id,
                 name = p.name,
+                measurement = p.measurement,
                 real_price = p.real_price,
                 direct_labor = p.direct_labor,
                 direct_wages = p.direct_wages,
@@ -67,6 +68,7 @@ def create_product(request):
         if form.is_valid():
             product = Product(
                 name=form.cleaned_data['name'],
+                measurement=form.cleaned_data['measurement'],
                 real_price=form.cleaned_data['real_price'],
                 direct_labor=form.cleaned_data['direct_labor'],
                 direct_wages=form.cleaned_data['direct_wages'],

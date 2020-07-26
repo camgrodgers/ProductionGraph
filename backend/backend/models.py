@@ -4,6 +4,7 @@ import uuid
 # TODO: Normalize? 
 class Product(models.Model):
     name = models.CharField(max_length = 100, unique = True) # NOTE: this max length is arbitrary placeholder
+    measurement = models.CharField(max_length = 40)
     real_price = models.FloatField()
     direct_labor = models.FloatField() # Consider placing a lower bound of 0.0?
     direct_wages = models.FloatField()
@@ -52,6 +53,7 @@ class ProductHistory(models.Model):
             )
     product_id = models.IntegerField() # NOTE: This is not a foreign key field because reasons
     name = models.CharField(max_length = 100) # NOTE: this max length is arbitrary placeholder
+    measurement = models.CharField(max_length = 40)
     real_price = models.FloatField()
     direct_labor = models.FloatField() # Consider placing a lower bound of 0.0?
     direct_wages = models.FloatField()

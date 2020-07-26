@@ -73,6 +73,9 @@
                       <div class="ml-4 text-sm leading-5 text-gray-500">
                         Estimated labor time: {{product.value|floatformat:3}} h
                       </div>
+                      <div class="ml-4 text-sm leading-5 text-gray-500">
+                        Unit of Measurement: {{product.measurement}}
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -304,6 +307,19 @@
                 />
               </div>
             </div>
+            <div class="w-1/2 px-2">
+                <label
+                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
+                >
+                  Unit of Measurement
+                </label>
+                <input
+                  name="measurement"
+                  required
+                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+                  placeholder="Yard, barrel, ton, etc."
+                />
+              </div>
 
             <!----------------------------------------------------------------->
             <!--INDIRECT WAGES AND INCOME INPUTES WERE HERE, BUT WERE REMOVED-->
