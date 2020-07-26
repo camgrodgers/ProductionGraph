@@ -50,10 +50,7 @@ class ProductHistory(models.Model):
             HistoryPoint,
             on_delete = models.CASCADE
             )
-    # NOTE: may want to make this not a foreign key
-    product = Models.ForeignKey(
-            Product,
-            )
+    product_id = Models.IntegerField() # NOTE: This is not a foreign key field because reasons
     name = models.CharField(max_length = 100, unique = True) # NOTE: this max length is arbitrary placeholder
     real_price = models.FloatField()
     direct_labor = models.FloatField() # Consider placing a lower bound of 0.0?
@@ -61,17 +58,12 @@ class ProductHistory(models.Model):
     indirect_wages = models.FloatField(default=0)
     indirect_labor = models.FloatField(default=0)
 
+# NOTE: actually displaying the history for these is not a priority
 class DependencyHistory(models.Model):
     history_point = models.ForeignKey(
             HistoryPoint,
             on_delete = models.CASCADE
             )
-    dependent = models.ForeignKey(
-            Product,
-            related_name = 'dependents'
-            )
-    dependency = models.ForeignKey(
-            Product,
-            related_name = 'dependencies'
-            )
+    dependent_id = models.IntegerField()
+    dependency_id = models.IntegerField()
     quantity = models.FloatField()
