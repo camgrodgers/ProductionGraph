@@ -7,8 +7,8 @@ from ..api import *
 
 class CalcDirectTestCase(TestCase):
     def setUp(self):
-        p1 = Product(name="Prod1", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
-        p2 = Product(name="Prod2", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p1 = Product(name="Prod1", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p2 = Product(name="Prod2", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
         p1.save()
         p2.save()
         d = Dependency(dependent_id=p1.id, dependency_id=p2.id, quantity =10.0)
@@ -22,10 +22,10 @@ class CalcDirectTestCase(TestCase):
 class CalcIndirTestCase(TestCase):
     def setUp(self):
         # TODO: Clean this stuff up
-        p1 = Product(name="Prod1", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
-        p2 = Product(name="Prod2", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
-        p3 = Product(name="Prod3", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
-        p4 = Product(name="Prod4", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p1 = Product(name="Prod1", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p2 = Product(name="Prod2", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p3 = Product(name="Prod3", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p4 = Product(name="Prod4", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
         p1.save()
         p2.save()
         p3.save()
@@ -49,10 +49,10 @@ class CalcIndirTestCase(TestCase):
 class CalcIndirCostTestCase(TestCase):
     def setUp(self):
         # TODO: Clean this stuff up
-        p1 = Product(name="Prod1", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
-        p2 = Product(name="Prod2", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
-        p3 = Product(name="Prod3", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
-        p4 = Product(name="Prod4", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p1 = Product(name="Prod1", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p2 = Product(name="Prod2", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p3 = Product(name="Prod3", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p4 = Product(name="Prod4", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
         p1.save()
         p2.save()
         p3.save()
@@ -75,10 +75,10 @@ class CalcIndirCostTestCase(TestCase):
 
 class DetectErrorCase(TestCase):
     def setUp(self):
-        p1 = Product(name="Prod1", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
-        p2 = Product(name="Prod2", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
-        p3 = Product(name="Prod3", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
-        p4 = Product(name="Prod4", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p1 = Product(name="Prod1", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p2 = Product(name="Prod2", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p3 = Product(name="Prod3", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
+        p4 = Product(name="Prod4", measurement="unit", real_price=10.0, direct_labor=10.0, direct_wages=10.0)
         p1.save()
         p2.save()
         p3.save()

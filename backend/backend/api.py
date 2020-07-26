@@ -14,6 +14,7 @@ def commit_history():
                 history_point = histpoint,
                 product_id = p.id,
                 name = p.name,
+                measurement = p.measurement,
                 real_price = p.real_price,
                 direct_labor = p.direct_labor,
                 direct_wages = p.direct_wages,
