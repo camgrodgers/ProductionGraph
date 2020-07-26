@@ -6,6 +6,31 @@ from .models import *
 from .forms import *
 import product_graph_bindings
 
+def commit_history():
+    histpoint = HistoryPoint()
+    histpoint.save()
+    for p in Product.objects.all():
+        p_history = ProductHistory(
+                history_point = histpoint,
+                product_id = p.id,
+                name = p.name,
+                real_price = p.real_price,
+                direct_labor = p.direct_labor,
+                direct_wages = p.direct_wages,
+                indirect_wages = p.indirect_wages,
+                indirect_labor = p.indirect_labor
+                )
+        p_history.save()
+    for d in Dependency.objects.all():
+        d_history = DependencyHistory(
+                history_point = histpoint,
+                dependent_id = d.dependent_id,
+                dependency_id = d.dependency_id,
+                quantity = d.quantity
+                )
+        d_history.save()
+
+
 def logout(request):
     """
     Logs a user out
