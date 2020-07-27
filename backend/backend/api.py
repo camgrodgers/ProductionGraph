@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout
 from .models import *
 from .forms import *
+from .decorators import *
 import product_graph_bindings
 
 def commit_history():
@@ -58,7 +59,7 @@ def logout(request):
     return redirect("/fourohfour")
 
 ### CRUD FOR PRODUCT ###
-
+@auth_required
 def create_product(request):
     """
     Creates a product in the database. This function handles POST requests sent to the URL 'api/create/product'
@@ -108,6 +109,7 @@ def create_product(request):
 
 
 # TODO: add safety try/except blocks (see delete_product)
+@auth_required
 def edit_product(request, name):
     """
     Updates a product in the database. This function handles POST requests sent to the URL 'api/edit/product/:id'
@@ -146,7 +148,7 @@ def edit_product(request, name):
     else:
         return HttpResponseRedirect("/fourohfour")
 
-
+@auth_required
 def delete_product(request, name):
     """
     Deletes a product in the database. This function handles POST requests sent to the URL 'api/delete/product/:id'
@@ -181,7 +183,7 @@ def delete_product(request, name):
 
 
 ### CRUD FOR DEPENDENCY ###
-
+@auth_required
 def create_dependency(request, prod_name):
     # handle the post to this url ONLY
     if request.method == 'POST':
@@ -217,7 +219,7 @@ def create_dependency(request, prod_name):
     else:
         return HttpResponseRedirect("/fourohfour")
 
-
+@auth_required
 def edit_dependency(request, prod_name):
     # url should only accept post requests
     if request.method == 'POST':
@@ -249,6 +251,7 @@ def edit_dependency(request, prod_name):
     else:
         return HttpResponseRedirect("/fourohfour")
 
+@auth_required
 def delete_dependency(request):
     # TODO: change to DELETE request??
     if request.method == 'POST':

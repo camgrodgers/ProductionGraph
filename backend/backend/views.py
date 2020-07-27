@@ -136,7 +136,6 @@ def register(request):
         
     return render(request, 'home/register.html')
 
-@unauthed_route
 def fourohfour(request):
     """
     GET request handler for the URL '/fourohfour'
@@ -150,8 +149,6 @@ def fourohfour(request):
     """
     return render(request, 'fourohfour/fourohfour.html')
 
-# root url is now empty, so redirect to products list view
-@unauthed_route
 def home(request):
     """
     GET request handler for the URL '/'
@@ -164,7 +161,7 @@ def home(request):
     """
     return render(request, 'home/index.html')
 
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def errors_page(request):
     if request.method != 'GET':
         return HttpResponseRedirect("/fourohfour")
@@ -180,7 +177,6 @@ def errors_page(request):
 
     return render(request, 'product_pages/errorlisting.html', context)
 
-@unauthed_route
 def products_page(request):
     """
     GET request handler for the URL '/'
@@ -212,6 +208,7 @@ def products_page(request):
     
     myFilter = ProductFilter(request.GET, queryset=product_list) # Instantiates filter using definiton from filters.py
     product_list = myFilter.qs                                   # Creates a query set by filtering the data
+    print(product_list)
 
     paginator = Paginator(product_list, 10)
     errors_exist = DependencyCycleError.objects.exists()
@@ -245,7 +242,6 @@ def products_page(request):
 # 1). Add modals for creating / deleting dependencies
 # 2). Add Button + Confirmation modal (i.e. "Are you sure?") for delete product
 
-@unauthed_route
 def product_view(request, name):
     """
     GET request handler for the URL '/product/:id'
@@ -276,7 +272,6 @@ def product_view(request, name):
         }
         return render(request, 'product_pages/product_info.html', context)
 
-@unauthed_route
 def product_analytics(request, name):
     """
     GET request handler for the URL '/product/:id/analytics/'
