@@ -30,6 +30,14 @@ def commit_history():
                 )
         d_history.save()
 
+def commit_history_request(request, name=None):
+    if request.method == "POST":
+        commit_history()
+    if name is None:
+        return redirect("/products/")
+    else:
+        return redirect("/product/" + name)
+
 
 def logout(request):
     """

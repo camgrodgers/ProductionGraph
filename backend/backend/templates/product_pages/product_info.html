@@ -61,15 +61,16 @@
         </button>
 
         <!-- EXECUTE HISTORY LOGGING BUTTON -->
-        <button id="execute-history-logging"
-          class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-3 rounded"
-          onclick=""
-        >
-            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" clip-rule="evenodd">
-                </path>
-            </svg>
-        </button>
+        <form action="{{ request.scheme }}://{{ request.get_host }}/api/edit/commit-history/{{ product.name }}" method="post">
+            {% csrf_token %}
+            <button type="submit" name="Execute History Logging"
+              class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded">
+                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" clip-rule="evenodd">
+                    </path>
+                </svg>
+            </button>
+        </form>
       </div>
       <!-- END HEADING ACTIONS -->
     </div>

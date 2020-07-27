@@ -34,10 +34,16 @@
         </form>
         <button
           id="modal-trigger"
-          class="modal-open bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded"
+          class="modal-open bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded"
         >
           Create
         </button>
+        <form action="{{ request.scheme }}://{{ request.get_host }}/api/edit/commit-history/" method="post">
+            {% csrf_token %}
+            <button type="submit" name="Execute History Logging" class="modal-open bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded">
+              Commit History
+            </button>
+        </form>
       </div>
     </div>
   </header>
