@@ -259,6 +259,7 @@ def product_view(request, name):
     product_dependencies = retrieveDependencies(target_product)
     selected_dep = None
     graph_error = retrieveProductError(target_product)
+    product_list = Product.objects.all()
     
     if target_product is None or request.method != 'GET':
         return redirect('/fourohfour')
@@ -266,6 +267,7 @@ def product_view(request, name):
         context = {
             'product': target_product,
             'dependencies': product_dependencies,
+            'products': product_list,
             'selected_dep': selected_dep,
             'graph_error': graph_error
         }
