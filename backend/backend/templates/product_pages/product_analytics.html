@@ -4,6 +4,50 @@
 
 {% block content %}
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+<script>
+    var config ={
+        type: 'line',
+        data: {
+            labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            datasets: [
+            {
+                label: "Prime and Fibonacci",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+            },
+            {
+                label: "My Second dataset",
+                fillColor: "rgba(151,187,205,0.2)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(151,187,205,1)",
+                data: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+            }
+        ],
+            options: {
+                responsive: true
+      }
+
+
+        }
+    };
+
+    window.onload = function () {
+        var ctx = document.getElementById('line-graph').getContext('2d');
+        window.Line = new Chart(ctx, config);
+    }
+
+</script>
+
 <header class="pt-6">
   <div
     class="flex items-center justify-between max-w-5xl mx-auto pt-4 px-4 sm:px-6 lg:px-8"
@@ -21,8 +65,8 @@
   </div>
 </header>
 
-<div class="max-w-5xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-  Content here
+<div id="chart" class="max-w-5xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+  <canvas id="line-graph"></canvas>
 </div>
 
 {% endblock %}
