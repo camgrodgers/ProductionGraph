@@ -32,20 +32,20 @@
             name ="note"
             />
         {% if user.is_authenticated %}
-        </form>
-        <button
-          id="modal-trigger"
-          class="modal-open bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded"
-        >
-          Create
-        </button>
-        <form action="{{ request.scheme }}://{{ request.get_host }}/api/edit/commit-history/" method="post">
-            {% csrf_token %}
-            <button type="submit" name="Execute History Logging" class="modal-open bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded">
-              Commit History
-            </button>
-        </form>
-          {% endif %}
+          </form>
+          <button
+            id="modal-trigger"
+            class="modal-open bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded"
+          >
+            Create
+          </button>
+          <form action="{{ request.scheme }}://{{ request.get_host }}/api/edit/commit-history/" method="post">
+              {% csrf_token %}
+              <button type="submit" name="Execute History Logging" class="modal-open bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded">
+                Commit History
+              </button>
+          </form>
+        {% endif %}
       </div>
     </div>
   </header>
@@ -61,46 +61,47 @@
           <table class="min-w-full">
             <tbody class="bg-white">
               <!-- if product list has items: render the list -->
-              {% if products|length > 0 %} {% for product in products %}
-              <tr
-                class="cursor-pointer"
-                onclick="location.href = '/product/{{product.name}}';"
-              >
-              
-                <td
-                  class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
+              {% if products|length > 0 %} 
+                {% for product in products %}
+                <tr
+                  class="cursor-pointer"
+                  onclick="location.href = '/product/{{product.name}}';"
                 >
-                  <div>
-                    <div class="ml-4">
-                      {{ product.name }}
+                
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
+                  >
+                    <div>
+                      <div class="ml-4">
+                        {{ product.name }}
+                      </div>
+                      <div class="flex">
+                        <div class="ml-4 text-sm leading-5 text-gray-500">
+                          Estimated cost: ${{product.cost_price|floatformat:2}}
+                        </div>
+                        <div class="ml-4 text-sm leading-5 text-gray-500">
+                          Estimated labor time: {{product.value|floatformat:3}} h
+                        </div>
+                        <div class="ml-4 text-sm leading-5 text-gray-500">
+                          Unit of Measurement: {{product.measurement}}
+                        </div>
+                      </div>
                     </div>
-                    <div class="flex">
-                      <div class="ml-4 text-sm leading-5 text-gray-500">
-                        Estimated cost: ${{product.cost_price|floatformat:2}}
-                      </div>
-                      <div class="ml-4 text-sm leading-5 text-gray-500">
-                        Estimated labor time: {{product.value|floatformat:3}} h
-                      </div>
-                      <div class="ml-4 text-sm leading-5 text-gray-500">
-                        Unit of Measurement: {{product.measurement}}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td
-                  class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
-                ></td>
-              </tr>
-              {% endfor %}
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
+                  ></td>
+                </tr>
+                {% endfor %}
               {% elif has_filter %}
                 <div class="flex items-center justify-center py-6">
                   Uh oh, no products matched that search.
                 </div>
               <!-- if prod list is empty, render this message -->
               {% else %}
-              <div class="flex items-center justify-center py-6">
-                Click the "Create" button to get started!
-              </div>
+                <div class="flex items-center justify-center py-6">
+                  Click the "Create" button to get started!
+                </div>
               {%endif%}
             </tbody>
           </table>
