@@ -257,7 +257,6 @@ def product_view(request, name):
     """
     target_product = retrieve_product(name)
     product_dependencies = retrieveDependencies(target_product)
-    selected_dep = None
     graph_error = retrieveProductError(target_product)
     product_list = Product.objects.all()
     
@@ -268,7 +267,6 @@ def product_view(request, name):
             'product': target_product,
             'dependencies': product_dependencies,
             'products': product_list,
-            'selected_dep': selected_dep,
             'graph_error': graph_error
         }
         return render(request, 'product_pages/product_info.html', context)
