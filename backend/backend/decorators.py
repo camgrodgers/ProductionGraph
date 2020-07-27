@@ -13,9 +13,10 @@ def unauthed_route(view_fn):
     :rtype: HttpResponseRedirect or Function
     """
     def wrapper_fn(request,*args, **kwargs):
-        if request.user.is_authenticated:
+        """ Had to comment this out because it was causing a redirect loop"""
+        """if request.user.is_authenticated:
             return redirect('/products/')
-        else:
-            return view_fn(request, *args, **kwargs)
+        else:"""
+        return view_fn(request, *args, **kwargs)
     
     return wrapper_fn
