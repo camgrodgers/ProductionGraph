@@ -31,6 +31,7 @@
             placeholder="Search for product"
             name ="note"
             />
+        {% if user.is_authenticated %}
         </form>
         <button
           id="modal-trigger"
@@ -44,6 +45,7 @@
               Commit History
             </button>
         </form>
+          {% endif %}
       </div>
     </div>
   </header>

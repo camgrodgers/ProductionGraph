@@ -21,6 +21,7 @@
       <!-- HEADING ACTIONS -->
       <div class="flex items-center">
 		<!-- ERRORS BUTTON TODO: should link to errors page-->
+          {% if user.is_authenticated %}
         <!-- EDIT BUTTON -->
         <button
           id="editing-modal-trigger"
@@ -46,6 +47,7 @@
             ></path>
           </svg>
         </button>
+          {% endif %}
 
         <!-- NAV TO CHARTS BUTTON -->
         <button
@@ -59,7 +61,7 @@
             </path>
           </svg>
         </button>
-
+        {% if user.is_authenticated %}
         <!-- EXECUTE HISTORY LOGGING BUTTON -->
         <form action="{{ request.scheme }}://{{ request.get_host }}/api/edit/commit-history/{{ product.name }}" method="post">
             {% csrf_token %}
@@ -71,6 +73,7 @@
                 </svg>
             </button>
         </form>
+        {% endif %}
       </div>
       <!-- END HEADING ACTIONS -->
     </div>
@@ -170,7 +173,8 @@
       <div class="mt-12 mx-4 py-6 lg:mx-8">
         <div class="flex items-center justify-between">
           <h3 class="font-bold text-md">Dependencies</h3>
-          <div>
+           {% if user.is_authenticated %}
+           <div>
             <button
               id="dependency-create-modal-trigger"
               class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded"
@@ -184,6 +188,7 @@
               Edit
             </button> {% endcomment %}
           </div>
+            {% endif %}
         </div>
         <div
           class="mt-4 align-middle inline-block min-w-full shadow sm:rounded-lg border-b border-gray-200"
