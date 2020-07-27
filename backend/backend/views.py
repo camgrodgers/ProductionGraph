@@ -208,7 +208,6 @@ def products_page(request):
     
     myFilter = ProductFilter(request.GET, queryset=product_list) # Instantiates filter using definiton from filters.py
     product_list = myFilter.qs                                   # Creates a query set by filtering the data
-    print(product_list)
 
     paginator = Paginator(product_list, 10)
     errors_exist = DependencyCycleError.objects.exists()
