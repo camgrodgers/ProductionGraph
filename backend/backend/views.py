@@ -291,8 +291,30 @@ def product_analytics(request, name):
     if target_product is None or request.method != "GET":
         return redirect('/fourohfour')
     else:
+        labels = []
+        real_price = []
+        estimated_labor_time = []
+        estimated_cost = []
+
+        all_history = ProductHistory.objects.all()
+        j = 1
+        for i in range(0, len(all_history)):
+            if name == all_history[i].name:
+                labels.append(j)
+                j += 1
+                real_price.append(all_history[i].real_price)
+                estimated_labor_time.append(all_history[i].direct_labor)
+                estimated_cost.append(all_history[i].indirect_wages)
+
+
         context = {
             'product': target_product,
-            'dependencies': []
+            'dependencies': [],
+            'labels': labels,
+            'real_price': real_price,
+            'estimated_labor_time': estimated_labor_time,
+            'estimated_cost': estimated_cost
         }
         return render(request, 'product_pages/product_analytics.html', context)
+
+

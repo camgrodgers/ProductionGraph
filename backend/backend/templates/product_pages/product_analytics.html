@@ -10,35 +10,59 @@
     var config ={
         type: 'line',
         data: {
-            labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            labels: {{ labels|safe }},
             datasets: [
             {
-                label: "Prime and Fibonacci",
-                fillColor: "rgba(220,220,220,0.2)",
-                strokeColor: "rgba(220,220,220,1)",
-                pointColor: "rgba(220,220,220,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
+                label: "Real Price",
+                fillColor: "rgba(0,33,165,1)",
+                strokeColor: "rgba(0,33,165,1)",
+                pointColor: "rgba(0,33,165,1)",
+                pointStrokeColor: "rgba(0,33,165,1)",
+                pointHighlightFill: "rgba(0,33,165,1)",
                 pointHighlightStroke: "rgba(220,220,220,1)",
-                data: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+                yAxisID: 'l',
+                data: {{ real_price|safe }}
             },
             {
-                label: "My Second dataset",
-                fillColor: "rgba(151,187,205,0.2)",
+                label: "Estimated Cost",
+                fillColor: "rgba(151,187,205,1)",
                 strokeColor: "rgba(151,187,205,1)",
                 pointColor: "rgba(151,187,205,1)",
                 pointStrokeColor: "#fff",
+                pointHighlightFill: "#0021A5",
+                pointHighlightStroke: "#fff",
+                yAxisID: "l",
+                data: {{ estimated_cost|safe }}
+            },
+            {
+                label: "Estimated Labor Time",
+                fillColor: "rgba(120, 150, 180, 0.2)",
+                strokeColor: "rgba(120, 150, 180, 1)",
+                pointColor: "#F41",
+                pointStrokeColor: "#fff",
                 pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(151,187,205,1)",
-                data: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+                pointHighlightStroke: "rgba(120, 150, 180, 1)",
+                yAxisID: "r",
+                data: {{ estimated_labor_time|safe }}
             }
-        ],
-            options: {
-                responsive: true
-      }
-
-
+        ]},
+        options: {
+                responsive: true,
+                scales: {
+                    yAxes: [{
+                      id: "l",
+                        type: "linear",
+                      position: "left"
+                    }, {
+                       id: "r",
+                        type: "linear",
+                       position: "right"
+                    }]
+                }
         }
+
+
+
     };
 
     window.onload = function () {
