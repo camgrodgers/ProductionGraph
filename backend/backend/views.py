@@ -208,7 +208,6 @@ def products_page(request):
     
     myFilter = ProductFilter(request.GET, queryset=product_list) # Instantiates filter using definiton from filters.py
     product_list = myFilter.qs                                   # Creates a query set by filtering the data
-    print(product_list)
 
     paginator = Paginator(product_list, 10)
     errors_exist = DependencyCycleError.objects.exists()
@@ -258,8 +257,8 @@ def product_view(request, name):
     """
     target_product = retrieve_product(name)
     product_dependencies = retrieveDependencies(target_product)
-    selected_dep = None
     graph_error = retrieveProductError(target_product)
+    product_list = Product.objects.all()
     
     if target_product is None or request.method != 'GET':
         return redirect('/fourohfour')
@@ -267,7 +266,7 @@ def product_view(request, name):
         context = {
             'product': target_product,
             'dependencies': product_dependencies,
-            'selected_dep': selected_dep,
+            'products': product_list,
             'graph_error': graph_error
         }
         return render(request, 'product_pages/product_info.html', context)
