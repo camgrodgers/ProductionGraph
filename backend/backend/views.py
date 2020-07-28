@@ -303,8 +303,8 @@ def product_analytics(request, name):
                 labels.append(j)
                 j += 1
                 real_price.append(all_history[i].real_price)
-                estimated_labor_time.append(all_history[i].direct_labor)
-                estimated_cost.append(all_history[i].indirect_wages)
+                estimated_labor_time.append(all_history[i].direct_labor + all_history[i].indirect_labor)
+                estimated_cost.append(all_history[i].indirect_wages + all_history[i].direct_wages)
 
 
         context = {
