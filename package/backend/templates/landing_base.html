@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
   </head>
 
-  <body class="bg-gray-100 font-serif leading-normal tracking-normal">
+  <body class="font-serif leading-normal tracking-normal">
     <nav class="bg-gray-800">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center h-16">
@@ -24,7 +24,7 @@
             <h3>ProductionGraph</h3>
           </div>
           <div class="absolute right-0 mr-12">
-            {% if request.user.is_authenticated %}
+            {% comment %} {% if request.user.is_authenticated %}
               <form method="post" action="/logout/">
                 {% csrf_token %}
                 <button class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded">Logout</button>
@@ -40,7 +40,7 @@
                 <button class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded">Register</button>
               </form>
                 </div>
-            {% endif %}
+            {% endif %} {% endcomment %}
           </div>
         </div>
       </div>

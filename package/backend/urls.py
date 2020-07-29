@@ -13,16 +13,26 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-#from django.contrib import admin
+from django.contrib import admin
 from django.urls import path, include
 from . import views
 from . import api
 
 urlpatterns = [
-#    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('fourohfour/', views.fourohfour),
+
+    # user pages
     path('', views.home),
-    path('product/<str:name>', views.product_view),
+    path('login/', views.login, name="login"),
+    path('register/', views.register),
+    path('logout/', api.logout),
+
+    # product pages
+    path('products/', views.products_page),
+    path('errors/', views.errors_page),
+    path('products/?page=<int:num>', views.products_page),
+    path('product/<str:name>/', views.product_view),
     path('product/<str:name>/analytics/', views.product_analytics),
 
     ### api ###
@@ -31,5 +41,7 @@ urlpatterns = [
     path('api/delete/product/<str:name>', api.delete_product),
     path('api/create/dependency/<str:prod_name>', api.create_dependency),
     path('api/edit/dependency/<str:prod_name>', api.edit_dependency),
-    path('api/delete/dependency/<str:dep_id>', api.delete_dependency)
+    path('api/delete/dependency/', api.delete_dependency),
+    path('api/edit/commit-history/<str:name>', api.commit_history_request),
+    path('api/edit/commit-history/', api.commit_history_request)
 ]
