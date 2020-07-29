@@ -71,10 +71,12 @@
               class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded"
               title="Execute History Logging"
             >
-                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" clip-rule="evenodd">
-                    </path>
-                </svg>
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path 
+                  fill-rule="evenodd" 
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" 
+                  clip-rule="evenodd"></path>
+              </svg>
             </button>
         </form>
         {% endif %}
@@ -94,82 +96,84 @@
         {% if graph_error != None %}
         <button
           id="errors-page-link"
-                class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
+          class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
+          title="Errors Page"
         >
-        <a href="/errors">WARNING: this Product depends on 1.0 or more of itself, or on another Product which does so.</a>
+          <a href="/errors">WARNING: this Product depends on 1.0 or more of itself, or on another Product which does so.</a>
         </button>
         {% endif %}
+        <p class="text-center text-md leading-5 text-gray-600">
+          Current Real Price: <span class="text-gray-900">$ {{product.real_price|floatformat:2}} </span>
+        </p>
       </div>
 
       <div>
-        <div class="px-6 pt-4 mx-4 flex flex-reverse justify-center items-center">
-          <p class="text-center text-4xl font-extrabold mr-4">
-            $ {{product.cost_price|floatformat:2}}
-          </p>
-          <p class="text-2xl font-bold">
-            / {{product.measurement}} &nbsp;&nbsp; 
-          </p>
-          <p class="text-center text-md leading-5 text-gray-500">
-              Estimated Cost
-          </p>
-        </div>
-        <div class="flex flex-row justify-between px-6 py-4 mx-4 lg:mx-8">
-        <div>
+        {% comment %} TOP ROW {% endcomment %}
+        <div class="flex flex-row justify-around px-6 py-4">
           <div class="py-4">
-            <p class="text-center text-xl font-extrabold">
-              $ {{product.real_price|floatformat:2}}
-            </p>
-            <p class="text-center text-md leading-5 text-gray-500">
-              Current Real Price
-            </p>
+              <p class="text-center text-4xl font-extrabold">
+                $ {{product.real_price|floatformat:2}}  
+                <span class="text-2xl font-bold"> / {{product.measurement}} &nbsp;&nbsp; </span>
+              </p>
+              <p class="text-center text-md leading-5 text-gray-500">
+                Current Real Price
+              </p>
           </div>
-          <div class="py-4">
-            <p class="text-center text-xl font-extrabold">
-              {{product.direct_labor|floatformat:3}} h
-            </p>
-            <p class="text-center text-md leading-5 text-gray-500">
-              Direct Labor Time
-            </p>
+          <div class="py-4 text-center">
+              <p class="text-center text-4xl font-extrabold">
+                {{product.value|floatformat:3}} 
+                <span class="text-2xl font-bold"> h &nbsp;&nbsp; </span>
+              </p>
+              <p class="text-center text-md leading-5 text-gray-500">
+                Estimated Labor Time
+              </p>
           </div>
         </div>
-        <div>
-          <div class="py-4">
-            <p class="text-center text-xl font-extrabold">
-              $ {{product.direct_wages|floatformat:2}}
-            </p>
-            <p class="text-center text-md leading-5 text-gray-500">
-              Direct Wages
-            </p>
-          </div>
-          <div class="py-4">
-            <p class="text-center text-xl font-extrabold">
-              $ {{product.indirect_wages|floatformat:2}}
-            </p>
-            <p class="text-center text-md leading-5 text-gray-500">
-              Indirect Wages
-            </p>
-          </div>
-        </div>
-        <div>
-          <div class="py-4">
-            <p class="text-center text-xl font-extrabold">
-              {{product.indirect_labor|floatformat:3}} h
-            </p>
-            <p class="text-center text-md leading-5 text-gray-500">
-              Indirect Labor Time
-            </p>
+        {% comment %} END TOP ROW {% endcomment %}
+
+        {% comment %} 2 x 2 section {% endcomment %}
+        <div class="flex flex-row justify-around px-6 py-4">
+          <div>
+            <div class="py-4">
+              <p class="text-center text-xl font-extrabold">
+                $ {{product.direct_wages|floatformat:2}}
+              </p>
+              <p class="text-center text-md leading-5 text-gray-500">
+                Direct Wages
+              </p>
+            </div>
+
+            <div class="py-4">
+              <p class="text-center text-xl font-extrabold">
+                $ {{product.indirect_wages|floatformat:2}}
+              </p>
+              <p class="text-center text-md leading-5 text-gray-500">
+                Indirect Wages
+              </p>
+            </div>
           </div>
 
-          <div class="py-4">
-            <p class="text-center text-xl font-extrabold">
-              {{product.value|floatformat:3}} h
-            </p>
-            <p class="text-center text-md leading-5 text-gray-500">
-				Estimated Labor Time
-            </p>
+          <div>
+            <div class="py-4">
+              <p class="text-center text-xl font-extrabold">
+                {{product.direct_labor|floatformat:3}} h
+              </p>
+              <p class="text-center text-md leading-5 text-gray-500">
+                Direct Labor
+              </p>
+            </div>
+            
+            <div class="py-4">
+              <p class="text-center text-xl font-extrabold">
+                {{product.indirect_labor|floatformat:3}} h
+              </p>
+              <p class="text-center text-md leading-5 text-gray-500">
+                Indirect Labor
+              </p>
+            </div>
           </div>
         </div>
-        </div>
+        {% comment %} end 2 x 2 section {% endcomment %}
       </div>
       <!-- End Product Details Overview -->
 
@@ -200,12 +204,12 @@
         >
           {% if dependencies|length > 0 %}
           <table class="min-w-full">
-            <thead class="min-w-full text-left bg-gray-100">
-              <tr >
-                <th class="px-6 py-4">
+            <thead class="text-left bg-gray-100">
+              <tr>
+                <th class="w-1/2 px-6 py-4">
                   Name
                 </th>
-                <th class="px-6 py-4">
+                <th class="w-1/2 px-6 py-4">
                   Quantity
                 </th>
               </tr>
@@ -529,11 +533,11 @@
                 </div>
               </div>
               <div class="w-1/2 px-2">
-                <!-- Input for the Quanity -->
+                <!-- Input for the Quantity -->
                 <label
                   class="px-2 block text-gray-700 text-sm font-medium mb-2"
                 >
-                  Quanity
+                  Quantity
                 </label>
                 <input
                   name="quantity"

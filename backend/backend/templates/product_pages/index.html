@@ -93,14 +93,17 @@
                   ></td>
                 </tr>
                 {% endfor %}
+              {% elif user.is_authenticated and has_filter == None %}
+                <div class="flex items-center justify-center py-6">
+                  Click the "Create" button to get started!
+                </div>
               {% elif has_filter %}
                 <div class="flex items-center justify-center py-6">
                   Uh oh, no products matched that search.
                 </div>
-              <!-- if prod list is empty, render this message -->
               {% else %}
                 <div class="flex items-center justify-center py-6">
-                  Click the "Create" button to get started!
+                  Login to start adding some products!
                 </div>
               {%endif%}
             </tbody>
