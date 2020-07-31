@@ -93,14 +93,7 @@
     >
       <div class="flex justify-between items-center px-6 py-4 overflow-hidden border-b border-gray-200">
         <h3 class="font-bold text-md">Details</h3>
-
-        <p class="text-center text-md leading-5 text-gray-600">
-          Current Real Price: <span class="text-gray-900">$ {{product.real_price|floatformat:2}} </span>
-        </p>
-      </div>
-
-          {% if graph_error != None %}
-      <div class="pt-4 text-center">
+        {% if graph_error != None %}
         <button
           id="errors-page-link"
           class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
@@ -108,19 +101,22 @@
         >
           <a href="/errors">WARNING: this Product depends on 1.0 or more of itself, or on another Product which does so.</a>
         </button>
+        {% endif %}
+        <p class="text-center text-md leading-5 text-gray-600">
+          Current Real Price: <span class="text-gray-900">$ {{product.real_price|floatformat:2}} </span>
+        </p>
       </div>
-    {% endif %}
 
       <div>
         {% comment %} TOP ROW {% endcomment %}
         <div class="flex flex-row justify-around px-6 py-4">
           <div class="py-4">
               <p class="text-center text-4xl font-extrabold">
-                $ {{product.cost_price|floatformat:2}}  
+                $ {{product.real_price|floatformat:2}}  
                 <span class="text-2xl font-bold"> / {{product.measurement}} &nbsp;&nbsp; </span>
               </p>
               <p class="text-center text-md leading-5 text-gray-500">
-                Estimated Cost
+                Current Real Price
               </p>
           </div>
           <div class="py-4 text-center">
@@ -388,22 +384,6 @@
                 />
               </div>
 
-              {% comment %} Unit of Measurement {% endcomment %}
-              <div class="w-1/2 px-2">
-                <label
-                  class="px-2 block text-gray-700 text-sm font-medium mb-2"
-                >
-                  Unit of Measurement
-                </label>
-                <input
-                  name="measurement"
-                  required
-                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-                  value="{{ product.measurement }}"
-                />
-              </div>
-            </div>
-            <div class="flex items-center mx-auto mb-4">
               <!-- Current Real Price Input -->
               <div class="w-1/2 px-2">
                 <label
@@ -418,7 +398,8 @@
                   value="{{ product.real_price }}"
                 />
               </div>
-
+            </div>
+            <div class="flex items-center mx-auto mb-4">
               <!-- Direct Labor Time Input -->
               <div class="w-1/2 px-2">
                 <label
