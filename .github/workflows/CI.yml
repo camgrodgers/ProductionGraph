@@ -20,7 +20,6 @@ jobs:
       run: |
         pip3 install --upgrade setuptools
         pip3 install productiongraph
-        pip3 install --user --requirement requirements.txt
         python3 manage.py tailwind install
         python3 manage.py tailwind install
         python3 manage.py tailwind start
