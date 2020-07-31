@@ -6,67 +6,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 
+    {{ chartjs_config| json_script:'chartjs_config' }}
 <script>
-    var config ={
-        type: 'line',
-        data: {
-            labels: {{ labels|safe }},
-            datasets: [
-            {
-                label: "Real Price",
-                fillColor: "rgba(0,33,165,1)",
-                strokeColor: "rgba(0,33,165,1)",
-                pointColor: "rgba(0,33,165,1)",
-                pointStrokeColor: "rgba(0,33,165,1)",
-                pointHighlightFill: "rgba(0,33,165,1)",
-                pointHighlightStroke: "rgba(220,220,220,1)",
-                yAxisID: 'l',
-                data: {{ real_price|safe }}
-            },
-            {
-                label: "Estimated Cost",
-                fillColor: "rgba(151,187,205,1)",
-                strokeColor: "rgba(151,187,205,1)",
-                pointColor: "rgba(151,187,205,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#0021A5",
-                pointHighlightStroke: "#fff",
-                yAxisID: "l",
-                data: {{ estimated_cost|safe }}
-            },
-            {
-                label: "Estimated Labor Time",
-                fillColor: "rgba(120, 150, 180, 0.2)",
-                strokeColor: "rgba(120, 150, 180, 1)",
-                pointColor: "#F41",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(120, 150, 180, 1)",
-                yAxisID: "r",
-                data: {{ estimated_labor_time|safe }}
-            }
-        ]},
-        options: {
-                responsive: true,
-                scales: {
-                    yAxes: [{
-                      id: "l",
-                        type: "linear",
-                      position: "left"
-                    }, {
-                       id: "r",
-                        type: "linear",
-                       position: "right"
-                    }]
-                }
-        }
-
-
-
-    };
-
     window.onload = function () {
         var ctx = document.getElementById('line-graph').getContext('2d');
+        const config = JSON.parse(document.getElementById('chartjs_config').textContent);
         window.Line = new Chart(ctx, config);
     }
 
