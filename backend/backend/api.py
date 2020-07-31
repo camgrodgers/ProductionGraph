@@ -7,7 +7,11 @@ from .forms import *
 from .decorators import *
 import product_graph_bindings
 
+
 def commit_history():
+    """
+    Commits the current graph state to history, for the purpose of analytics.
+    """
     histpoint = HistoryPoint()
     histpoint.save()
     for p in Product.objects.all():
@@ -282,6 +286,9 @@ def delete_dependency(request):
 ### Calculating indirect costs ###
 
 def update_product_indirect_values():
+    """
+    Performs the calculation of indirect values by calling on the Rust library.
+    """
     # TODO: might want to make a separate function that handles a request, if we stop doing this
     # calculation automatically when data is added
     #if request.method != 'PUT':
