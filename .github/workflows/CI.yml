@@ -36,7 +36,10 @@ jobs:
         pip3 install product_graph_bindings
         pip3 install --user --requirement backend/requirements.txt
     - name: Lint
-      run:  pylint backend
+      run:  |
+        pip3 install pylint-django
+        --load-plugins pylint_django
+        pylint backend
       working-directory: backend
     - name: Run tests
       run: python3 backend/manage.py test backend.tests
