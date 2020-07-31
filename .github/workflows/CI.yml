@@ -19,6 +19,7 @@ jobs:
     - name: Start
       run: |
         sudo -H pip3 install --upgrade pip
+        pip3 install --upgrade setuptools pip
         pip3 --version
         pip3 install product_graph_bindings
         pip3 install --user --requirement requirements.txt
