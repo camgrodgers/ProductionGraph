@@ -136,7 +136,6 @@ def register(request):
         
     return render(request, 'home/register.html')
 
-
 def fourohfour(request):
     """
     GET request handler for the URL '/fourohfour'
@@ -150,7 +149,6 @@ def fourohfour(request):
     """
     return render(request, 'fourohfour/fourohfour.html')
 
-# root url is now empty, so redirect to products list view
 def home(request):
     """
     GET request handler for the URL '/'
@@ -163,7 +161,7 @@ def home(request):
     """
     return render(request, 'home/index.html')
 
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def errors_page(request):
     if request.method != 'GET':
         return HttpResponseRedirect("/fourohfour")
@@ -179,7 +177,6 @@ def errors_page(request):
 
     return render(request, 'product_pages/errorlisting.html', context)
 
-@login_required(login_url='login')
 def products_page(request):
     """
     GET request handler for the URL '/'
@@ -244,7 +241,6 @@ def products_page(request):
 # 1). Add modals for creating / deleting dependencies
 # 2). Add Button + Confirmation modal (i.e. "Are you sure?") for delete product
 
-@login_required(login_url='login')
 def product_view(request, name):
     """
     GET request handler for the URL '/product/:id'
@@ -261,8 +257,8 @@ def product_view(request, name):
     """
     target_product = retrieve_product(name)
     product_dependencies = retrieveDependencies(target_product)
-    selected_dep = None
     graph_error = retrieveProductError(target_product)
+    product_list = Product.objects.all()
     
     if target_product is None or request.method != 'GET':
         return redirect('/fourohfour')
@@ -270,12 +266,11 @@ def product_view(request, name):
         context = {
             'product': target_product,
             'dependencies': product_dependencies,
-            'selected_dep': selected_dep,
+            'products': product_list,
             'graph_error': graph_error
         }
         return render(request, 'product_pages/product_info.html', context)
 
-@login_required(login_url='login')
 def product_analytics(request, name):
     """
     GET request handler for the URL '/product/:id/analytics/'

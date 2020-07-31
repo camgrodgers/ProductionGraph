@@ -4,9 +4,14 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout
 from .models import *
 from .forms import *
+from .decorators import *
 import product_graph_bindings
 
+
 def commit_history():
+    """
+    Commits the current graph state to history, for the purpose of analytics.
+    """
     histpoint = HistoryPoint()
     histpoint.save()
     for p in Product.objects.all():
@@ -58,7 +63,7 @@ def logout(request):
     return redirect("/fourohfour")
 
 ### CRUD FOR PRODUCT ###
-
+@auth_required
 def create_product(request):
     """
     Creates a product in the database. This function handles POST requests sent to the URL 'api/create/product'
@@ -108,6 +113,7 @@ def create_product(request):
 
 
 # TODO: add safety try/except blocks (see delete_product)
+@auth_required
 def edit_product(request, name):
     """
     Updates a product in the database. This function handles POST requests sent to the URL 'api/edit/product/:id'
@@ -128,6 +134,7 @@ def edit_product(request, name):
         if form.is_valid():
             Product.objects.filter(name=name).update(
                 name = form.cleaned_data['name'],
+                measurement = form.cleaned_data['measurement'],
                 real_price = form.cleaned_data['real_price'],
                 direct_labor = form.cleaned_data['direct_labor'],
                 direct_wages = form.cleaned_data['direct_wages'],
@@ -146,7 +153,7 @@ def edit_product(request, name):
     else:
         return HttpResponseRedirect("/fourohfour")
 
-
+@auth_required
 def delete_product(request, name):
     """
     Deletes a product in the database. This function handles POST requests sent to the URL 'api/delete/product/:id'
@@ -181,7 +188,7 @@ def delete_product(request, name):
 
 
 ### CRUD FOR DEPENDENCY ###
-
+@auth_required
 def create_dependency(request, prod_name):
     # handle the post to this url ONLY
     if request.method == 'POST':
@@ -217,7 +224,7 @@ def create_dependency(request, prod_name):
     else:
         return HttpResponseRedirect("/fourohfour")
 
-
+@auth_required
 def edit_dependency(request, prod_name):
     # url should only accept post requests
     if request.method == 'POST':
@@ -249,6 +256,7 @@ def edit_dependency(request, prod_name):
     else:
         return HttpResponseRedirect("/fourohfour")
 
+@auth_required
 def delete_dependency(request):
     # TODO: change to DELETE request??
     if request.method == 'POST':
@@ -279,6 +287,9 @@ def delete_dependency(request):
 ### Calculating indirect costs ###
 
 def update_product_indirect_values():
+    """
+    Performs the calculation of indirect values by calling on the Rust library.
+    """
     # TODO: might want to make a separate function that handles a request, if we stop doing this
     # calculation automatically when data is added
     #if request.method != 'PUT':
