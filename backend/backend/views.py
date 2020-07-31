@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -9,6 +9,7 @@ from .models import *
 from .forms import *
 from .filters import *
 from .decorators import *
+
 
 # HELPERS
 # I think eventually we should change this
@@ -28,14 +29,16 @@ def retrieve_product(product_name):
     """
     try:
         return Product.objects.get(name=product_name)
-    except:    
+    except:
         return None
 
-def retrieveDependencies (product):
+
+def retrieveDependencies(product):
     try:
         return Dependency.objects.filter(dependent=product)
     except:
         return []
+
 
 # TODO: could replace this with .exists()?
 def retrieveProductError(_product):
@@ -43,6 +46,7 @@ def retrieveProductError(_product):
         return DependencyCycleError.objects.get(product_id=_product.id)
     except:
         return None
+
 
 # def handle_edit_product(form, name):
 
@@ -66,23 +70,22 @@ def generate_paginator(current_page_index, last_page):
         page_range.append(1)
         page_range.append(('...', current_page_index - 1))
         for i in range(current_page_index - 1, current_page_index + 2):
-            page_range.append(i+1)
+            page_range.append(i + 1)
         page_range.append(('...', current_page_index + 3))
 
         for i in range(last_page - 2, last_page):
-            page_range.append(i+1)
-    
+            page_range.append(i + 1)
+
     # elif current_page_index - 3 < 0:
     else:
-        for i in range(0,3):
-            page_range.append(i+1)
-        page_range.append(('...',4))
+        for i in range(0, 3):
+            page_range.append(i + 1)
+        page_range.append(('...', 4))
 
         for i in range(last_page - 3, last_page):
-            page_range.append(i+1)
+            page_range.append(i + 1)
 
     return page_range
-
 
 
 ### VIEWS ###
@@ -111,6 +114,7 @@ def login(request):
 
     return render(request, 'home/login.html')
 
+
 @unauthed_route
 def register(request):
     """
@@ -129,12 +133,13 @@ def register(request):
             register_form.save()
             messages.success(request, 'Account was created successfully')
             return redirect("/login")
-        else: 
+        else:
             print(register_form.errors)
             for message in list(register_form.errors.values()):
                 messages.info(request, message)
-        
+
     return render(request, 'home/register.html')
+
 
 def fourohfour(request):
     """
@@ -149,6 +154,7 @@ def fourohfour(request):
     """
     return render(request, 'fourohfour/fourohfour.html')
 
+
 def home(request):
     """
     GET request handler for the URL '/'
@@ -161,21 +167,23 @@ def home(request):
     """
     return render(request, 'home/index.html')
 
+
 # @login_required(login_url='/login/')
 def errors_page(request):
     if request.method != 'GET':
         return HttpResponseRedirect("/fourohfour")
-    
+
     error_list = []
     for p in DependencyCycleError.objects.all():
         error_list.append(p.product.id)
     product_list = Product.objects.filter(id__in=error_list)
 
     context = {
-            'products': product_list,
-            }
+        'products': product_list,
+    }
 
     return render(request, 'product_pages/errorlisting.html', context)
+
 
 def products_page(request):
     """
@@ -190,24 +198,26 @@ def products_page(request):
     """
     if request.method != 'GET':
         return HttpResponseRedirect("/fourohfour")
-    
+
     page = request.GET.get('page', 1)
-    
+
     has_filter = request.GET.get('note')
 
     # this is not necessary, this is just to keep consistency
     # that /products alone defaults to page 1
     if page is not None and page == '1':
         return HttpResponseRedirect("/products")
-    
+
     if has_filter == '':
         return HttpResponseRedirect("/products/")
 
     product_list = Product.objects.all()
 
+
     
     myFilter = ProductFilter(request.GET, queryset=product_list) # Instantiates filter using definiton from filters.py
     product_list = myFilter.qs                                   # Creates a query set by filtering the data
+
 
     paginator = Paginator(product_list, 10)
     errors_exist = DependencyCycleError.objects.exists()
@@ -236,8 +246,7 @@ def products_page(request):
     return render(request, 'product_pages/index.html', context)
 
 
-
-#TODO: 
+# TODO:
 # 1). Add modals for creating / deleting dependencies
 # 2). Add Button + Confirmation modal (i.e. "Are you sure?") for delete product
 
@@ -258,8 +267,10 @@ def product_view(request, name):
     target_product = retrieve_product(name)
     product_dependencies = retrieveDependencies(target_product)
     graph_error = retrieveProductError(target_product)
+
     product_list = Product.objects.all()
     
+
     if target_product is None or request.method != 'GET':
         return redirect('/fourohfour')
     else:
@@ -270,6 +281,7 @@ def product_view(request, name):
             'graph_error': graph_error
         }
         return render(request, 'product_pages/product_info.html', context)
+
 
 def product_analytics(request, name):
     """
@@ -290,8 +302,77 @@ def product_analytics(request, name):
     if target_product is None or request.method != "GET":
         return redirect('/fourohfour')
     else:
+        labels = []
+        real_price = []
+        estimated_labor_time = []
+        estimated_cost = []
+
+        all_history = ProductHistory.objects.all()
+        j = 1
+        for i in range(0, len(all_history)):
+            if name == all_history[i].name:
+                labels.append(f"{all_history[i].history_point.date_time:%Y/%m/%d %H:%M}")
+                real_price.append(all_history[i].real_price)
+                estimated_labor_time.append(all_history[i].direct_labor + all_history[i].indirect_labor)
+                estimated_cost.append(all_history[i].indirect_wages + all_history[i].direct_wages)
+
+        chartjs_config = {
+            'type': 'line',
+            'data': {
+                'labels': labels,
+                'datasets': [
+                    {
+                        'label': "Real Price",
+                        'borderColor': "rgba(0,33,165,1)",
+                        'yAxisID': 'l',
+                        'data': real_price
+                    },
+                    {
+                        'label': "Estimated Cost",
+                        'borderColor': "rgba(250,70,22,1)",
+                        'yAxisID': "l",
+                        'data': estimated_cost
+                    },
+                    {
+                        'label': "Estimated Labor Time",
+                        'borderColor': 'rgba(25, 25, 25, 1)',
+                        'pointHoverBorderColor': 'rgba(25, 25, 25, 1)',
+                        'yAxisID': "r",
+                        'data': estimated_labor_time
+                    }
+                ]},
+            'options': {
+                'responsive': 'true',
+                'legend': {
+                  'labels': {
+                      'fontColor': 'black'
+                  }
+                },
+                'scales': {
+                    'yAxes': [{
+                        'id': "l",
+                        'type': "linear",
+                        'position': "left",
+                        'scaleLabel': {
+                            'display': 'true',
+                            'labelString': 'Dollars ($)'}
+                    }, {
+                        'id': "r",
+                        'type': "linear",
+                        'position': "right",
+                        'scaleLabel': {
+                            'display': 'true',
+                            'labelString': 'Hours'}
+                    }]
+                }
+            }
+
+        }
+
         context = {
             'product': target_product,
-            'dependencies': []
+            'dependencies': [],
+            'labels': labels,
+            'chartjs_config': chartjs_config
         }
         return render(request, 'product_pages/product_analytics.html', context)
