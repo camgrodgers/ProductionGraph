@@ -130,6 +130,7 @@ def edit_product(request, name):
         if form.is_valid():
             Product.objects.filter(name=name).update(
                 name = form.cleaned_data['name'],
+                measurement = form.cleaned_data['measurement'],
                 real_price = form.cleaned_data['real_price'],
                 direct_labor = form.cleaned_data['direct_labor'],
                 direct_wages = form.cleaned_data['direct_wages'],
