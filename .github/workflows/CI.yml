@@ -36,5 +36,5 @@ jobs:
         pip3 install product_graph_bindings
         pip3 install --user --requirement backend/requirements.txt
     - name: Run tests
-      run: python3 backend/manage.py test backend.tests
+      run: python3 manage.py test backend.tests
       working-directory: backend
