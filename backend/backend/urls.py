@@ -24,8 +24,9 @@ urlpatterns = [
 
     # user pages
     path('', views.home),
-    path('login/', views.login),
+    path('login/', views.login, name="login"),
     path('register/', views.register),
+    path('logout/', api.logout),
 
     # product pages
     path('products/', views.products_page),
@@ -40,5 +41,7 @@ urlpatterns = [
     path('api/delete/product/<str:name>', api.delete_product),
     path('api/create/dependency/<str:prod_name>', api.create_dependency),
     path('api/edit/dependency/<str:prod_name>', api.edit_dependency),
-    path('api/delete/dependency/', api.delete_dependency)
+    path('api/delete/dependency/', api.delete_dependency),
+    path('api/edit/commit-history/<str:name>', api.commit_history_request),
+    path('api/edit/commit-history/', api.commit_history_request)
 ]

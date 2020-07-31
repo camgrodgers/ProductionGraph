@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+<!-- START OF NEW CONTENT  -->
+<!-- 
+  Note: See TailwindUI preview and TailwindCSS docs, they are used heavily
+ -->
+
+{% block content %}
+
+<div>
+  <!-- Project List Heading -->
+  <header class="pt-6">
+    <div
+      class="flex items-center justify-between max-w-5xl mx-auto pt-4 px-4 sm:px-6 lg:px-8"
+    >
+      <h3 class="text-xl text-red-600"><span class="text-black"><a href="/products/">Products</a> > </span>Products containing errors</h3>
+    </div>
+  </header>
+  <!-- End Project List Heading -->
+
+  <!-- Product List -->
+  <div class="max-w-5xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col">
+      <div class="-my-2 py-2 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div
+          class="bg-white align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200"
+        >
+          <table class="min-w-full">
+            <tbody class="bg-white">
+              <!-- if product list has items: render the list -->
+              {% if products|length > 0 %} {% for product in products %}
+              <tr
+                class="cursor-pointer"
+                onclick="location.href = '/product/{{product.name}}';"
+              >
+              
+                <td
+                  class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
+                >
+                  <div>
+                    <div class="ml-4">
+                      {{ product.name }}
+                    </div>
+                    <div class="flex">
+                      <div class="ml-4 text-sm leading-5 text-gray-500">
+                        Estimated cost: ${{product.cost_price|floatformat:2}}
+                      </div>
+                      <div class="ml-4 text-sm leading-5 text-gray-500">
+                        Estimated labor time: {{product.value|floatformat:3}} h
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td
+                  class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"
+                ></td>
+              </tr>
+              {% endfor %}
+              <!-- if prod list is empty, render this message -->
+              {% else %}
+              <div class="flex items-center justify-center py-6">
+				  No errors detected in graph.
+              </div>
+              {%endif%}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Product List -->
+{% endblock %}
+

@@ -7,7 +7,8 @@ db.sqlite3
 media
 
 # tailwind gen
-static/
+static/css/
+css
 
 # Backup files # 
 *.bak 
@@ -121,8 +122,9 @@ GitHub.sublime-settings
 # OS
 .DS_STORE/
 
-# RUST
-
+# rust
+debug
+rls
 target/
 /target/
 target

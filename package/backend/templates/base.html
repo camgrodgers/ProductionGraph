@@ -17,16 +17,30 @@
     <nav class="bg-gray-800">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center h-16">
+          <div
+            class="text-white font-semibold tracking-wide text-lg cursor-pointer"
+            onclick="window.location.href='/'"
+          >
+            <h3>ProductionGraph</h3>
+          </div>
           <div class="absolute right-0 mr-12">
-            <button
-              class="max-w-xs flex items-center text-sm rounded-full text-white focus:outline-none focus:shadow-solid"
-            >
-              <img
-                class="h-8 w-8 rounded-full"
-                src="https://www.gravatar.com/avatar?d=mp"
-                alt="avatar"
-              />
-            </button>
+            {% if request.user.is_authenticated %}
+              <form method="post" action="/logout/">
+                {% csrf_token %}
+                <button class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded">Logout</button>
+              </form>
+             {% else %}
+                <div class="flex items-center">
+                <form method="post" action="/login/">
+                    {% csrf_token %}
+                <button class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded">Login</button>
+              </form>
+                <form method="post" action="/register/">
+                    {% csrf_token %}
+                <button class="bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 mr-2 rounded">Register</button>
+              </form>
+                </div>
+            {% endif %}
           </div>
         </div>
       </div>
