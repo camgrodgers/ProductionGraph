@@ -18,10 +18,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Start
       run: |
-        sudo pip3 install virtualenv
-        virtualenv newenv
-        source newenv/bin/activate
-        pip3 install django
+        pip3 install --user --requirement requirements.txt
+        python3 manage.py tailwind install
         python3 manage.py tailwind install
         python3 manage.py tailwind start
         python3 manage.py runserver
