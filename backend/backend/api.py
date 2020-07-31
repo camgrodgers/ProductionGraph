@@ -280,6 +280,9 @@ def delete_dependency(request):
 ### Calculating indirect costs ###
 
 def update_product_indirect_values():
+    """
+    Performs the calculation of indirect values by calling on the Rust library.
+    """
     # TODO: might want to make a separate function that handles a request, if we stop doing this
     # calculation automatically when data is added
     #if request.method != 'PUT':
