@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, pythonCI ]
+  pull_request:
+    branches: [ master, pythonCI ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Start
+      run: |
+        python3 manage.py tailwind install
+        python3 manage.py tailwind start
+        python3 manage.py runserver
+        python manage.py tailwind build
+      working-directory: backend
+    - name: Lint
+      run:  pylint backend
+      working-directory: backend
+    - name: Run tests
+      run: python3 manage.py test backend.tests
+      working-directory: backend
