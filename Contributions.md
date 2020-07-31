@@ -6,6 +6,8 @@ However, some of our work is not visible in those places, and is listed here.
 
 ### Aaron Leopold
 
+Attended regular team meetings, set-up one-on-one voice chat sessions to help teammates deal with bugs / obstacles during development and put together the slides for our prototype presentation
+
 ### Benjamin Rheault
 
 ### Cameron Rodgers
