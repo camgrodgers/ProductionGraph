@@ -28,7 +28,6 @@ jobs:
         python3 manage.py tailwind start
         python3 manage.py runserver
         python manage.py tailwind build
-      working-directory: backend
     - name: Lint
       run:  pylint backend
       working-directory: backend
