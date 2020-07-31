@@ -9,6 +9,7 @@ from .models import *
 from .forms import *
 from .filters import *
 from .decorators import *
+import numpy
 
 
 # HELPERS
@@ -315,6 +316,9 @@ def product_analytics(request, name):
                 real_price.append(all_history[i].real_price)
                 estimated_labor_time.append(all_history[i].direct_labor + all_history[i].indirect_labor)
                 estimated_cost.append(all_history[i].indirect_wages + all_history[i].direct_wages)
+        cor_labor_price = numpy.corrcoef(numpy.array(real_price), numpy.array(estimated_labor_time))
+        cor_cost_price = numpy.corrcoef(estimated_cost, real_price)
+        print(cor_labor_price)
 
         chartjs_config = {
             'type': 'line',
@@ -344,10 +348,9 @@ def product_analytics(request, name):
             'options': {
                 'responsive': 'true',
                 'legend': {
-                  'labels': {
-                      'fontColor': 'black'
-                  }
-                },
+                    'position': 'top',
+                    'display': 'true'
+                    },
                 'scales': {
                     'yAxes': [{
                         'id': "l",
@@ -373,6 +376,9 @@ def product_analytics(request, name):
             'product': target_product,
             'dependencies': [],
             'labels': labels,
-            'chartjs_config': chartjs_config
+            'chartjs_config': chartjs_config,
+            'cor_labor_price': cor_labor_price,
+            'cor_cost_price': cor_cost_price
+
         }
         return render(request, 'product_pages/product_analytics.html', context)
