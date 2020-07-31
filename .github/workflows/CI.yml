@@ -38,7 +38,7 @@ jobs:
     - name: Lint
       run:  |
         pip3 install pylint-django
-        --load-plugins pylint_django
+        pylint --load-plugins pylint_django
         pylint backend
       working-directory: backend
     - name: Run tests
