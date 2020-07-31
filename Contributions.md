@@ -9,7 +9,7 @@ However, some of our work is not visible in those places, and is listed here.
 ### Benjamin Rheault
 
 ### Cameron Rodgers
-Ran meetings, did one-on-one chats and voice chats to help teammates, and set most of the agenda for what needed to be done. 
+Ran meetings, did one-on-one chats and voice chats to help teammates and deal with bugs, and set most of the agenda for what needed to be done. 
 
 ### Matthew Petela
 
