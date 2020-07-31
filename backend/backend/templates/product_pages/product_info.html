@@ -93,7 +93,14 @@
     >
       <div class="flex justify-between items-center px-6 py-4 overflow-hidden border-b border-gray-200">
         <h3 class="font-bold text-md">Details</h3>
-        {% if graph_error != None %}
+
+        <p class="text-center text-md leading-5 text-gray-600">
+          Current Real Price: <span class="text-gray-900">$ {{product.real_price|floatformat:2}} </span>
+        </p>
+      </div>
+
+          {% if graph_error != None %}
+      <div class="pt-4 text-center">
         <button
           id="errors-page-link"
           class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 mr-2 rounded"
@@ -101,11 +108,8 @@
         >
           <a href="/errors">WARNING: this Product depends on 1.0 or more of itself, or on another Product which does so.</a>
         </button>
-        {% endif %}
-        <p class="text-center text-md leading-5 text-gray-600">
-          Current Real Price: <span class="text-gray-900">$ {{product.real_price|floatformat:2}} </span>
-        </p>
       </div>
+    {% endif %}
 
       <div>
         {% comment %} TOP ROW {% endcomment %}
