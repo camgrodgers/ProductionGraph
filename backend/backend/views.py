@@ -476,5 +476,5 @@ def products_analytics(request):
         'cor_cost_price': cor_cost_price
 
     }
-    return render(request, 'product_pages/product_analytics.html', context)
+    return render(request, 'product_pages/products_analytics.html', context)
 
