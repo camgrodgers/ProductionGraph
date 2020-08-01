@@ -14,5 +14,6 @@ Attended regular team meetings, set-up one-on-one voice chat sessions to help te
 Ran meetings, did one-on-one chats and voice chats to help teammates and deal with bugs, and set most of the agenda for what needed to be done. 
 
 ### Matthew Petela
+Attended team meetings and gave feedback/chatted in our Teams group
 
 ### Osiris Villacampa
