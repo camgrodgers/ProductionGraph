@@ -1,4 +1,4 @@
-
+![Logo](https://github.com/camgrodgers/ProductionGraph/raw/camgrodgers-edit-readme/logo.png)
 # ProductionGraph
 
 ProductionGraph is a web service for estimating total costs and labor hours of commodities, and testing the results against real data.
