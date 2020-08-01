@@ -32,6 +32,7 @@ urlpatterns = [
     path('products/', views.products_page),
     path('errors/', views.errors_page),
     path('products/?page=<int:num>', views.products_page),
+    path('products/analytics', views.products_analytics),
     path('product/<str:name>/', views.product_view),
     path('product/<str:name>/analytics/', views.product_analytics),
 

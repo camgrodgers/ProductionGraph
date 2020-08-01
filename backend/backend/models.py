@@ -75,6 +75,15 @@ class ProductHistory(models.Model):
     indirect_wages = models.FloatField(default=0)
     indirect_labor = models.FloatField(default=0)
 
+    @property
+    def cost_price(self):
+        # wage price + wage price of deps + profits of deps. NOTE: very rough estimate of profits, hardcoded
+        return self.direct_wages + self.indirect_wages + (self.indirect_wages * 0.1)
+
+    @property
+    def value(self):
+        return self.direct_labor + self.indirect_labor
+
 # NOTE: actually displaying the history for these is not a priority
 class DependencyHistory(models.Model):
     """This class is a model that stores historical Dependency data."""

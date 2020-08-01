@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, pythonCI ]
+  pull_request:
+    branches: [ master, pythonCI ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+        
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Start
+      run: |
+        sudo -H pip3 install --upgrade pip
+        pip3 install --upgrade setuptools pip
+        pip3 --version
+        pip3 install django-filter numpy
+        pip3 install product_graph_bindings
+        pip3 install --user --requirement backend/requirements.txt
+    - name: Run tests
+      run: python3 manage.py test backend.tests
+      working-directory: backend
