@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/camgrodgers/ProductionGraph/raw/camgrodgers-edit-readme/logo.png" />
+</p>
+
 ![Logo](https://github.com/camgrodgers/ProductionGraph/raw/camgrodgers-edit-readme/logo.png)
 # ProductionGraph
 
