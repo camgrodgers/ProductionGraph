@@ -1,2 +1,2 @@
-recursive-include productiongraph *.html *.css
+recursive-include productiongraph *.html *.css *.jpg *.png
 
