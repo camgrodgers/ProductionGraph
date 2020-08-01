@@ -317,8 +317,9 @@ def product_analytics(request, name):
                 estimated_labor_time.append(all_history[i].direct_labor + all_history[i].indirect_labor)
                 estimated_cost.append(all_history[i].indirect_wages + all_history[i].direct_wages)
         cor_labor_price = numpy.corrcoef(numpy.array(real_price), numpy.array(estimated_labor_time))
+        cor_labor_price = cor_labor_price[0,1]
         cor_cost_price = numpy.corrcoef(estimated_cost, real_price)
-        print(cor_labor_price)
+        cor_cost_price = cor_cost_price[0,1]
 
         chartjs_config = {
             'type': 'line',
@@ -382,3 +383,98 @@ def product_analytics(request, name):
 
         }
         return render(request, 'product_pages/product_analytics.html', context)
+
+
+def products_analytics(request):
+    """
+    GET request handler for the URL '/products/analytics/'
+
+    :param request: The request sent to server
+    :type request: HttpRequest
+
+    :return: HttpResponse containing the page HTML and a context of the Product objects, and an
+         HttpResponseRedirect to the 404 page '/fourohfour' if request type isn't a GET
+    :rtype: HttpResponse or HttpResponseRedirect
+    """
+    if request.method != "GET":
+        return redirect('/fourohfour')
+
+    labels = []
+    real_price = []
+    estimated_labor_time = []
+    estimated_cost = []
+
+    all_prods = Product.objects.all().order_by('real_price')
+    j = 1
+    for prod in all_prods:
+        labels.append(f"{prod.name}")
+        real_price.append(prod.real_price)
+        estimated_labor_time.append(prod.value)
+        estimated_cost.append(prod.cost_price)
+    cor_labor_price = numpy.corrcoef(numpy.array(real_price), numpy.array(estimated_labor_time))
+    cor_labor_price = cor_labor_price[0,1]
+    cor_cost_price = numpy.corrcoef(estimated_cost, real_price)
+    cor_cost_price = cor_cost_price[0,1]
+
+    chartjs_config = {
+        'type': 'line',
+        'data': {
+            'labels': labels,
+            'datasets': [
+                {
+                    'label': "Real Price",
+                    'borderColor': "rgba(0,33,165,1)",
+                    'yAxisID': 'l',
+                    'data': real_price
+                },
+                {
+                    'label': "Estimated Cost",
+                    'borderColor': "rgba(250,70,22,1)",
+                    'yAxisID': "l",
+                    'data': estimated_cost
+                },
+                {
+                    'label': "Estimated Labor Time",
+                    'borderColor': 'rgba(25, 25, 25, 1)',
+                    'pointHoverBorderColor': 'rgba(25, 25, 25, 1)',
+                    'yAxisID': "r",
+                    'data': estimated_labor_time
+                }
+            ]},
+        'options': {
+            'responsive': 'true',
+            'legend': {
+                'position': 'top',
+                'display': 'true'
+                },
+            'scales': {
+                'yAxes': [{
+                    'id': "l",
+                    'type': "linear",
+                    'position': "left",
+                    'scaleLabel': {
+                        'display': 'true',
+                        'labelString': 'Dollars ($)'}
+                }, {
+                    'id': "r",
+                    'type': "linear",
+                    'position': "right",
+                    'scaleLabel': {
+                        'display': 'true',
+                        'labelString': 'Hours'}
+                }]
+            }
+        }
+
+    }
+
+    context = {
+        'dependencies': [],
+        'labels': labels,
+        'chartjs_config': chartjs_config,
+        'cor_labor_price': cor_labor_price,
+        'cor_cost_price': cor_cost_price
+
+    }
+    return render(request, 'product_pages/product_analytics.html', context)
+
