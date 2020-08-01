@@ -19,7 +19,7 @@ if __name__ == "__main__":
         { 'console_scripts':
             [
                 'prodgraph_run = scripts.run:main',
-                'prodgraph_migrate_and_run = scripts.run:main',
+                'prodgraph_migrate_and_run = scripts.migrate_and_run:main',
                 'prodgraph_init = scripts.init:main',
                 'prodgraph_test = scripts.test:main',
             ]
