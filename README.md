@@ -128,3 +128,10 @@ $ python3 manage.py test backend.tests
 // Run specific test
 $ python3 manage.py test backend.tests.test_urls
 ```
+
+## Our Team 
+
+| **Project Manager** | **Dev Team** | **Dev Team** | **Dev Team** | **Dev Team** | 
+| :---: |:---:| :---:| :---:| :---:| 
+| [![Cameron Rodgers]( https://avatars0.githubusercontent.com/u/46136660?s=400&u=7d086b2b4187b862e854c751cc02d4f00358eaf5&v=4)]( https://github.com/camgrodgers) | [![Aaron Leopold]( https://avatars3.githubusercontent.com/u/36278431?s=400&u=e081a3c4c5721096cfff9a7f8399eeeee0026338&v=4)]( https://github.com/aaronleopold) | [![Benjamin Rheault]( https://avatars0.githubusercontent.com/u/44026930?s=400&v=4)]( https://github.com/bhreault) | [![Matthew Petela]( https://avatars2.githubusercontent.com/u/25089614?s=400&v=4)]( http://github.com/matthewpetela) | [![Osiris Villacampa]( https://avatars0.githubusercontent.com/u/44124858?s=400&v=4&s=200)]( http://github.com/ovillacampa) 
+| ` github.com/camgrodgers` | ` github.com/aaronleopold` | ` github.com/bhreault` | ` github.com/matthewpetela` | ` github.com/ovillacampa` | 
