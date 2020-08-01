@@ -17,3 +17,4 @@ Ran meetings, did one-on-one chats and voice chats to help teammates and deal wi
 Attended team meetings and gave feedback/chatted in our Teams group
 
 ### Osiris Villacampa
+Attended team meetings, tested sql queries to reduce overhead and improve performance, condensed heavy ORM for better performance as well as creating a django CI pipeline.
