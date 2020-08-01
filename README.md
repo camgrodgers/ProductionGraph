@@ -1,6 +1,12 @@
+<p align="center">
+  <img src="https://github.com/camgrodgers/ProductionGraph/raw/camgrodgers-edit-readme/logo.png" />
+</p>
+
 # ProductionGraph
 
-ProductionGraph is a set of programs for estimating costs and labor hours of commodities.
+ProductionGraph is a web service for estimating total costs and labor hours of commodities, and testing the results against real data.
+Github link:
+https://github.com/camgrodgers/ProductionGraph
 
 ### ProductionGraph components:
 
@@ -15,7 +21,7 @@ pip install .
 Or via PyPI (https://pypi.org/project/productiongraph/):
 
 ```
-pip install productiongraph
+pip install productiongraph==0.2.0
 ```
 
 Once the server is installed via pip, a number of commands will be available for initializing and running the server:
@@ -37,7 +43,7 @@ The 'backend' directory contains a Django project that allows users to enter pro
 
 #### production_graph_rs
 
-The 'production_graph_rs' folder contains a high-performance Rust library that performs the estimation. It represents production of commodities as a dependency graph. Each commodity has a "direct cost," which could be labor or wages used directly in its production, and a list of dependencies and their associated quantities, which represent other commodities in the graph that the commodity depends on. The library is documented here:
+The 'production_graph_rs' folder contains a high-performance Rust library that performs the estimation. It represents production of commodities as a dependency graph. The library is documented here:
 
 https://docs.rs/product_graph_rs/0.1.0/product_graph_rs/product_graph_rayon/index.html
 
@@ -60,8 +66,7 @@ Note: this is not presently part of the same build process as the server, as cha
 
 #### rs_alt_ds
 
-The 'rs_alt_ds' directory contains a port of the rust library from 'production_graph_rs' to using a hashmap. This was created for benchmarking purposes.
-
+The 'rs_alt_ds' directory contains a port of the rust library from 'production_graph_rs' to using a hashmap. This was created for benchmarking purposes. It was found that the hashmap version had significantly higher overhead than an array-backed version.
 
 #### product_graph_py
 
@@ -70,6 +75,23 @@ The 'product_graph_py' directory contains code for thin Python bindings that mak
 https://pypi.org/project/product_graph_bindings/
 
 Note: building this is not presently part of the same build process as the server, as changes in the library should not be automatically applied to the server's codebase and build process.
+
+### Web interface usage
+
+#### Basics
+In order to begin entering data, you must create an account and log in. Once logged in, you can create, view, edit, and delete Products and their Dependencies.
+
+#### Error checking
+If you create any Products that depend on themselves in a quantity of 1.0 or more, directly or indirectly, the program will display an error warning and direct you to fix the error. This can be used to detect bad data entry, or to detect crisis situations in an economy. 
+
+#### Commit history
+You can record the current state of the graph as a point in history, to keep track of the history of changes to prices and labor times. Multiple states can be logged in the history. 
+
+#### Analytics
+Once you have entered three or more Products with three or more history points, you can click the analytics button on any individual product page to view the history of its prices as a chart. 
+This chart will also display the correlation rates between labor time and the real price, and estimated price and the real price.
+Another chart will be viewable from the Product listing page, which plots the same variables for the entire current set of Product data rather than a historical dataset for one single Product.
+If the correlations are high, then the dataset is in line with Smith's value theory. A real-world dataset could be entered and used in this manner to empirically test the theory of value.
 
 ### Development info
 
