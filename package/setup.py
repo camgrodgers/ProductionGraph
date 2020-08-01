@@ -3,7 +3,7 @@ if __name__ == "__main__":
     import setuptools
     setuptools.setup(
         name='productiongraph',
-        version='0.1.7',
+        version='0.1.8',
         author='Cameron, Aaron, Osiris, Benjamin, Matt',
         author_email='cameron.g.rodgers@gmail.com',
         packages=setuptools.find_packages(),
@@ -14,7 +14,7 @@ if __name__ == "__main__":
             "backend": ["*.html", "*.css", "*.jpg", "*.png"],
         },
         description='Web interface for calculating prices',
-        install_requires=[ 'Django', 'product_graph_bindings' ],
+        install_requires=[ 'Django', 'product_graph_bindings', 'numpy' ],
         entry_points =
         { 'console_scripts':
             [
