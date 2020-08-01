@@ -58,6 +58,11 @@ cargo run --release
 
 Note: this is not presently part of the same build process as the server, as changes in the library should not be automatically applied to the server's codebase and build process.
 
+#### rs_alt_ds
+
+The 'rs_alt_ds' directory contains a port of the rust library from 'production_graph_rs' to using a hashmap. This was created for benchmarking purposes.
+
+
 #### product_graph_py
 
 The 'product_graph_py' directory contains code for thin Python bindings that make it possible for python programs, such as the backend, to use the rust library. The bindings are on PyPI:
