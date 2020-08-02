@@ -186,7 +186,6 @@ def create_dependency(request, prod_name):
     if request.method == 'POST':
         form = DependencyForm(request.POST)
         if form.is_valid():
-
             try:
                 dependent = Product.objects.get(name=prod_name)
                 dependency = Product.objects.get(name=form.cleaned_data['dependency'])
